@@ -1,0 +1,9 @@
+﻿<Window x:Class="Badger2018.views.Navigator"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Navigator" Height="361" Width="657.6">
+    <Grid>
+        <WebBrowser x:Name="webB" Margin="0,0,0.2,0.2"/>
+
+    </Grid>
+</Window>

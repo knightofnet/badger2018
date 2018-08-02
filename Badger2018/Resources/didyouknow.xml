@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<root>
+  <elt>
+    Comment me rappeler l'heure du gouter ?
+    Habitué à prendre une pause gouter à 16h00 ? Vous pouvez ajouter jusqu'à deux notifications personnalisées à Badger2018. Elles s'afficheront à l'heure désirées avec un message personnalisé.
+    Pour les paramétrer, rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Notifications. Dans la partie inférieure, cocher les cases pour activer les notifications de votre choix. Ajuster l'heure et le message.
+    Validez le tout avec le bouton "OK".
+  </elt>
+  <elt>
+    Badger plus que 4 fois avec Badger2018
+    L'application Badger2018 vous assiste dans les 4 badgeages quotidiens d'une journée classique : en arrivant le matin, en fin de matinée avant de prendre la pause du midi, en début d'après-midi et en fin de journée. Ces 4 badgeages font évoluer l'interface de sorte que vous pouvez savoir rapidement où vous en êtes et combien de temps vous avez travaillé.
+    Mais vous pouvez réaliser d'autres badgeages : pour cela, cliquez simplement sur le bouton "Badger manuellement". Ce badgeage ne sera pas pris en compte par Badger2018, alors attention à avoir un nombre pair de badgeages.
+  </elt>
+  <elt>
+    Que se passe-t-il si le site GTA ne réponds pas ?
+    Même si le site GTA ne répond pas, Badger2018 continue de fonctionner. Lorsque Badger2018 n'a pas réussi à badger, une fenêtre d'erreur s'affiche vous permettant de tenter diverses actions.
+    Vous pourrez ainsi :
+    - soit réessayer de badger avec Badger2018,
+    - soit ouvrir la page GTA pour badger directement sur le site (s'il répond),
+    - soit ouvrir Sirhius pour aller saisir un pointage auto-déclaratif,
+    - soit Consulter vos pointages pour vous assurer de ce qui a été pointé (ou non).
+    En choisissant l'une des trois dernières propositions, Badger2018 vous proposera d'indiquer l'heure badger (avec GTA ou Sirhius) afin que le programme puisse continuer de vous assister.
+  </elt>
+  <elt>
+    Envie de badger automatiquement au démarrage de Windows ? Il y une option pour ça !
+    Rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Divers. Cochez la case "Badger au premier lancement du programme de la journée".
+    Validez votre choix en cliquant sur le bouton OK. Vous aurez alors la possibilité de créer un raccourci vers Badger2018 dans le dossier des applications lancées au démarrage du Windows.
+    A partir de maintenant, Badger2018 sera démarré au démarrage de Windows et ira badger automatiquement.
+  </elt>
+  <elt>
+    Est-ce que je peux redémarrer mon ordinateur si j'ai activé le badgeage au démarrage de Windows ?
+    En activant l'option "Badger au premier lancement du programme de la journée", le badgeage automatiquement est réalisé juste pour le premier badgeage de la journée.
+    Ensuite, peu importe que vous redémarriez ou non Windows, l'application ne badgera plus automatiquement avant la journée d'après !
+  </elt>
+  <elt>
+    Besoin de désactiver le badgeage automatique rapidement ?
+    Il se peut que, anticipant la journée de demain, vous avez besoin de ne pas badger automatiquement. Pour cela, cliquez sur la petite icone lecture dans la partie supérieure de la fenêtre principale.
+  </elt>
+  <elt>
+    Même en utilisant Badger2018, vous pouvez badger sur le site GTA pour le premier badgeage de la journée
+    Si vous utilisez le site GTA pour badger le premier badgeage du jour, il n'y a aucun souci. Pour rattraper ce badgeage dans Badger2018, cliquez simplement sur le bouton "Badger"; une fenêtre de dialogue vous invitera soit à badger réellement, ou à reporter l'heure badger sur GTA. Cliquez sur "Non" dans votre situation.
+    Remarque : si vous procédez ainsi, assurez-vous de désactiver le badgeage automatique.
+  </elt>
+  <elt>
+    Windows 10 et ses couleurs !
+    Si votre ordinateur utilise Windows 10 comme système d'exploitation, vous devriez le voir ! En effet, une partie de l'interface de Badger2018 change de couleurs en fonction de la couleur de votre thème Windows.
+  </elt>
+  <elt>
+    Vous en avez assez des ballons ?
+    Avec Windows 7, les notifications de Badger2018 s'affichent sous forme d'un ballon beige. Un peu petit pour certains utilisateurs. Mais ça peut se changer. En effet, Badger2018 propose un rendu de notification alternative.
+    Rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Divers. Cochez alors la case "Utilisez une notification alternative à celle du système". Vous pouvez tester avec ou sans cette option activée en cliquant sur le bouton "Tester notifications".
+    Si vous êtes satisfait, validez le tout en cliquant sur le bouton "OK".
+  </elt>
+  <elt>
+    Une pause inférieure à 45 minutes
+    Si votre pause méridienne est inférieure à 45 minutes, vous pouvez quand même badger normalement avec Badger2018. L'heure de fin de travail théorique ainsi que le compteur de temps travaillé prendront tout de même en compte au moins 45 minutes de pause.
+  </elt>
+  <elt>
+    Vous avez 5 minutes ?
+    Dans le protocole des horaires variables, 5 minutes sont ajoutées chaque jour dans le compteur du temps travaillé (dans la limite des 9h30 max par jours).
+    Par défaut, Badger2018 prends en compte ces 5 minutes dans le calcul du temps travaillé, mais vous désactiver cet ajout. Pour cela rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), et dans l'onglet Horaires, décochez la case "Ajouter les 5 min de temps au compteur de temps de travail". Dès lors, les calculs de Badger2018 ne prendront plus en compte ces 5 minutes.
+    Bien sûr vous pouvez les réactiver.
+    Oh et bien sûr, cela ne change pas le compteur de temps travaillé sur le tam-tam.
+  </elt>
+  <elt>
+    "Souvent, j'oublie de badger le midi. Est-ce qu'il y a une solution pour éviter ça ?" Oui !
+    Pas toujours évident de se rappeler de badger avant de prendre la pause du midi : avec la précipitation, on a tendance à verrouiller l'ordinateur et partir manger.
+    Pour tenter d'éviter cela, Badger2018 peut jouer un son pour vous avertir que vous avez oublié de badger. Ce son ne se jouera qu'à deux conditions : que l'heure de fin de plage fixe du matin soit dépassée et que l'utilisateur verrouille sa session Windows (avec touche Windows + L par exemple).
+    Cette option s'active en allant dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Rappels. Cochez la case "Avertissement sonore pour le rappel du pointage de fin de matinée".
+    Sur la partie droite de la fenêtre, choisissez le périphérique sonore avec lequel sera joué le son, puis en dessous le son à jouer. Validez votre choix en cliquant sur le bouton "OK".
+    Le son se jouera lorsque les conditions précédentes seront réunies. Il se jouera, même si le son est muet, alors attention aux oreilles !
+  </elt>
+  <elt>
+    Un son personnalisé comme alerte
+    Avec l'option "Avertissement sonore pour le rappel du pointage de fin de matinée", il est possible de jouer un des nombreux fichiers sonores fournis avec Windows. Mais vous pouvez également utiliser le votre.
+    Pour cela il faut placer votre son, au format WAVE dans le dossier de l'application Badger2018. Le fichier wav de votre son doit être nommé : CustomSound.wav. Si Badger2018 est démarré, relancez-le. Dès lors, le son personnalisé apparaitra dans la liste des sons avec le libellé "Son personnalisé".
+    Note : il se peut qu'il ne soit pas jouable par l'application; pour vous assurer de sa bonne lecture, testez-le avec le bouton "Jouer".
+  </elt>
+  <elt>
+    En réunion, désactivez les notifications !
+    Les notifications peuvent rapidement être désactivées. Pour cela :
+    - Cliquez sur la petite cloche dans la partie supérieure de la fenêtre principale.
+    - Dans le menu contextuel du l'icône Badger2018 dans la barre système, cliquez sur "Afficher les notifications".
+    N'oubliez-pas de les réactiver.
+  </elt>
+  <elt>
+    Oups, vous avez cliqué sur "Suivant" trop vite ?
+    Vous pouvez voir les astuces précédentes en cliquant sur le bouton "Suivant" tout en maintenant la touche CTRL de votre clavier.
+  </elt>
+  <elt>
+    9h30 par jour
+    Au-delà de 9h30 de temps de travail cumulé, l'application arrête de compter le temps de travail. En effet, au-delà de 9h30, le protocole des horaires variables précise que le temps de travail n'est plus compté.
+  </elt>
+  <elt>
+    Afficher le temps de travail théorique restant
+    Pour afficher le temps de travail théorique restant pour la journée, double-cliquez sur le compteur de temps travaillé.
+    Un autre double-clic réaffichera le compteur de temps travaillé.
+  </elt>
+  <elt>
+    Pressé de partir ?
+    Pour les utilisateurs qui éteignent trop vite leur ordinateur en fin de journée sans badger, Badger2018 peut tenter de bloquer l'extinction de Windows afin de vous avertir que vous n'avez pas badger.
+    Rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Rappels. Cochez alors la case "Tenter de bloquer l'extinction de l'ordinateur si le dernier pointage n'a pas été effectué". Validez le tout en cliquant sur le bouton "OK".
+  </elt>
+  <elt>
+    Un souci avec Badger2018 ?
+    Si un problème, un bug, une crainte ou une incompréhension apparait lorsque vous utilisez Badger2018, n'hésitez pas à m'envoyer un mail. J'y répondrais le plus vite possible.
+    Badger2018 est toujours en développement, mais le but est d'obtenir le meilleur assistant pour la gestion des badgeages.
+  </elt>
+  <elt>
+    Après un bon repas, on badge !
+    Si de retour de votre pause du midi il vous arrive d'oublier de badger, Badger2018 peut peut-être vous aider.
+    En vous rendant dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Rappels, regarder l'option "Afficher une boite de dialogue après le déverrouillage de la session lorsque la pause de midi n'est pas terminée".
+    Cette option permet d'afficher une petite boite de dialogue lorsque la session est déverrouillée, typiquement au retour de la pause méridienne, avec un petit message vous inviter à badger.
+    Vous savez ce qu'il vous reste à faire !
+  </elt>
+  <elt>
+    Un raccourci pour afficher la fenêtre des options
+    Pour montrer la fenêtre des options, il suffit de cliquer la petite roue dentée en bas à gauche.
+    Mais il est également possible d'utiliser la touche F2.
+  </elt>
+  <elt>
+    Vérifier la présence d'une mise à jour de Badger2018
+    La vérification des mises à jour de Badger2018 se fait automatiquement au démarrage et à d'autres moments de la journée. Mais pour vérifier manuellement si une mise à jour est présente, il suffit d'appuyer sur le bouton F3.
+  </elt>
+  <elt>
+    Afficher les astuces "Le saviez-vous ?"
+    Si les astuces "Le saviez-vous ?" ne s'affichent pas automatiquement au démarrage, vous pouvez les afficher en appuyant sur la touche F4 ou utilisant le raccourci présent dans le menu contextuel de l'icône Badger2018.
+  </elt>
+  <elt>
+    Pas là cette après-midi ?
+    Si vous ne travailler que le matin, ou que l'après-midi, vous pouvez l'indiquez à l'application Badger2018.
+    Passer simplement le curseur sur le texte indiquant le type de journée (dans la partie gauche de l'interface), et lorsque la liste déroulante s'affiche, choisissez le type de journée.
+    Faites ce changement avant le badgeage du début de l'après-midi, car ensuite cela n'est plus possible !
+  </elt>
+  <elt>
+    Badger2018 ne travaille que toutes les 10s...
+    Le tick de Badger2018 a lieu toutes les 10s. Ainsi, toutes les 10 secondes le temps travaillé est mis à jour, les horaires des notifications sont analysés, la barre de progression de la journée avance...
+  </elt>
+  <elt>
+    Une barre verte pour symboliser la journée de travail
+    Située dans la partie supérieure, la barre verte de progression est une image de la journée de travail. Dès qu'elle est remplie, vous avez travaillé 7h48. Le midi, elle progresse dans le sens inverse pour matérialiser les 45 minutes de pause.
+    C'est un peu comme un sablier... numérique.
+  </elt>
+  <elt>
+    Ne craignez plus le bouton rouge !
+    Badger2018 est par défaut une application résidente : lorsque vous la fermez avec la croix rouge, elle se réduit dans la barre des icônes systèmes.
+    Vous pouvez changer ce comportement. Pour cela rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Divers. Choisissez ensuite "Fermer le programme" dans la liste déroulante "Action du bouton Fermer".
+    Validez votre choix avec le bouton "OK".
+  </elt>
+  <elt>
+    Affichage du temps supplémentaire
+    Dès que le temps de travail dépasse 7h48 sur la journée, le temps supplémentaire travaillé apparait entre parenthèse à coté du temps travaillé.
+  </elt>
+  <elt>
+    Un raccourci pour Badger
+    La façon classique de badger en utilisant Badger2018 est de cliquer sur le bouton "Badger" présent au niveau de la frise de la fenêtre principale.
+    Une façon alternative est d'utiliser le raccourci présent dans le menu contextuel de l'icône de Badger2018 de la barre système.
+  </elt>
+</root>

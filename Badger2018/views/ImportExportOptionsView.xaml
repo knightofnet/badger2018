@@ -1,0 +1,19 @@
+﻿<Window x:Class="Badger2018.views.ImportExportOptionsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Import-Export des paramètres" Height="309.475" Width="297.746" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/iconSetting.png">
+    <Grid>
+        <RadioButton x:Name="radioExport" Content="Exporter les paramètres" HorizontalAlignment="Left" Margin="10,124,0,0" VerticalAlignment="Top" IsChecked="True" GroupName="radioEI"/>
+        <RadioButton x:Name="radioImport" Content="Importer les paramètres" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" GroupName="radioEI"/>
+        <TextBlock Margin="10,10,11.4,0" TextWrapping="Wrap" VerticalAlignment="Top" TextAlignment="Justify">
+            La configuration de l'application peut être sauvegardée et également chargée à partir d'un fichier. Cette fenêtre va vous
+            guider dans la gestion des paramètres.
+        </TextBlock>
+        <Label Content="Quelle action désirez-vous réaliser ?" Margin="10,93,11.4,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+        <Label Content="Entrez le chemin du fichier :" Margin="10,164,11.4,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+        <TextBox x:Name="tboxFilepath" Height="23" Margin="10,194,0,0" Text="fichier.xml" VerticalAlignment="Top" HorizontalAlignment="Left" Width="243" MouseDoubleClick="tboxFilepath_MouseDoubleClick"/>
+        <Button x:Name="btnOk" Content="OK" Margin="0,0,10.4,10" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom" IsDefault="True" Click="btnOk_Click"/>
+        <Button x:Name="btnCancel"  Content="Annuler" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" IsCancel="True" Click="btnCancel_Click" Height="19"/>
+        <Button x:Name="btnBrowse" Content="..." Margin="258,194,0,0" VerticalAlignment="Top" Height="22" Click="btnBrowse_Click" HorizontalAlignment="Left" Width="22" ToolTip="Parcourir"/>
+    </Grid>
+</Window>

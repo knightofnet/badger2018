@@ -1,0 +1,38 @@
+﻿<Window x:Class="Badger2018.views.ModTimeView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Report des badgeages" Height="383.2" Width="469.6" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
+    <Grid>
+        <CheckBox x:Name="chkB0Tick" Content="Premier badgeage de la journée" HorizontalAlignment="Left" Margin="31,194,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tboxB0Time" HorizontalAlignment="Left" Height="23" Margin="155,214,0,0" TextWrapping="Wrap" Text="07:00" VerticalAlignment="Top" Width="66"/>
+
+        <CheckBox x:Name="chkB1Tick" Content="Badgeage de la fin de matinée" HorizontalAlignment="Left" Margin="249,194,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tboxB1Time" HorizontalAlignment="Left" Height="23" Margin="364,214,0,0" TextWrapping="Wrap" Text="11:30" VerticalAlignment="Top" Width="66"/>
+
+
+        <CheckBox x:Name="chkB2Tick" Content="Badgeage après la pause du midi" HorizontalAlignment="Left" Margin="31,253,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tboxB2Time" HorizontalAlignment="Left" Height="23" Margin="155,273,0,0" TextWrapping="Wrap" Text="14:30" VerticalAlignment="Top" Width="66"/>
+
+        <CheckBox x:Name="chkB3Tick" Content="Badgeage de fin de journée" HorizontalAlignment="Left" Margin="249,253,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tboxB3Time" HorizontalAlignment="Left" Height="23" Margin="364,273,0,0" TextWrapping="Wrap" Text="15:30" VerticalAlignment="Top" Width="66" RenderTransformOrigin="0.515,0.513"/>
+        <Label Content="Entrez les horaires badgés du jour :" Margin="8,163,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="270"/>
+        <Label Content="Choisissez le type de journée réalisée :" Margin="8,103,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="270"/>
+        <ComboBox x:Name="cboxTyJournee" HorizontalAlignment="Left" Margin="31,134,0,0" VerticalAlignment="Top" Width="190"/>
+
+        <TextBlock Margin="10,10,10.2,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="88" TextAlignment="Justify">
+            Dans cette fenêtre, vous allez pouvoir modifier les heures badgées du programme, afin par exemple, de reporter des badgeages
+            effectués via la procédure classique en passant par le site. Les modifications permettront aux calculs de l'application d'être correctes. Ils
+            n'affecterons pas les badgeages réellement effectués sur le site : uniquement ceux-ci font foi.
+        </TextBlock>
+
+        <Label Margin="10,0,0,10.6" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Left" Width="216" Height="19" VerticalAlignment="Bottom" >
+            <Hyperlink x:Name="lienMesBadgeages" >
+                <Run Text="Consulter mes pointages sur TamTam"/>
+            </Hyperlink>
+        </Label>
+
+        <Button x:Name="btnOk" Content="Appliquer" HorizontalAlignment="Right" Margin="0,0,10.2,10.6" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOk_Click"/>
+        <Button x:Name="btnCancel" Content="Annuler" HorizontalAlignment="Right" Margin="0,0,90.2,10.6" VerticalAlignment="Bottom" Width="75" IsCancel="True"/>
+
+    </Grid>
+</Window>

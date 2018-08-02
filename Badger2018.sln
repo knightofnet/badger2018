@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger2018", "Badger2018\Badger2018.csproj", "{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C09E7253-FD05-4984-BFDE-6E7C868D74E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadgerUpdater", "BadgerUpdater\BadgerUpdater.csproj", "{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadgerCommonLibrary", "BadgerCommonLibrary\BadgerCommonLibrary.csproj", "{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug-cli|Any CPU = Debug-cli|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Release-cli|Any CPU = Release-cli|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Debug-cli|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Debug-cli|Any CPU.Build.0 = Debug|Any CPU
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
+		{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}.Release-cli|Any CPU.Build.0 = Release|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Debug-cli|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Debug-cli|Any CPU.Build.0 = Debug|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}.Release-cli|Any CPU.Build.0 = Release|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Debug-cli|Any CPU.ActiveCfg = Debug|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Debug-cli|Any CPU.Build.0 = Debug|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
+		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Release-cli|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84DDCF2E-8198-4948-A3C9-698F89D03E1B}
+	EndGlobalSection
+EndGlobal

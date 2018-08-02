@@ -1,0 +1,9 @@
+﻿<Window x:Class="Badger2018.views.OptionsCtxtHelpView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="OptionsCtxtHelpView" Height="512px" Width="400px"  MaxWidth="400px">
+    <Grid>
+        <WebBrowser x:Name="webView" OpacityMask="Black" />
+
+    </Grid>
+</Window>
