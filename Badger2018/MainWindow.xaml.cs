@@ -694,7 +694,7 @@ args.Key == Key.F12 ||
                 ClockUpdTimerOnTick(null, null);
 
 
-                if (TypeJournee == EnumTypesJournees.Matin || TypeJournee == EnumTypesJournees.ApresMidi)
+                if (EnumTypesJournees.IsDemiJournee(TypeJournee))
                 {
                     ChangeTypeJournee();
                 }
