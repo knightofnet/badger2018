@@ -1961,7 +1961,7 @@ args.Key == Key.F12 ||
             bool isAprem = ctrlTyJournee.TypeJournee == EnumTypesJournees.ApresMidi;
 
             _logger.Info("Changement type de journée :");
-            if (isMatin || isAprem)
+            if (EnumTypesJournees.IsDemiJournee(ctrlTyJournee.TypeJournee))
             {
 
                 lblPauseTime.Visibility = Visibility.Hidden;
