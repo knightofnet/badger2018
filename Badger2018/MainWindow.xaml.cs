@@ -34,6 +34,8 @@ using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
 using Badger2018.views;
+using BadgerCommonLibrary.business;
+using BadgerCommonLibrary.utils;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 using OpenQA.Selenium;
@@ -47,6 +49,8 @@ using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using MessageBox = System.Windows.MessageBox;
 using Timer = System.Threading.Timer;
+using UpdateChecker = Badger2018.business.UpdateChecker;
+using UpdateInfoDto = BadgerCommonLibrary.dto.UpdateInfoDto;
 
 namespace Badger2018
 {
@@ -62,9 +66,11 @@ namespace Badger2018
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
         readonly DispatcherTimer _clockUpdTimer = new DispatcherTimer();
-         DispatcherTimer finPauseMidiTimer = null;
+        DispatcherTimer finPauseMidiTimer = null;
 
         public AppOptions PrgOptions { get; set; }
+
+        public UpdaterManager UpdaterMgr;
 
         public BadgerWorker BadgerWorker { get; private set; }
 
@@ -136,7 +142,7 @@ namespace Badger2018
         public TimeSpan RealTimeTsNow { get; private set; }
         public bool IsFullyLoaded { get; private set; }
 
-        public MainWindow(AppOptions prgOptions)
+        public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager)
         {
             _logger.Debug("Chargement de l'écran principal");
 
@@ -149,6 +155,7 @@ namespace Badger2018
             pbarTime.IsIndeterminate = true;
 
             PrgOptions = prgOptions;
+            UpdaterMgr = updaterManager;
 
             BadgerWorker = new BadgerWorker(this);
 
@@ -222,7 +229,12 @@ namespace Badger2018
 
             KeyUp += (sender, args) =>
             {
-                if (args.Key == Key.F2)
+                if (args.Key == Key.F1)
+                {
+                    AboutView aboutView = new AboutView();
+                    aboutView.ShowDialog();
+                }
+                else if (args.Key == Key.F2)
                 {
                     btnOptions_Click(null, null);
                 }
@@ -344,7 +356,7 @@ args.Key == Key.F12 ||
             {
                 AfterLoadPostInitComponent();
 
-          
+
 
             };
 
@@ -691,7 +703,7 @@ args.Key == Key.F12 ||
 
                 TypeJournee = EnumTypesJournees.GetFromIndex(p.TypeJournee);
                 ctrlTyJournee.ChangeTypeJourneeWithoutAction(TypeJournee);
-                
+
                 OldEtatBadger = p.OldEtatBadger;
 
                 UpdRealTimes();
@@ -788,7 +800,7 @@ args.Key == Key.F12 ||
             {
                 PrgSwitch.IsShowOnStartupDone = true;
                 LoadsDidYouKnow();
-                
+
             }
 
         }
@@ -880,21 +892,21 @@ args.Key == Key.F12 ||
 
         private void SignalUpdate(bool isForceCheck = false)
         {
-            UpdateChecker chk = UpdateChecker.Instance;
+            //UpdateChecker chk = UpdateChecker.Instance;
 
             bool isOkToSignalUpd = false;
-            if (!isForceCheck && EtatBadger <= 0 && chk.IsNewUpdateAvalaible &&
-                chk.UpdateCheckTag.Equals("launch"))
+            if (!isForceCheck && EtatBadger <= 0 && UpdaterMgr.IsNewUpdateAvalaible &&
+                UpdaterMgr.UpdateCheckTag.Equals("launch"))
             {
-                chk.UpdateCheckTag = "-1";
+                UpdaterMgr.UpdateCheckTag = "-1";
 
                 isOkToSignalUpd = true;
             }
 
-            if (isForceCheck || (EtatBadger == 2 && chk.UpdateCheckTag.Equals("-1")))
+            if (isForceCheck || (EtatBadger == 2 && UpdaterMgr.UpdateCheckTag.Equals("-1")))
             {
-                chk.CheckForNewUpdate("2");
-                if (chk.IsUpdateCheckSuccess && chk.IsNewUpdateAvalaible)
+                UpdaterMgr.CheckForUpdates("2");
+                if (UpdaterMgr.IsNewUpdateAvalaible)
                 {
                     isOkToSignalUpd = true;
                 }
@@ -903,18 +915,18 @@ args.Key == Key.F12 ||
 
             if (!isOkToSignalUpd)
             {
-                imgBtnUpdate.Visibility = chk.IsNewUpdateAvalaible ? Visibility.Visible : Visibility.Collapsed;
+                imgBtnUpdate.Visibility = UpdaterMgr.IsNewUpdateAvalaible ? Visibility.Visible : Visibility.Collapsed;
                 return;
             }
-
+            UpdateInfoDto upd = UpdaterMgr.ListReleases[0];
             var result = MiscAppUtils.TopMostMessageBox("Une nouvelle version du programme est disponible :" + Environment.NewLine +
-                                                        " Titre : " + chk.UpdateInfo.Title + Environment.NewLine +
-                                                        " Version : " + chk.UpdateInfo.Version + Environment.NewLine +
-                                                        " Description : " + chk.UpdateInfo.Description + Environment.NewLine + Environment.NewLine +
+                                                        " Titre : " + upd.Title + Environment.NewLine +
+                                                        " Version : " + upd.Version + Environment.NewLine +
+                                                        " Description : " + upd.Description + Environment.NewLine + Environment.NewLine +
                                                         "Voulez-vous récupérer le fichier de mise à jour ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Information);
             if (result == MessageBoxResult.Yes)
             {
-                if (UpdateChecker.UpdateProgram(chk))
+                if (UpdaterMgr.UpdateProgramTo(upd))
                 {
                     PrgSwitch.IsRealClose = true;
                     Close();
@@ -939,6 +951,7 @@ args.Key == Key.F12 ||
                     PrgOptions.TipsLastInt = DidYouKnowWindow.LastIntTips;
                     PrgOptions.ShowTipsAtStart = DidYouKnowWindow.ShowTipsAtStart;
                     OptionManager.SaveOptions(PrgOptions);
+                    DidYouKnowWindow = null;
                 };
 
             }
@@ -1309,7 +1322,7 @@ args.Key == Key.F12 ||
         {
             // Etat de l'UI après avoir badgé le début de l'après-midi.
 
-            
+
             PrgSwitch.PbarMainTimerActif = true;
             PrgSwitch.IsTimerStoppedByMaxTime = false;
             NotifManager.SetNotifShow(Cst.NotifTpsMaxJournee, false);

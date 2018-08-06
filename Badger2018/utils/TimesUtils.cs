@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Badger2018.constants;
 using Badger2018.dto;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.utils
 {

@@ -9,6 +9,7 @@ using System.Text;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
+using BadgerCommonLibrary.utils;
 using Ionic.Zip;
 
 namespace Badger2018.business
@@ -69,13 +70,13 @@ namespace Badger2018.business
             {
                 try
                 {
-                    
+
                     fi.Delete();
                 }
                 catch (Exception e)
                 {
                     _logger.Error(" Echec de lors de la suppression du fichier {0}. {1} -- {2}", fi.Name, e.Message, e.StackTrace);
-                    
+
                 }
             }
         }

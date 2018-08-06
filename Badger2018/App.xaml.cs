@@ -14,6 +14,8 @@ using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
+using BadgerCommonLibrary.business;
+using BadgerCommonLibrary.constants;
 
 namespace Badger2018
 {
@@ -22,7 +24,7 @@ namespace Badger2018
     /// </summary>
     public partial class App : Application
     {
-        private static Logger _logger = new Logger(Cst.LogFile, Cst.ConsoleLogLvl, Cst.FileLogLvl, "1 Mo");
+        private static Logger _logger = new Logger(CommonCst.AppLogFile, CommonCst.ConsoleLogLvl, CommonCst.FileLogLvl, "1 Mo");
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
@@ -47,12 +49,17 @@ namespace Badger2018
 
             PreLoadActions(argsDto, prgOptions);
 
+            UpdaterManager updaterManager = new UpdaterManager(prgOptions.UpdateXmlUri);
+            updaterManager.CheckForUpdates("launch");
+
+            /*
             UpdateChecker.Instance.UpdateUri = prgOptions.UpdateXmlUri;
             UpdateChecker.Instance.CheckForNewUpdate("launch");
 
+             */
             //_logger.Debug(DbbAccessManager.Instance.Connection.ConnectionString);
 
-            MainWindow mainWindow = new MainWindow(prgOptions);
+            MainWindow mainWindow = new MainWindow(prgOptions, updaterManager);
             mainWindow.ShowDialog();
 
             _logger.Info("Fin du programme");

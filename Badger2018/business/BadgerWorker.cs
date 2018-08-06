@@ -14,6 +14,7 @@ using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
 using Badger2018.views;
+using BadgerCommonLibrary.utils;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
@@ -146,7 +147,7 @@ namespace Badger2018.business
             BadgeageProgressView progress = new BadgeageProgressView();
             progress.Show();
 
-            
+
 
             BadgingBckder b = new BadgingBckder
             {
@@ -398,7 +399,7 @@ namespace Badger2018.business
 
                 Pwin.AdaptUiFromState(Pwin.EtatBadger, tmpsPause);
 
-                
+
             };
             BadgerActionBis(Pwin.PrgOptions.Uri, Pwin.PrgOptions.UriParam, Pwin.PrgOptions.UriVerif, actionAfter);
         }
@@ -436,7 +437,7 @@ namespace Badger2018.business
 
                 Pwin.AdaptUiFromState(Pwin.EtatBadger, null);
 
-                
+
 
             };
             BadgerActionBis(Pwin.PrgOptions.Uri, Pwin.PrgOptions.UriParam, Pwin.PrgOptions.UriVerif, actionAfter);
@@ -460,8 +461,8 @@ namespace Badger2018.business
                     Pwin.Times.StartDateTime = Pwin.Times.StartDateTime.ChangeTime(Pwin.PrgOptions.HeureMinJournee);
                 }
                 Pwin.EtatBadger = 0;
-                Pwin.AdaptUiFromState(Pwin.EtatBadger , null);
-               
+                Pwin.AdaptUiFromState(Pwin.EtatBadger, null);
+
 
             };
             BadgerActionBis(Pwin.PrgOptions.Uri, Pwin.PrgOptions.UriParam, Pwin.PrgOptions.UriVerif, actionAfter);
@@ -485,9 +486,9 @@ namespace Badger2018.business
                 Pwin.Times.EndDateTime = b.Value.AtSec(Cst.SecondeOffset);
 
                 Pwin.EtatBadger = 3;
-                Pwin.AdaptUiFromState(Pwin.EtatBadger , null);
+                Pwin.AdaptUiFromState(Pwin.EtatBadger, null);
 
-                
+
 
                 if (Pwin.PrgSwitch.IsBetaUser && Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
                 {

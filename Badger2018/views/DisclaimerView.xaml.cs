@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Badger2018.utils;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.views
 {

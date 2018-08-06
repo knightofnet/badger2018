@@ -16,6 +16,7 @@ using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
 using Badger2018.views;
+using BadgerCommonLibrary.utils;
 using OpenQA.Selenium.Remote;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;

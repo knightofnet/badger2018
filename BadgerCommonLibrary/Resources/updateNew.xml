@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <release>
+    <version>1.0.0728.1708</version>
+    <title>Badger2018 - Alpha Aigle</title>
+    <authors>Arnaud Leblanc</authors>
+    <description>Corrections diverses</description>
+    <levelUpdate>0</levelUpdate>
+    <needIntermediateLaunch>True</needIntermediateLaunch>
+    <fileUpdate>C:\Users\ARyx\Documents\Visual Studio 2013\Projects\Badger2018\Badger2018\Badger2018\bin\Release\Badger2018r.exe</fileUpdate>
+  </release>
+  <release>
+    <version>1.0.0928.1708</version>
+    <title>Badger2018 - Charly Code</title>
+    <authors>Arnaud Leblanc</authors>
+    <description>Corrections diverses 09</description>
+    <levelUpdate>0</levelUpdate>
+    <needIntermediateLaunch>True</needIntermediateLaunch>
+    <fileUpdate>C:\Users\ARyx\Documents\Visual Studio 2013\Projects\Badger2018\Badger2018\Badger2018\bin\Release\Badger2018r.exe</fileUpdate>
+  </release>
+</package>

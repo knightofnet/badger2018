@@ -43,7 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="business\AppArgsParser.cs" />
     <Compile Include="business\XmlUpdateParser.cs" />
+    <Compile Include="dto\AppArgsDto.cs" />
     <Compile Include="dto\PrgArgsDto.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

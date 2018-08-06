@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using AryxDevLibrary.extensions;
 using Badger2018.utils;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.views
 {

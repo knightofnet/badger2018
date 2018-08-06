@@ -139,7 +139,6 @@
     <Compile Include="dto\NotificationDto.cs" />
     <Compile Include="dto\PointageElt.cs" />
     <Compile Include="dto\TimesBadgerDto.cs" />
-    <Compile Include="dto\UpdateInfoDto.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -147,7 +146,6 @@
     </Compile>
     <Compile Include="services\BadgeageServices.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="utils\AppDateUtils.cs" />
     <Compile Include="utils\BadgingUtils.cs" />
     <Compile Include="utils\controls\AlignableWrapPanel.cs" />
     <Compile Include="utils\FlashWindowUtils.cs" />
@@ -354,6 +352,12 @@
     <Resource Include="Resources\font-awesome_4-7-0_external-link_23_0_3498db_none.png" />
     <Resource Include="Resources\sign-info-icon.png" />
     <Resource Include="Resources\sign-error-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BadgerCommonLibrary\BadgerCommonLibrary.csproj">
+      <Project>{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}</Project>
+      <Name>BadgerCommonLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

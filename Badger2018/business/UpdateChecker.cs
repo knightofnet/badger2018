@@ -16,8 +16,10 @@ using Badger2018.utils;
 
 namespace Badger2018.business
 {
+    [System.Obsolete]
     public sealed class UpdateChecker
     {
+        /*
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
         private static UpdateChecker _instance;
@@ -76,7 +78,7 @@ namespace Badger2018.business
 
                 }
 
-                XmlFile xmlFile = XmlFile.InitXmlFile(filePath);                
+                XmlFile xmlFile = XmlFile.InitXmlFile(filePath);
                 UpdateInfo = ExtractUpdateInfo(xmlFile);
                 if (UpdateUri.ToLower().StartsWith("http"))
                 {
@@ -191,5 +193,6 @@ namespace Badger2018.business
 
 
         }
+         * */
     }
 }

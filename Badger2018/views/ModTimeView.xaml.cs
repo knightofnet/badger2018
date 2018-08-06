@@ -14,6 +14,7 @@ using AryxDevLibrary.extensions;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.views
 {

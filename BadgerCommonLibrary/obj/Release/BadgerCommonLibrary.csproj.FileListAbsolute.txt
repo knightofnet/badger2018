@@ -1,1 +1,2 @@
 C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.csproj.CoreCompileInputs.cache
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.csprojResolveAssemblyReference.cache

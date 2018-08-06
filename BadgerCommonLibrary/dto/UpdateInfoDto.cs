@@ -16,6 +16,7 @@ namespace BadgerCommonLibrary.dto
 
         public string Description { get; set; }
         public string FileUpdate { get; set; }
-
+        public int LevelUpdate { get; set; }
+        public bool NeedIntermediateLaunch { get; set; }
     }
 }

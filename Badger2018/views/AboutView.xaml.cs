@@ -21,6 +21,13 @@ namespace Badger2018.views
         public AboutView()
         {
             InitializeComponent();
+            lblVersion.Content = String.Format(lblVersion.Content.ToString(), System.Reflection.Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

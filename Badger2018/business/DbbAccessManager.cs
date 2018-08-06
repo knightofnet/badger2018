@@ -8,6 +8,7 @@ using System.Text;
 using AryxDevLibrary.utils.logger;
 using Badger2018.services;
 using Badger2018.utils;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.business
 {
