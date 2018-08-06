@@ -62,6 +62,7 @@ namespace Badger2018
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
         readonly DispatcherTimer _clockUpdTimer = new DispatcherTimer();
+         DispatcherTimer finPauseMidiTimer = null;
 
         public AppOptions PrgOptions { get; set; }
 
@@ -283,7 +284,7 @@ args.Key == Key.F12 ||
                 lblHmidiS.Visibility = Visibility.Hidden;
                 lblHmidiE.Visibility = Visibility.Hidden;
 
-                ctrlTyJournee.TypeJournee = EnumTypesJournees.Complete;
+                ctrlTyJournee.ChangeTypeJourneeWithoutAction(EnumTypesJournees.Complete);
 
                 /*
                 chkAmidi.IsEnabled = false;
@@ -341,13 +342,15 @@ args.Key == Key.F12 ||
 
             Loaded += (sender, args) =>
             {
-                if (PrgOptions.ShowTipsAtStart)
-                {
-                    LoadsDidYouKnow();
-                }
+                AfterLoadPostInitComponent();
+
+          
+
             };
 
         }
+
+
 
         private void AssignBetaRole()
         {
@@ -407,10 +410,6 @@ args.Key == Key.F12 ||
             };
             */
 
-            ctrlTyJournee.OnTypeJourneeChange += (e) =>
-            {
-                ChangeTypeJournee();
-            };
 
             lienCptTpsReel.Click += (sender, args) => MiscAppUtils.GoTo(PrgOptions.UrlCptTpsReel);
             lienMesBadgeages.Click += (sender, args) => MiscAppUtils.GoTo(PrgOptions.UrlMesPointages);
@@ -418,7 +417,14 @@ args.Key == Key.F12 ||
 
             PrgSwitch.IsSoundOver = true;
         }
+        private void AfterLoadPostInitComponent()
+        {
 
+            ctrlTyJournee.OnTypeJourneeChange += (e) =>
+            {
+                ChangeTypeJournee();
+            };
+        }
 
 
         private void ModifyAccentColor()
@@ -654,7 +660,7 @@ args.Key == Key.F12 ||
             try
             {
                 EtatBadger = p.EtatBadger;
-
+                ctrlTyJournee.IsEnabledChange = true;
                 if (EtatBadger >= 0)
                 {
                     Times.StartDateTime = DateTime.Parse(p.B0);
@@ -670,7 +676,7 @@ args.Key == Key.F12 ||
                 if (EtatBadger >= 2)
                 {
                     Times.PauseEndDateTime = DateTime.Parse(p.B2);
-
+                    ctrlTyJournee.IsEnabledChange = false;
                 }
                 if (EtatBadger >= 3)
                 {
@@ -684,7 +690,8 @@ args.Key == Key.F12 ||
                 NotifManager.SetNotifShow(Cst.NotifCust2Name, p.IsNotif2Showed);
 
                 TypeJournee = EnumTypesJournees.GetFromIndex(p.TypeJournee);
-                ctrlTyJournee.TypeJournee = TypeJournee;
+                ctrlTyJournee.ChangeTypeJourneeWithoutAction(TypeJournee);
+                
                 OldEtatBadger = p.OldEtatBadger;
 
                 UpdRealTimes();
@@ -702,7 +709,7 @@ args.Key == Key.F12 ||
             }
             catch (Exception e)
             {
-                string msg = "Erreur lors de la lecture de la journée mémorisée. Supprimer le fichier xml du jour s'il existe et relancez le programme";
+                string msg = "Erreur lors de la lecture de la journée mémorisée. Supprimez le fichier xml du jour s'il existe et relancez le programme";
                 _logger.Error(msg);
                 _logger.Error(e.Message);
                 _logger.Error(e.StackTrace);
@@ -775,6 +782,13 @@ args.Key == Key.F12 ||
             if (PrgSwitch.CanCheckUpdate)
             {
                 SignalUpdate();
+            }
+
+            if (PrgOptions.ShowTipsAtStart && EtatBadger >= 0 && !PrgSwitch.IsShowOnStartupDone && IsLoaded)
+            {
+                PrgSwitch.IsShowOnStartupDone = true;
+                LoadsDidYouKnow();
+                
             }
 
         }
@@ -1201,6 +1215,15 @@ args.Key == Key.F12 ||
             _nIconBadgerManItem.Text = "Badger la fin de la matinée";
             _nIconBadgerManItem.ToolTipText = btnBadger.ToolTip.ToString();
 
+            pbarTime.Foreground = Cst.SCBGreenPbar;
+            if (finPauseMidiTimer != null)
+            {
+                finPauseMidiTimer.Stop();
+                PrgSwitch.PbarMainTimerActif = true;
+                pbarTime.ToolTip = null;
+                pbarTime.Foreground = Cst.SCBGreenPbar;
+            }
+
         }
 
         private void AdaptUiForState1()
@@ -1233,21 +1256,32 @@ args.Key == Key.F12 ||
                 PrgSwitch.PbarMainTimerActif = false;
                 pbarTime.ToolTip = "Décompte jusqu'à " + tsFinPause.ToString(Cst.TimeSpanFormat);
 
-                DispatcherTimer finPauseMidiTimer = new DispatcherTimer();
+                if (finPauseMidiTimer != null)
+                {
+                    finPauseMidiTimer.Stop();
+                    PrgSwitch.PbarMainTimerActif = true;
+                    pbarTime.ToolTip = null;
+                    pbarTime.Foreground = Cst.SCBGreenPbar;
+                }
+
+                finPauseMidiTimer = new DispatcherTimer();
                 finPauseMidiTimer.Interval = new TimeSpan(0, 0, 5);
                 finPauseMidiTimer.Tick += (sender, args) =>
                 {
                     TimeSpan remainingTimer = tsFinPause - RealTimeTsNow;
-                    if (remainingTimer < TimeSpan.Zero)
+                    if (remainingTimer < TimeSpan.Zero && EtatBadger == 2)
                     {
                         finPauseMidiTimer.Stop();
                         PrgSwitch.PbarMainTimerActif = true;
                         pbarTime.ToolTip = null;
+                        pbarTime.Foreground = Cst.SCBGreenPbar;
                     }
                     else
                     {
                         pbarTime.IsIndeterminate = false;
                         ChangePBarValue(100 * remainingTimer.TotalSeconds / PrgOptions.TempsMinPause.TotalSeconds);
+                        pbarTime.Foreground = Cst.SCBGold;
+                        PrgSwitch.PbarMainTimerActif = false;
                     }
                 };
                 finPauseMidiTimer.Start();
@@ -1275,8 +1309,7 @@ args.Key == Key.F12 ||
         {
             // Etat de l'UI après avoir badgé le début de l'après-midi.
 
-
-
+            
             PrgSwitch.PbarMainTimerActif = true;
             PrgSwitch.IsTimerStoppedByMaxTime = false;
             NotifManager.SetNotifShow(Cst.NotifTpsMaxJournee, false);
@@ -1327,10 +1360,8 @@ args.Key == Key.F12 ||
             lblPauseTime.Visibility = Visibility.Visible;
             lblTpsTravReel.Foreground = Cst.SCBBlack;
             lblTpsTravReel.ToolTip = null;
-            /*
-            chkAmidi.IsEnabled = false;
-            chkMatin.IsEnabled = false;
-            */
+
+            ctrlTyJournee.IsEnabledChange = false;
 
             _nIconBadgerManItem.ToolTipText = String.Format("Badgeage possible à partir de {0}", Times.EndTheoDateTime.TimeOfDay.ToString(Cst.TimeSpanFormat));
             _notifyIconApremLblItem.Visible = true;
@@ -1375,10 +1406,7 @@ args.Key == Key.F12 ||
                 tempSuppl.TotalSeconds < 0 ? "-" : "+"));
 
             ctrlTyJournee.IsEnabled = false;
-            /*
-            chkAmidi.IsEnabled = false;
-            chkMatin.IsEnabled = false;
-            */
+
 
             _nIconBadgerManItem.ToolTipText = null;
             _notifyIconApremLblItem.Visible = true;

@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Badger2018.constants;
+using Badger2018.utils;
 
 namespace Badger2018.views
 {
@@ -80,9 +81,21 @@ namespace Badger2018.views
             Title += " - " + dt.ToShortTimeString();
         }
 
+        private void SetIsWarning(bool isWarning)
+        {
+            if (isWarning)
+            {
+                imgA.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "sign-warning-icon.png");
+            } else
+            {
+                imgA.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "sign-error-icon.png");
+            }
+        }
+
         public static EnumErrorCodeRetour ShowMessageError(Exception e, DateTime dt, Window progessWindow, bool isConsultRecommand=false )
         {
             MessageErrorBadgeageView m = new MessageErrorBadgeageView();
+            m.SetIsWarning(isConsultRecommand);
             m.SetErreurMessage(e.Message);
             m.SetDtErreur(dt);
             m.WindowStartupLocation = WindowStartupLocation.Manual;

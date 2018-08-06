@@ -26,8 +26,6 @@
 
         </Grid>
         <ProgressBar x:Name="pbarTime" Height="5" Margin="10,76,10.2,0" VerticalAlignment="Top" Value="100" MouseDoubleClick="pbarTime_MouseDoubleClick"/>
-        <CheckBox x:Name="chkMatinOLD" Content="Demi-journée matin" HorizontalAlignment="Left" Margin="10,97,0,0" VerticalAlignment="Top" Height="15" Width="133" IsChecked="True"/>
-        <CheckBox x:Name="chkAmidiOLD" Content="Demi-journée après-midi" HorizontalAlignment="Left" Margin="10,117,0,0" VerticalAlignment="Top" Width="169" Height="23" IsChecked="True"/>
 
         <usercontrols:TypeJourneeControl x:Name="ctrlTyJournee" Margin="10,87,0,0" Width="211" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible"/>
 

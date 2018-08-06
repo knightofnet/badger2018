@@ -29,5 +29,6 @@ namespace Badger2018.dto
         public bool IsTimeRemainingNotTimeWork { get; internal set; }
         public bool CanCheckUpdate { get; set; }
         public bool IsSoundOver { get; set; }
+        public bool IsShowOnStartupDone { get; internal set; }
     }
 }

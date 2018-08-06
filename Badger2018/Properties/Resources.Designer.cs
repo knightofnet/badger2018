@@ -305,6 +305,16 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sign_warning_icon {
+            get {
+                object obj = ResourceManager.GetObject("sign_warning_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;package &gt;
         ///  &lt;metadata&gt;   

@@ -140,6 +140,11 @@
     <Compile Include="dto\PointageElt.cs" />
     <Compile Include="dto\TimesBadgerDto.cs" />
     <Compile Include="dto\UpdateInfoDto.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="services\BadgeageServices.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="utils\AppDateUtils.cs" />
@@ -281,11 +286,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -321,6 +321,7 @@
     </Content>
     <Resource Include="Resources\helpIcon.png" />
     <None Include="Resources\update.xml" />
+    <Resource Include="Resources\sign-warning-icon.png" />
     <Content Include="Resources\updateBadger.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

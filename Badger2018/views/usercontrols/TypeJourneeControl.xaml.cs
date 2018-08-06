@@ -112,5 +112,11 @@ namespace Badger2018.views.usercontrols
         {
             //throw new NotImplementedException();
         }
+
+        internal void ChangeTypeJourneeWithoutAction(EnumTypesJournees tyJournee)
+        {
+            _typeJournee = tyJournee;
+            AdaptUiTypeJournee(tyJournee);
+        }
     }
 }

@@ -53,6 +53,8 @@ namespace Badger2018.constants
         public static readonly SolidColorBrush SCBBlack = new SolidColorBrush(Colors.Black);
         public static readonly SolidColorBrush SCBDarkRed = new SolidColorBrush(Colors.DarkRed);
         public static readonly SolidColorBrush SCBDarkGreen = new SolidColorBrush(Colors.DarkGreen);
+        public static readonly SolidColorBrush SCBGreenPbar = new SolidColorBrush(Color.FromArgb(255,6,176,37));
+        public static readonly SolidColorBrush SCBGold = new SolidColorBrush(Colors.Gold);
         internal static readonly int SecondeOffset = 0;
         public const string NotifEndPfMatinName = "ShowNotifEndPfMatin";
         public const string NotifEndPfApremName = "ShowNotifEndPfAprem";

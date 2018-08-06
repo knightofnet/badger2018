@@ -46,7 +46,7 @@ namespace Badger2018.business
 
         public void BadgeFullAction(bool forceWhenMsg = false)
         {
-            _logger.Info("BadgeFullAction (forceWhenMsg: {0}) EtatBadger: {1}", forceWhenMsg ? "true" : "false", Pwin.EtatBadger);
+            _logger.Info("BadgeFullAction (forceWhenMsg: {0}) EtatBadger: {1})", forceWhenMsg ? "true" : "false", Pwin.EtatBadger);
 
 
             switch (Pwin.EtatBadger)
@@ -394,9 +394,11 @@ namespace Badger2018.business
 
                 tmpsPause = Pwin.Times.PauseEndDateTime - Pwin.Times.PauseStartDateTime;
 
-                Pwin.AdaptUiFromState(Pwin.EtatBadger + 1, tmpsPause);
-
                 Pwin.EtatBadger = 2;
+
+                Pwin.AdaptUiFromState(Pwin.EtatBadger, tmpsPause);
+
+                
             };
             BadgerActionBis(Pwin.PrgOptions.Uri, Pwin.PrgOptions.UriParam, Pwin.PrgOptions.UriVerif, actionAfter);
         }
@@ -430,9 +432,11 @@ namespace Badger2018.business
 
                 Pwin.Times.PauseStartDateTime = b.Value.AtSec(Cst.SecondeOffset);
 
-                Pwin.AdaptUiFromState(Pwin.EtatBadger + 1, null);
-
                 Pwin.EtatBadger = 1;
+
+                Pwin.AdaptUiFromState(Pwin.EtatBadger, null);
+
+                
 
             };
             BadgerActionBis(Pwin.PrgOptions.Uri, Pwin.PrgOptions.UriParam, Pwin.PrgOptions.UriVerif, actionAfter);
@@ -455,8 +459,9 @@ namespace Badger2018.business
                 {
                     Pwin.Times.StartDateTime = Pwin.Times.StartDateTime.ChangeTime(Pwin.PrgOptions.HeureMinJournee);
                 }
-                Pwin.AdaptUiFromState(Pwin.EtatBadger + 1, null);
                 Pwin.EtatBadger = 0;
+                Pwin.AdaptUiFromState(Pwin.EtatBadger , null);
+               
 
             };
             BadgerActionBis(Pwin.PrgOptions.Uri, Pwin.PrgOptions.UriParam, Pwin.PrgOptions.UriVerif, actionAfter);
@@ -479,9 +484,10 @@ namespace Badger2018.business
                 }
                 Pwin.Times.EndDateTime = b.Value.AtSec(Cst.SecondeOffset);
 
-                Pwin.AdaptUiFromState(Pwin.EtatBadger + 1, null);
-
                 Pwin.EtatBadger = 3;
+                Pwin.AdaptUiFromState(Pwin.EtatBadger , null);
+
+                
 
                 if (Pwin.PrgSwitch.IsBetaUser && Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
                 {
