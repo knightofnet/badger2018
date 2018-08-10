@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AryxDevLibrary.utils.logger;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -226,9 +227,12 @@ namespace Badger2018.constants
 
                 PlayAction += () =>
                 {
-                    if (!WaveFileInfo.Exists) return;
-                    SoundPlayer player = new SoundPlayer(WaveFileInfo.FullName);
-                    player.PlaySync();
+
+                        if (!WaveFileInfo.Exists) return;
+                        SoundPlayer player = new SoundPlayer(WaveFileInfo.FullName);
+                        player.PlaySync();
+        
+
                 };
             }
 
@@ -249,7 +253,14 @@ namespace Badger2018.constants
 
         public void Play()
         {
-            PlayAction.Invoke();
+                try
+                {
+                    PlayAction.Invoke();
+                } catch (Exception ex)        {
+                    Logger _logger = Logger.LastLoggerInstance;
+                    _logger.Error("{0} : {1}", ex.GetType().Name, ex.Message);
+                    _logger.Error(ex.StackTrace);
+            }
         }
 
         EnumSonWindows IEnumSerializableWithIndex<EnumSonWindows>.GetFromIndex(int index)

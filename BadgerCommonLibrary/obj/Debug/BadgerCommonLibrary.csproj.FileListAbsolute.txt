@@ -8,3 +8,11 @@ C:\Users\ARyx\documents\visual studio 2013\Projects\Badger2018\Badger2018\Badger
 C:\Users\ARyx\documents\visual studio 2013\Projects\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.csprojResolveAssemblyReference.cache
 C:\Users\ARyx\documents\visual studio 2013\Projects\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.Properties.Resources.resources
 C:\Users\ARyx\documents\visual studio 2013\Projects\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.csproj.GenerateResource.Cache
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\bin\Debug\BadgerCommonLibrary.dll
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\bin\Debug\BadgerCommonLibrary.pdb
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\bin\Debug\AryxDevLibrary.dll
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.Properties.Resources.resources
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.csproj.GenerateResource.cache
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.csproj.CopyComplete
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.dll
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Debug\BadgerCommonLibrary.pdb

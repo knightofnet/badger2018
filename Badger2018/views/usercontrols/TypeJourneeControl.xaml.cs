@@ -1,4 +1,5 @@
-﻿using Badger2018.constants;
+﻿using AryxDevLibrary.utils.logger;
+using Badger2018.constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace Badger2018.views.usercontrols
     /// </summary>
     public partial class TypeJourneeControl : UserControl
     {
+        private static readonly Logger _logger = Logger.LastLoggerInstance;
+
         private EnumTypesJournees _typeJournee;
         public Action<EnumTypesJournees> OnTypeJourneeChange;
         private bool _isEnabledChange;
@@ -43,6 +46,7 @@ namespace Badger2018.views.usercontrols
             get { return _isEnabledChange; }
             set
             {
+                _logger.Debug("IsEnabledChange : {0}", value);
                 _isEnabledChange = value;
                 AdaptUiEnableState(value);
             }
@@ -110,7 +114,12 @@ namespace Badger2018.views.usercontrols
 
         private void AdaptUiEnableState(bool value)
         {
-            //throw new NotImplementedException();
+            if (!value)
+            {
+                cboxTypeJournee.Visibility = Visibility.Collapsed;
+                lblTypeJournee.Visibility = Visibility.Visible;
+
+            } 
         }
 
         internal void ChangeTypeJourneeWithoutAction(EnumTypesJournees tyJournee)

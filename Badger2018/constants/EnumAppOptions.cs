@@ -60,7 +60,7 @@ namespace Badger2018.constants
 
 
         public static readonly EnumAppOptions IsPlaySoundAtLockMidi = new EnumAppOptions("IsPlaySoundAtLockMidi", typeof(bool), "False", false);
-        public static readonly EnumAppOptions SoundPlayedAtLockMidi = new EnumAppOptions("SoundPlayedAtLockMidi", typeof(IEnumSerializableWithIndex<EnumSonWindows>), "" + EnumSonWindows.Beep.GetIndex(), false);
+        public static readonly EnumAppOptions SoundPlayedAtLockMidi = new EnumAppOptions("SoundPlayedAtLockMidi", typeof(IEnumSerializableWithIndex<EnumSonWindows>), "" + EnumSonWindows.Chord.GetIndex(), false);
         public static readonly EnumAppOptions SoundDeviceFullName = new EnumAppOptions("SoundDeviceFullName", typeof(string), "", false);
         public static readonly EnumAppOptions SoundPlayedAtLockMidiVolume = new EnumAppOptions("SoundPlayedAtLockMidiVolume", typeof(int), "75", false);
 

@@ -49,9 +49,19 @@ namespace Badger2018
 
             PreLoadActions(argsDto, prgOptions);
 
-            UpdaterManager updaterManager = new UpdaterManager(prgOptions.UpdateXmlUri);
-            updaterManager.CheckForUpdates("launch");
+            UpdaterManager updaterManager = new UpdaterManager();
+            try
+            {
+               
+                updaterManager.XmlUpdFilePath = prgOptions.UpdateXmlUri;
+                updaterManager.CheckForUpdates("launch");
 
+            } catch (Exception ex)
+            {
+                _logger.Warn("Erreur lors de la recherche de mise à jour");
+                _logger.Debug("{0} : {1}", ex.GetType().Name, ex.Message);
+                _logger.Debug("{0}", ex.StackTrace);
+            }
             /*
             UpdateChecker.Instance.UpdateUri = prgOptions.UpdateXmlUri;
             UpdateChecker.Instance.CheckForNewUpdate("launch");

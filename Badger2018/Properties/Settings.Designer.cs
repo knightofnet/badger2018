@@ -603,7 +603,7 @@ namespace Badger2018.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("17")]
         public int SoundPlayedAtLockMidi {
             get {
                 return ((int)(this["SoundPlayedAtLockMidi"]));

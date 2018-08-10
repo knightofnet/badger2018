@@ -297,11 +297,7 @@ args.Key == Key.F12 ||
                 lblHmidiE.Visibility = Visibility.Hidden;
 
                 ctrlTyJournee.ChangeTypeJourneeWithoutAction(EnumTypesJournees.Complete);
-
-                /*
-                chkAmidi.IsEnabled = false;
-                chkMatin.IsEnabled = false;
-                */
+                ctrlTyJournee.IsEnabledChange = false;
 
                 TimeSpan tsfinMat = TimesUtils.GetTimeEndTravTheorique(Times.StartDateTime, PrgOptions,
                     EnumTypesJournees.Matin);
@@ -923,7 +919,7 @@ args.Key == Key.F12 ||
                                                         " Titre : " + upd.Title + Environment.NewLine +
                                                         " Version : " + upd.Version + Environment.NewLine +
                                                         " Description : " + upd.Description + Environment.NewLine + Environment.NewLine +
-                                                        "Voulez-vous récupérer le fichier de mise à jour ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                                                        "Voulez-vous effectuer la mise à jour ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Information);
             if (result == MessageBoxResult.Yes)
             {
                 if (UpdaterMgr.UpdateProgramTo(upd))
@@ -1169,6 +1165,7 @@ args.Key == Key.F12 ||
             lblStartTime.ContentShortTime(Times.StartDateTime);
             lblEndTime.ContentShortTime(Times.EndTheoDateTime);
 
+            ctrlTyJournee.IsEnabledChange = true;
 
             Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.StartDateTime, PrgOptions, TypeJournee);
 
@@ -1220,6 +1217,8 @@ args.Key == Key.F12 ||
 
             lblTpsTravReel.ContentShortTime(TimeSpan.Zero);
             lblTpsTravReel.Visibility = Visibility.Visible;
+
+            ctrlTyJournee.IsEnabledChange = true;
 
             _nIconBadgerManItem.ToolTipText = String.Format("Badgeage possible à partir de {0}", PrgOptions.PlageFixeMatinFin.ToString(Cst.TimeSpanFormat));
 

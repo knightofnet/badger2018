@@ -1,2 +1,9 @@
 C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.csproj.CoreCompileInputs.cache
-C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.csprojResolveAssemblyReference.cache
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\bin\Release\BadgerCommonLibrary.dll
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\bin\Release\BadgerCommonLibrary.pdb
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\bin\Release\AryxDevLibrary.dll
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.Properties.Resources.resources
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.csproj.GenerateResource.cache
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.csproj.CopyComplete
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.dll
+C:\D\Badger2018\Badger2018\BadgerCommonLibrary\obj\Release\BadgerCommonLibrary.pdb

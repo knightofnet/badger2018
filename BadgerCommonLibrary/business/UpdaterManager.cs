@@ -22,13 +22,13 @@ namespace BadgerCommonLibrary.business
             set
             {
                 _xmlUpdFilePath = value;
-                LoadsXmlFile(value);
+
             }
         }
 
-
-
+        
         public bool IsNewUpdateAvalaible { get; private set; }
+        public bool IsUpdaterFileLoaded { get; private set; }
         public string UpdateCheckTag { get; set; }
 
         public List<UpdateInfoDto> ListReleases { get; private set; }
@@ -36,20 +36,23 @@ namespace BadgerCommonLibrary.business
         private XmlFile xmlFile { get; set; }
 
 
-        public UpdaterManager(String xmlFilePath)
+        public UpdaterManager()
         {
-            XmlUpdFilePath = xmlFilePath;
+            
         }
 
         private void LoadsXmlFile(string filepath)
         {
             FileInfo fileInfo = new FileInfo(filepath);
+            IsUpdaterFileLoaded = false;
             if (!fileInfo.Exists)
             {
+                _logger.Error("Le fichier contenant les mise à jour n'existe pas ou n'est pas lisible. Fichier {}", filepath);
                 throw new FileNotFoundException(filepath);
             }
 
             xmlFile = XmlFile.InitXmlFile(filepath);
+            IsUpdaterFileLoaded = true;
         }
 
         public void CheckForUpdates(string tagCheckUpd, string versionTarget = "*")
@@ -58,6 +61,10 @@ namespace BadgerCommonLibrary.business
             {
                 List<UpdateInfoDto> listReleasesLoc = new List<UpdateInfoDto>();
                 LoadsXmlFile(XmlUpdFilePath);
+                if (!IsUpdaterFileLoaded)
+                {
+                    return;
+                }
                 XmlNodeList releasesXml = XmlUtils.GetNodesXpath(xmlFile.Root, "//release");
                 for (int i = 0; i < releasesXml.Count; i++)
                 {

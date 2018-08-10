@@ -147,7 +147,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="SoundPlayedAtLockMidi" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">17</Value>
     </Setting>
     <Setting Name="UpdateXmlUri" Type="System.String" Scope="User">
       <Value Profile="(Default)">E:\CSharp\Données accessoires\Badger\update.xml</Value>
