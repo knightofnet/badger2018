@@ -1,0 +1,24 @@
+﻿<Window x:Class="Badger2018.views.ExceptionMsgBoxView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Erreur non prévue" Height="300" Width="400" Icon="/Badger2018;component/Resources/sign-error-icon.png">
+    <Grid>
+        <Label Content="Erreur de l'application" Margin="78,10,18,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Image x:Name="imgA" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="63" Source="/Badger2018;component/Resources/sign-error-icon.png"/>
+        <Label Margin="78,36,18,0" VerticalAlignment="Top" Height="87">
+            <AccessText x:Name="accessText" TextWrapping="Wrap" TextAlignment="Justify"  >
+                Une erreur inattendue est survenue et Badger2018 n'a pas pu la traiter. L'application va donc se fermer.
+                A des fins techniques, l'erreur est visible ci-dessous et a également été journalisée.
+            </AccessText>
+        </Label>
+        <RichTextBox x:Name="rchTbox" Height="101" Margin="10,123,9.6,0" VerticalAlignment="Top" IsReadOnly="True">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="RichTextBox"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Button x:Name="btnOK" Content="OK" Margin="0,0,9.6,10.4" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom" Click="btnOK_Click"/>
+        <Button x:Name="btnSentMail" Content="Envoyer l'erreur par mail" HorizontalAlignment="Right" Margin="0,0,89.6,10.4" VerticalAlignment="Bottom" Width="155" Click="btnSentMail_Click"/>
+    </Grid>
+</Window>

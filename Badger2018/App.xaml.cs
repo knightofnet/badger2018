@@ -14,8 +14,10 @@ using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
+using Badger2018.views;
 using BadgerCommonLibrary.business;
 using BadgerCommonLibrary.constants;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018
 {
@@ -32,46 +34,76 @@ namespace Badger2018
             _logger.Info("*  Application lancée (v. {0})", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
             _logger.Info("***********************/");
 
-            Cst.ApplicationDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+            AppOptions prgOptions = null;
+            UpdaterManager updaterManager = null;
 
-            AppArgsDto argsDto = new AppArgsDto();
-
-            _logger.Debug("Chargement des options du programme");
-            AppOptions prgOptions = OptionManager.LoadOptions();
-            if (prgOptions == null)
-            {
-                _logger.Error("Erreur lors du chargement des options du programme. Impossible de démarrer le programme");
-                Environment.Exit(1);
-            }
-
-
-            argsDto = LoadArgs(e, argsDto);
-
-            PreLoadActions(argsDto, prgOptions);
-
-            UpdaterManager updaterManager = new UpdaterManager();
+            /*
+             * Bloc chargement de la configuration et divers traitement pré-interface
+             */
             try
             {
-               
-                updaterManager.XmlUpdFilePath = prgOptions.UpdateXmlUri;
-                updaterManager.CheckForUpdates("launch");
 
-            } catch (Exception ex)
-            {
-                _logger.Warn("Erreur lors de la recherche de mise à jour");
-                _logger.Debug("{0} : {1}", ex.GetType().Name, ex.Message);
-                _logger.Debug("{0}", ex.StackTrace);
+                Cst.ApplicationDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+
+                AppArgsDto argsDto = new AppArgsDto();
+
+                _logger.Debug("Chargement des options du programme");
+                prgOptions = OptionManager.LoadOptions();
+                if (prgOptions == null)
+                {
+                    ExceptionHandlingUtils.LogAndNewException("Erreur lors du chargement des options du programme. Impossible de démarrer le programme");
+
+                }
+
+
+                argsDto = LoadArgs(e, argsDto);
+
+                PreLoadActions(argsDto, prgOptions);
+
+                updaterManager = new UpdaterManager();
+                try
+                {
+
+                    updaterManager.XmlUpdFilePath = prgOptions.UpdateXmlUri;
+                    updaterManager.CheckForUpdates("launch");
+
+                }
+                catch (Exception ex)
+                {
+                    ExceptionHandlingUtils.LogAndHideException(ex, "Erreur lors de la recherche de mise à jour", true);
+
+                }
+
+
             }
+            catch (Exception ex)
+            {
+                ExceptionMsgBoxView.ShowException(ex);
+                ExceptionHandlingUtils.LogAndEndsProgram(
+                    ex,
+                    90,
+                    "Erreur lors de la phase de chargement de la configuration et des divers traitements pré-interface");
+
+            }
+
             /*
-            UpdateChecker.Instance.UpdateUri = prgOptions.UpdateXmlUri;
-            UpdateChecker.Instance.CheckForNewUpdate("launch");
-
+             * Bloc chargeant l'interface
              */
-            //_logger.Debug(DbbAccessManager.Instance.Connection.ConnectionString);
+            try
+            {
 
-            MainWindow mainWindow = new MainWindow(prgOptions, updaterManager);
-            mainWindow.ShowDialog();
+                MainWindow mainWindow = new MainWindow(prgOptions, updaterManager);
+                mainWindow.ShowDialog();
 
+            }
+            catch (Exception ex)
+            {
+                ExceptionMsgBoxView.ShowException(ex);
+                ExceptionHandlingUtils.LogAndEndsProgram(
+                    ex,
+                    95,
+                    "Erreur lors du programme");
+            }
             _logger.Info("Fin du programme");
             Environment.Exit(0);
 
@@ -104,16 +136,16 @@ namespace Badger2018
 
             }
 
-            if (File.Exists("oneShotUpdateConf.xml"))
+            if (File.Exists(CommonCst.OneShotUpdateConfFilename))
             {
-                _logger.Info("Importation de la configuration à partir de oneShotUpdateConf.xml");
+                _logger.Info("Importation de la configuration à partir de {0}", CommonCst.OneShotUpdateConfFilename);
                 _logger.Debug(" Lecture du fichier");
-                AppOptions optionImported = OptionManager.LoadFromXml("oneShotUpdateConf.xml");
+                AppOptions optionImported = OptionManager.LoadFromXml(CommonCst.OneShotUpdateConfFilename);
 
                 _logger.Debug(" Prise en compte des nouvelles options");
-                OptionManager.ChangeOptions(optionImported, prgOptions, "oneShotUpdateConf.xml");
+                OptionManager.ChangeOptions(optionImported, prgOptions, CommonCst.OneShotUpdateConfFilename);
 
-                File.Delete("oneShotUpdateConf.xml");
+                File.Delete(CommonCst.OneShotUpdateConfFilename);
             }
 
             OptionManager.SaveOptions(prgOptions);
@@ -141,11 +173,8 @@ namespace Badger2018
             }
             catch (Exception ex)
             {
-                _logger.Error("Erreur lors du chargement des paramètres en entrée du programme.");
-                _logger.Error(ex.Message);
-                _logger.Error(ex.StackTrace);
+                ExceptionHandlingUtils.LogAndRethrows(ex, "Erreur lors du chargement des paramètres en entrée du programme.");
 
-                Environment.Exit(2);
             }
             return argsDto;
         }

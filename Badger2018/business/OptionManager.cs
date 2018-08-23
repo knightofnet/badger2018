@@ -14,6 +14,7 @@ using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.Properties;
 using Badger2018.views;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.business
 {
@@ -38,9 +39,7 @@ namespace Badger2018.business
             }
             catch (Exception e)
             {
-                _logger.Error("Une erreur est survenue lors de la récupération des options.");
-                _logger.Error(e.Message);
-                _logger.Error(e.StackTrace);
+                ExceptionHandlingUtils.LogAndRethrows(e, "Une erreur est survenue lors de la récupération des options.");
 
             }
 
@@ -96,15 +95,11 @@ namespace Badger2018.business
             }
             catch (Exception e)
             {
-                _logger.Error("Erreur lors du chargement des paramètres à partir de la configuration utilisateur (paramètre en cours de traitement: {0})", eOptCurrent);
-                _logger.Error(e.Message);
-                _logger.Error(e.StackTrace);
-
                 MessageBox.Show(
-                    "Une erreur s'est produite lors du chargement des paramètres. Le programme ne peut pas démarrer. Consulter le journal pour plus d'informations",
-                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+    "Une erreur s'est produite lors du chargement des paramètres. Le programme ne peut pas démarrer. Consulter le journal pour plus d'informations",
+    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                throw e;
+                ExceptionHandlingUtils.LogAndRethrows(e, "Une erreur s'est produite lors du chargement des paramètres. Le programme ne peut pas démarrer. Consulter le journal pour plus d'informations");
 
             }
 
@@ -190,10 +185,8 @@ namespace Badger2018.business
 
             if (!x.Root.Name.Equals(Cst.XmlRootName))
             {
-                _logger.Error("Erreur lors de l'importation des paramètres à partir du fichier XML : la racine du fichier xml n'est pas {0}", Cst.XmlRootName);
 
-                throw new Exception("Erreur lors de l'importation des paramètres à partir du fichier XML. Le fichier n'est pas valide.");
-
+                ExceptionHandlingUtils.LogAndNewException(String.Format("Erreur lors de l'importation des paramètres à partir du fichier XML : la racine du fichier xml n'est pas {0}", Cst.XmlRootName));
             }
 
             AppOptions opt = new AppOptions();
@@ -240,10 +233,11 @@ namespace Badger2018.business
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error("Erreur lors de l'importation des paramètres à partir du fichier XML (paramètre lu: {0}.", pName);
-                    _logger.Error(ex.Message);
-                    _logger.Error(ex.StackTrace);
-                    throw new Exception("Erreur lors de l'importation des paramètres à partir du fichier XML.", ex);
+                    ExceptionHandlingUtils.LogAndNewException(
+                        String.Format("Erreur lors de l'importation des paramètres à partir du fichier XML (paramètre lu: {0}.)", pName),
+                        ex);
+
+
                 }
 
             }
@@ -284,9 +278,7 @@ namespace Badger2018.business
             }
             catch (Exception e)
             {
-                _logger.Error("Erreur lors de la RaZ des paramètres (paramètre en cours de traitement: {0})", eOptCurrent);
-                _logger.Error(e.Message);
-                _logger.Error(e.StackTrace);
+                ExceptionHandlingUtils.LogAndHideException(e, String.Format("Erreur lors de la RaZ des paramètres (paramètre en cours de traitement: {0})", eOptCurrent));
 
                 MessageBox.Show(
                     "Une erreur s'est produite lors de la remise à zéro des paramètres. L'action est annulée. Consulter le journal pour plus d'informations",

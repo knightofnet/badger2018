@@ -38,8 +38,8 @@
     <ApplicationIcon>Resources\Paomedia-Small-N-Flat-Clock.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AryxDevLibrary, Version=1.0.3.99, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AryxDevLibrary.1.0.3.99\lib\net35-client\AryxDevLibrary.dll</HintPath>
+    <Reference Include="AryxDevLibrary, Version=1.0.3.117, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AryxDevLibrary.1.0.3.117\lib\net35-client\AryxDevLibrary.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
@@ -96,8 +96,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WebDriver, Version=3.12.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.WebDriver.3.12.1\lib\net40\WebDriver.dll</HintPath>
+    <Reference Include="WebDriver, Version=3.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.3.14.0\lib\net40\WebDriver.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -170,6 +171,9 @@
     <Compile Include="views\DisclaimerView.xaml.cs">
       <DependentUpon>DisclaimerView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\ExceptionMsgBoxView.xaml.cs">
+      <DependentUpon>ExceptionMsgBoxView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\ImportExportOptionsView.xaml.cs">
       <DependentUpon>ImportExportOptionsView.xaml</DependentUpon>
     </Compile>
@@ -232,6 +236,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\DisclaimerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\ExceptionMsgBoxView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,30 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Media;
-using System.Net.Mime;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using AryxDevLibrary.extensions;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AudioSwitcher.AudioApi;
@@ -32,25 +17,16 @@ using AudioSwitcher.AudioApi.CoreAudio;
 using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.Properties;
 using Badger2018.utils;
 using Badger2018.views;
 using BadgerCommonLibrary.business;
+using BadgerCommonLibrary.dto;
 using BadgerCommonLibrary.utils;
 using Microsoft.Win32;
-using Microsoft.Win32.SafeHandles;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.IE;
-using OpenQA.Selenium.Remote;
-
 using Application = System.Windows.Application;
-using Brush = System.Windows.Media.Brush;
-using Color = System.Windows.Media.Color;
-using ColorConverter = System.Windows.Media.ColorConverter;
+using Color = System.Drawing.Color;
 using MessageBox = System.Windows.MessageBox;
-using Timer = System.Threading.Timer;
-using UpdateChecker = Badger2018.business.UpdateChecker;
-using UpdateInfoDto = BadgerCommonLibrary.dto.UpdateInfoDto;
 
 namespace Badger2018
 {
@@ -151,7 +127,7 @@ namespace Badger2018
             InitializeComponent();
             Times = new TimesBadgerDto();
             //imgOptions.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "iconSetting.png");
-            lblVersion.Content = String.Format(lblVersion.Content.ToString(), System.Reflection.Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
+            lblVersion.Content = String.Format(lblVersion.Content.ToString(), Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
             pbarTime.IsIndeterminate = true;
 
             PrgOptions = prgOptions;
@@ -208,8 +184,6 @@ namespace Badger2018
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
 
-
-
                 }
 
                 OptionManager.SaveOptions(PrgOptions);
@@ -222,7 +196,7 @@ namespace Badger2018
             // tOdo bug reload notifs
             AdaptUiFromOptions(PrgOptions);
 
-            Title = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            Title = Assembly.GetExecutingAssembly().GetName().Name;
             PrgSwitch.PbarMainTimerActif = true;
             InitNotifyIcon();
             Closing += OnClosing;
@@ -351,9 +325,6 @@ args.Key == Key.F12 ||
             Loaded += (sender, args) =>
             {
                 AfterLoadPostInitComponent();
-
-
-
             };
 
         }
@@ -362,7 +333,7 @@ args.Key == Key.F12 ||
 
         private void AssignBetaRole()
         {
-            if (MiscAppUtils.CsvStringContains(Environment.UserName.ToUpper(), ((string)Properties.Settings.Default["specUser"]).ToUpper()))
+            if (MiscAppUtils.CsvStringContains(Environment.UserName.ToUpper(), ((string)Settings.Default["specUser"]).ToUpper()))
             {
                 PrgSwitch.IsBetaUser = true;
             }
@@ -444,8 +415,8 @@ args.Key == Key.F12 ||
                     int argbColor =
                         (int)Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM",
                             "ColorizationColor", null);
-                    System.Drawing.Color color = System.Drawing.Color.FromArgb(argbColor);
-                    Color colorA = Color.FromRgb(color.R, color.G, color.B);
+                    Color color = Color.FromArgb(argbColor);
+                    System.Windows.Media.Color colorA = System.Windows.Media.Color.FromRgb(color.R, color.G, color.B);
 
                     rectMatin.Fill =
                         new SolidColorBrush(colorA);
@@ -869,7 +840,7 @@ args.Key == Key.F12 ||
                 lblTpsTravReelSuppl.Content = String.Format("(+{0})",
                     (RealTimeTempsTravaille - tTravTheo).ToString(Cst.TimeSpanAltFormat));
 
-                if (!NotifManager.IsNotifShow(Cst.NotifTpsMaxJournee) && !PrgSwitch.IsMoreThanTpsTheo)
+                if (!PrgSwitch.IsMoreThanTpsTheo)
                 {
                     PrgSwitch.IsMoreThanTpsTheo = true;
                     lblTpsTravReel.Foreground = Cst.SCBDarkGreen;
@@ -922,10 +893,20 @@ args.Key == Key.F12 ||
                                                         "Voulez-vous effectuer la mise à jour ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Information);
             if (result == MessageBoxResult.Yes)
             {
-                if (UpdaterMgr.UpdateProgramTo(upd))
+                try
                 {
-                    PrgSwitch.IsRealClose = true;
-                    Close();
+                    if (UpdaterMgr.UpdateProgramTo(upd))
+                    {
+                        PrgSwitch.IsRealClose = true;
+                        Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ExceptionMsgBoxView.ShowException(ex, "Processus de mise à jour",
+                        "Une erreur inconnue est survenue lors du processus de mise à jour. Celui-ci n'a pas aboutit. " +
+                        "Consultez les fichiers de journalisation ou transférez les par email pour résoudre cette anomalie."
+                        );
                 }
             }
             else
@@ -1044,7 +1025,7 @@ args.Key == Key.F12 ||
 
             _notifyIconTrayMenu = new ContextMenuStrip();
 
-            _notifyIconAppNameLblItem = new ToolStripLabel(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
+            _notifyIconAppNameLblItem = new ToolStripLabel(Assembly.GetExecutingAssembly().GetName().Name);
 
 
             _notifyIconMatineeLblItem = new ToolStripLabel();
@@ -1114,7 +1095,7 @@ args.Key == Key.F12 ||
                 RestoreWindow();
                 this.Activate();
             };
-            _notifyIcon.Text = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            _notifyIcon.Text = Assembly.GetExecutingAssembly().GetName().Name;
         }
 
 
@@ -1320,7 +1301,13 @@ args.Key == Key.F12 ||
         private void AdaptUiForState2(TimeSpan? tmpsPause)
         {
             // Etat de l'UI après avoir badgé le début de l'après-midi.
-
+            if (finPauseMidiTimer != null)
+            {
+                finPauseMidiTimer.Stop();
+                PrgSwitch.PbarMainTimerActif = true;
+                pbarTime.ToolTip = null;
+                pbarTime.Foreground = Cst.SCBGreenPbar;
+            }
 
             PrgSwitch.PbarMainTimerActif = true;
             PrgSwitch.IsTimerStoppedByMaxTime = false;
@@ -1383,7 +1370,7 @@ args.Key == Key.F12 ||
 
             PushNewInfo(null);
 
-            Title = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            Title = Assembly.GetExecutingAssembly().GetName().Name;
         }
 
         private void AdaptUiForState3()
