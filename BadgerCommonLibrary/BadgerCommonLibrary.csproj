@@ -33,6 +33,7 @@
     <Reference Include="AryxDevLibrary">
       <HintPath>..\externals\AryxDevLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,6 +54,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="utils\AppDateUtils.cs" />
+    <Compile Include="utils\ExceptionHandlingUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

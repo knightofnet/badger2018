@@ -20,5 +20,8 @@ namespace BadgerCommonLibrary.constants
         public const Logger.LogLvl FileLogLvl = Logger.LogLvl.INFO;
 #endif
 
+        public const string OneShotUpdateConfFilename = "oneShotUpdateConf.xml";
+
+
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Windows;
 using System.Xml;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
@@ -26,7 +29,7 @@ namespace BadgerCommonLibrary.business
             }
         }
 
-        
+
         public bool IsNewUpdateAvalaible { get; private set; }
         public bool IsUpdaterFileLoaded { get; private set; }
         public string UpdateCheckTag { get; set; }
@@ -38,7 +41,7 @@ namespace BadgerCommonLibrary.business
 
         public UpdaterManager()
         {
-            
+
         }
 
         private void LoadsXmlFile(string filepath)
@@ -59,6 +62,11 @@ namespace BadgerCommonLibrary.business
         {
             try
             {
+                if (versionTarget == null)
+                {
+                    versionTarget = "*";
+                }
+
                 List<UpdateInfoDto> listReleasesLoc = new List<UpdateInfoDto>();
                 LoadsXmlFile(XmlUpdFilePath);
                 if (!IsUpdaterFileLoaded)
@@ -108,13 +116,13 @@ namespace BadgerCommonLibrary.business
 
             UpdateInfoDto updRet = new UpdateInfoDto();
 
-            string newVersion = XmlUtils.GetValueXpath(releaseXml, ".//version");
-            updRet.Version = Version.Parse(newVersion);
-            _logger.Debug(" Version {0}", newVersion);
-
             string title = XmlUtils.GetValueXpath(releaseXml, ".//title");
             updRet.Title = title;
             _logger.Debug(" Titre {0}", title);
+
+            string newVersion = XmlUtils.GetValueXpath(releaseXml, ".//version");
+            updRet.Version = Version.Parse(newVersion);
+            _logger.Debug(" Version {0}", newVersion);
 
             string description = XmlUtils.GetValueXpath(releaseXml, ".//description");
             updRet.Description = description;
@@ -138,7 +146,43 @@ namespace BadgerCommonLibrary.business
 
         public bool UpdateProgramTo(UpdateInfoDto upd)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string filenameUpdter = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Resources/BadgerUpdater.exe");
+                string badgerExe = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Badger2018.exe");
+
+                string args = String.Format("-l -v {0} -f \"{1}\" -a \"{2}\"", upd.Version.ToString(), XmlUpdFilePath,
+                    badgerExe);
+
+                _logger.Debug("Appel de {0} avec {1}", filenameUpdter, args);
+
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(filenameUpdter, args);
+                processStartInfo.UseShellExecute = true;
+                processStartInfo.WorkingDirectory =
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Resources");
+
+                var processUpd = Process.Start(processStartInfo);
+                processUpd.WaitForExit(2000);
+                if (processUpd.HasExited)
+                {
+                    string msg = "Erreur lors du lancement du programme de mise à jour :  celui-ci s'est arrêté précocement";
+
+                    throw new Exception(msg);
+                }
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                string msg = "Erreur lors du lancement du programme de mise à jour";
+                _logger.Error(msg);
+                _logger.Error(ex.Message);
+                _logger.Error(ex.StackTrace);
+
+
+                throw ex;
+            }
         }
     }
 }
