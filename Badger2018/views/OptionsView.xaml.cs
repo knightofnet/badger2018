@@ -166,6 +166,8 @@ namespace Badger2018.views
             tboxMaxTravTime.Text = opt.TempsMaxJournee.ToString(Cst.TimeSpanFormat);
             tboxMaxTravTimeDemi.Text = opt.TempsMaxDemieJournee.ToString(Cst.TimeSpanFormat);
             tboxMinTravTime.Text = opt.HeureMinJournee.ToString(Cst.TimeSpanFormat);
+            tboxTpsReglementaireDemieJournee.Text = opt.TempsDemieJournee.ToString(Cst.TimeSpanFormat);
+
 
             cboxMode.SelectedItem = opt.ModeBadgement.Libelle;
             cboxListBrowser.SelectedItem = opt.BrowserIndex.Libelle;
@@ -833,6 +835,29 @@ namespace Badger2018.views
             {
                 MessageBox.Show("L'horaire minimum pour commencer à travailler doit être au format HH:mm.");
                 tboxMinTravTime.Focus();
+                return true;
+            }
+
+            // tboxTpsReglementaireDemieJournee
+            TimeSpan newTboxTpsRegl = new TimeSpan();
+            if (TimeSpan.TryParse(tboxTpsReglementaireDemieJournee.Text, out newTboxTpsRegl))
+            {
+                if (newTboxTpsRegl.CompareTo(NewOptions.TempsMaxDemieJournee) >= 0)
+                {
+                    MessageBox.Show("Le temps de travail réglementaire pour une demie journée doit être inférieur au temps maximum de tarvail pour une demie journée.");
+                    tboxTpsReglementaireDemieJournee.Focus();
+                    return true;
+                }
+                else if (!newTboxTpsRegl.Equals(OrigOptions.TempsDemieJournee))
+                {
+                    HasChangeOption = true;
+                    NewOptions.TempsDemieJournee = newTboxTpsRegl;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Le temps de travail réglementaire pour une demie journée doit être au format HH:mm.");
+                tboxTpsReglementaireDemieJournee.Focus();
                 return true;
             }
 
