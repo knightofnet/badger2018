@@ -36,6 +36,7 @@ namespace BadgerUpdater
 
         private static void Main(string[] args)
         {
+
             _logger.ShowDtAndLogLevel = false;
 
 
@@ -183,7 +184,7 @@ namespace BadgerUpdater
                 prgParams.BadgerExeFileInfo = new FileInfo(prgParams.InArgs.BadgerAppExe);
                 prgParams.BadgerExeVersion =
                     Version.Parse(FileVersionInfo.GetVersionInfo(prgParams.BadgerExeFileInfo.FullName).ProductVersion);
-                _logger.Debug("Version de l'executable de Badger2018: {0}", prgParams.BadgerExeVersion.ToString());
+                _logger.Info("Version de l'executable de Badger2018: {0}", prgParams.BadgerExeVersion.ToString());
 
                 /*
                 string sevenZexeStr = (string) Settings.Default["SevenZipFilePath"];
@@ -257,7 +258,7 @@ namespace BadgerUpdater
             updMgr.XmlUpdFilePath = prgParams.InArgs.XmlUpdateFile;
 
             _logger.Info("Vérification des mises à jour");
-            updMgr.CheckForUpdates(runName, prgParams.InArgs.VergionTarget);
+            updMgr.CheckForUpdates(runName, prgParams.BadgerExeVersion.ToString() , prgParams.InArgs.VergionTarget);
 
             if (!updMgr.IsUpdaterFileLoaded)
             {
@@ -268,7 +269,7 @@ namespace BadgerUpdater
 
             if (!updMgr.IsNewUpdateAvalaible)
             {
-                _logger.Info("Badger2018 est déjà à jour.");
+                _logger.Info("Badger2018 est déjà à jour (0).");
 
                 Exit(EnumExitCodes.OK_NO_UPDATE_NEEDED.ExitCodeInt);
             }
@@ -279,7 +280,7 @@ namespace BadgerUpdater
 
             if (!updAval)
             {
-                _logger.Info("Badger2018 est déjà à jour.");
+                _logger.Info("Badger2018 est déjà à jour (1).");
 
                 Exit(EnumExitCodes.OK_NO_UPDATE_NEEDED.ExitCodeInt);
             }

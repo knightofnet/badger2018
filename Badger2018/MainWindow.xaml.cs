@@ -872,7 +872,7 @@ args.Key == Key.F12 ||
 
             if (isForceCheck || (EtatBadger == 2 && UpdaterMgr.UpdateCheckTag.Equals("-1")))
             {
-                UpdaterMgr.CheckForUpdates("2");
+                UpdaterMgr.CheckForUpdates("2", Assembly.GetEntryAssembly().GetName().Version.ToString());
                 if (UpdaterMgr.IsNewUpdateAvalaible)
                 {
                     isOkToSignalUpd = true;

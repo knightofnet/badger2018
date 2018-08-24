@@ -31,7 +31,7 @@ namespace Badger2018
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             _logger.Info("/***********************");
-            _logger.Info("*  Application lancée (v. {0})", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+            _logger.Info("*  Application lancée (v. {0})", Assembly.GetExecutingAssembly().GetName().Version);
             _logger.Info("***********************/");
 
             AppOptions prgOptions = null;
@@ -65,7 +65,7 @@ namespace Badger2018
                 {
 
                     updaterManager.XmlUpdFilePath = prgOptions.UpdateXmlUri;
-                    updaterManager.CheckForUpdates("launch");
+                    updaterManager.CheckForUpdates("launch", Assembly.GetEntryAssembly().GetName().Version.ToString());
 
                 }
                 catch (Exception ex)

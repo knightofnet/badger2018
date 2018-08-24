@@ -41,7 +41,7 @@ namespace BadgerCommonLibrary.business
 
         public UpdaterManager()
         {
-
+            UpdateCheckTag = "";
         }
 
         private void LoadsXmlFile(string filepath)
@@ -58,10 +58,11 @@ namespace BadgerCommonLibrary.business
             IsUpdaterFileLoaded = true;
         }
 
-        public void CheckForUpdates(string tagCheckUpd, string versionTarget = "*")
+        public void CheckForUpdates(string tagCheckUpd, string versionIn, string versionTarget = "*")
         {
             try
             {
+
                 if (versionTarget == null)
                 {
                     versionTarget = "*";
@@ -81,12 +82,18 @@ namespace BadgerCommonLibrary.business
                     listReleasesLoc.Add(releaseDto);
                 }
 
+                Version vsIn;
+                if (!Version.TryParse(versionIn, out vsIn))
+                {
+                    throw new Exception("La version en entrée n'est pas correcte (" + versionIn + ")");
+                }
+
                 if (!versionTarget.Equals("*"))
                 {
                     Version vs;
                     if (Version.TryParse(versionTarget, out vs))
                     {
-                        listReleasesLoc = listReleasesLoc.Where(r => r.Version.CompareTo(vs) <= 0).ToList();
+                        listReleasesLoc = listReleasesLoc.Where(r => r.Version.CompareTo(vsIn) > 0 && r.Version.CompareTo(vs) <= 0).ToList();
                     }
                     else
                     {
@@ -95,6 +102,9 @@ namespace BadgerCommonLibrary.business
                             versionTarget);
                         throw new Exception("Impossible de vérifier les mise à jour. Version cible invalide");
                     }
+                } else
+                {
+                    listReleasesLoc = listReleasesLoc.Where(r => r.Version.CompareTo(vsIn) > 0).ToList();
                 }
 
                 IsNewUpdateAvalaible = listReleasesLoc.Any();
