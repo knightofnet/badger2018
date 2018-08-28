@@ -62,6 +62,15 @@ namespace BadgerUpdater.business
             Name = "_forceLogDebugOption"
         };
 
+        private static readonly Option _repriseOption = new Option()
+        {
+            ShortOpt = "r",
+            LongOpt = "reprise",
+            Description = "Numéro de la run pour reprendre.",
+            HasArgs = true,
+            IsMandatory = false,
+            Name = "repriseOption"
+        };
 
 
         public AppArgsParser()
@@ -71,6 +80,7 @@ namespace BadgerUpdater.business
             AddOption(_configFilePathOption);
             AddOption(_forceLogDebugOption);
             AddOption(_appFilePathOption);
+            AddOption(_repriseOption);
 
 
         }
@@ -109,6 +119,12 @@ namespace BadgerUpdater.business
                 appArgsDto.BadgerAppExe = exeFilePath;
 
 
+            }
+
+
+            if (HasOption(_repriseOption, dictionary))
+            {
+                appArgsDto.NumRunReprise = GetSingleOptionValue(_repriseOption, dictionary);
             }
 
             appArgsDto.LaunchAppIfSucess = HasOption(_launchAppIfSucessOption, dictionary);

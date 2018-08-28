@@ -233,7 +233,7 @@ namespace Badger2018
 #if DEBUG
 args.Key == Key.F12 ||
 #endif
- KonamiCodeListener.IsCompletedBy(args.Key))
+KonamiCodeListener.IsCompletedBy(args.Key))
                 {
                     DebugCommandView d = new DebugCommandView();
                     d.Show();
@@ -963,6 +963,8 @@ args.Key == Key.F12 ||
                 PrgOptions = opt.NewOptions;
                 OptionManager.SaveOptions(PrgOptions);
                 AdaptUiFromOptions(PrgOptions);
+                UpdaterMgr.XmlUpdFilePath = PrgOptions.UpdateXmlUri;
+
 
             }
             if (opt.IsRazNotifs)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AryxDevLibrary.utils;
 
 namespace BadgerUpdater.dto
 {
@@ -12,5 +13,11 @@ namespace BadgerUpdater.dto
         public string BadgerAppExe { get; set; }
 
         public bool LaunchAppIfSucess { get; set; }
+        public string NumRunReprise { get; set; }
+
+        public bool IsReprise()
+        {
+            return !StringUtils.IsNullOrWhiteSpace(NumRunReprise);
+        }
     }
 }
