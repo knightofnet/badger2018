@@ -34,19 +34,11 @@ namespace BadgerUpdater
 
         private static bool _isUpdateUpdaterAvailable = false;
 
-        private static string[] filesIgnored =
-        {
-            "Resources/AryxDevLibrary.dll",
-            "Resources/BadgerCommonLibrary.dll",
-            "Resources/BadgerUpdater.exe",
-            "Resources/Interop.IWshRuntimeLibrary.dll",
-            "Resources/Ionic.Zip.Reduced.dll",
-            "Resources/updateBadger.cmd",
-            "Resources/logUpd.log",
+        private static readonly WorkDoneStepDto WorkDone = new WorkDoneStepDto();
 
-        };
-
-        private static readonly ParamsTrtDto prgParams = new ParamsTrtDto();
+        private static readonly ParamsTrtDto PrgParams = new ParamsTrtDto();
+        private static FileInfo _fiXmlBackupOption;
+        private static FileInfo _backupBinaries;
 
         private static void Main(string[] args)
         {
@@ -54,65 +46,64 @@ namespace BadgerUpdater
             {
                 _logger.ShowDtAndLogLevel = false;
 
-
-                Console.WriteLine("");
-                _logger.Info("<*white*>Application Updater lancée (v. {0})<*/*>",
+                Console.WriteLine();
+                _logger.Info("<*white*>Application {0} lancée (v. {1})<*/*>",
+                    Assembly.GetExecutingAssembly().GetName().Name,
                     System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-                Console.WriteLine("");
+                Console.WriteLine();
                 InitsUpdate(args);
 
-                Console.WriteLine("");
+
+                Console.WriteLine();
                 GetVersionAppExe();
 
                 String runName = "";
-                if (prgParams.InArgs.IsReprise())
+                if (PrgParams.InArgs.IsReprise())
                 {
-                    runName = prgParams.InArgs.NumRunReprise;
+                    runName = PrgParams.InArgs.NumRunReprise;
                 }
                 else
                 {
                     runName = runName = String.Format(Cst.RunNameTpl, DateTime.Now.ToString("yyyyMMdd-hhmmss"));
                 }
 
+                InitUpdFilesInfo(runName);
 
-                if (!prgParams.InArgs.IsReprise())
+
+                if (!PrgParams.InArgs.IsReprise())
                 {
-                    CleanGenericOldBackups(Cst.RunNameTpl, prgParams.BadgerExeFileInfo.Directory);
+                    CleanGenericOldBackups(Cst.RunNameTpl, PrgParams.BadgerExeFileInfo.Directory);
                 }
 
-                Console.WriteLine("");
+                Console.WriteLine();
                 List<UpdateInfoDto> lstUpd = SearchAndControlUpdates(runName);
 
                 CheckIfAppRunning();
-                DoUpdaterUpdate(runName);
+                DoUpdaterUpdateSeconde(runName, PrgParams.BadgerExeFileInfo.Directory);
 
 
 
-                Console.WriteLine("");
+                Console.WriteLine();
                 DoUpdates(runName, lstUpd);
 
-                Console.WriteLine("");
+
+                BackupUtils.LoadBackupOptions(PrgParams.BadgerExeFileInfo, _fiXmlBackupOption);
+
+
+                Console.WriteLine();
                 _logger.Info("<*white*>Mise à jour terminée ! <*/*>");
-                Console.WriteLine("");
+                Console.WriteLine();
 
 
-                if (prgParams.InArgs.LaunchAppIfSucess)
-                {
-                    _logger.Info("<*green*>Démarrage de Badger2018<*/*>");
-                    ProcessStartInfo processStartInfo = new ProcessStartInfo(prgParams.BadgerExeFileInfo.FullName);
-                    processStartInfo.WorkingDirectory = prgParams.BadgerExeFileInfo.DirectoryName;
-                    Process.Start(processStartInfo);
-
-                }
-
-                Console.ReadLine();
+                // Console.ReadLine();
                 Exit(EnumExitCodes.OK.ExitCodeInt);
 
             }
             catch (Exception ex)
             {
                 ExceptionHandlingUtils.LogAndHideException(ex);
+                Exit(EnumExitCodes.U_ERROR_UNKNOW_IN_APP.ExitCodeInt);
             }
         }
 
@@ -152,10 +143,10 @@ namespace BadgerUpdater
             string cmdStr = String.Format("\"{0}\" -f \"{1}\" -v {2} -a \"{3}\" {4} -r {5}",
             new[]{
                 Assembly.GetExecutingAssembly().Location,
-                prgParams.InArgs.XmlUpdateFile,
-                prgParams.InArgs.VergionTarget.ToString(),
-                prgParams.InArgs.BadgerAppExe,
-                prgParams.InArgs.LaunchAppIfSucess ? "-l" : "",
+                PrgParams.InArgs.XmlUpdateFile,
+                PrgParams.InArgs.VergionTarget.ToString(),
+                PrgParams.InArgs.BadgerAppExe,
+                PrgParams.InArgs.LaunchAppIfSucess ? "-l" : "",
                 runName
             }
                 );
@@ -165,7 +156,7 @@ namespace BadgerUpdater
                 fileStream.WriteLine("@echo off");
 
                 fileStream.WriteLine(cmdWdStr);
-                fileStream.WriteLine(@"xcopy ..\BKP\* .. /E /Y");
+                fileStream.WriteLine(@"xcopy ..\TMP\* .. /E /Y");
                 fileStream.WriteLine("TIMEOUT /T 2 /NOBREAK");
                 fileStream.WriteLine(cmdStr);
 #if DEBUG
@@ -173,9 +164,6 @@ namespace BadgerUpdater
 #endif
                 fileStream.WriteLine("exit");
             }
-
-
-
 
 
             _logger.Info("Démarrage de la mise à jour");
@@ -184,96 +172,15 @@ namespace BadgerUpdater
             processStartInfo.WorkingDirectory = cmdsUpdate.DirectoryName;
             Process.Start(processStartInfo);
 
-            Exit();
+            Exit(EnumExitCodes.U_OK_UPD_UPDATE_RELAUNCH.ExitCodeInt);
         }
 
-        private static void DoUpdaterUpdate(string runName)
-        {
-            FileInfo cmdsUpdate = new FileInfo("updateBatch.cmd");
-            if (cmdsUpdate.Exists)
-            {
-                cmdsUpdate.Delete();
-            }
 
-
-            FileInfo fiUpdate = new FileInfo("updaterPckg.exe");
-            if (!fiUpdate.Exists)
-            {
-                return;
-            }
-
-
-            _logger.Info("Une mise à jour de l'outil de mise à jour existe.");
-
-
-
-            string cmdWdStr = String.Format("cd \"{0}\"",
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                );
-            string cmdStr = String.Format("\"{0}\" -f \"{1}\" -v {2} -a \"{3}\" {4} -r {5}",
-            new[]{
-                Assembly.GetExecutingAssembly().Location,
-                prgParams.InArgs.XmlUpdateFile,
-                prgParams.InArgs.VergionTarget.ToString(),
-                prgParams.InArgs.BadgerAppExe,
-                prgParams.InArgs.LaunchAppIfSucess ? "-l" : "",
-                runName
-            }
-                );
-
-            using (StreamWriter fileStream = FileUtils.NewStreamWriterCstEncoding(cmdsUpdate.Name, FileMode.CreateNew, EnumOtherEncoding.IBM850))
-            {
-                fileStream.WriteLine("@echo off");
-                fileStream.WriteLine("IF [%1]==[] goto relBootstraper");
-                fileStream.WriteLine("IF %1 EQU 0 goto startUpdateExe");
-                fileStream.WriteLine("IF %1 EQU 1 goto relaunchUpdater");
-                fileStream.WriteLine("GOTO:eof");
-                fileStream.WriteLine("");
-
-                fileStream.WriteLine(":relBootstraper");
-                fileStream.WriteLine("start \"\" \"{0}\" 1", cmdsUpdate.FullName);
-                fileStream.WriteLine("GOTO:eof");
-                fileStream.WriteLine("");
-
-                fileStream.WriteLine(":startUpdateExe");
-                fileStream.WriteLine("TIMEOUT /T 5 /NOBREAK");
-                fileStream.WriteLine("start \"\" /W \"{0}\" -o", fiUpdate.FullName);
-#if DEBUG
-                fileStream.WriteLine("pause");
-#endif
-                fileStream.WriteLine("GOTO:eof");
-
-                fileStream.WriteLine("");
-                fileStream.WriteLine(":relaunchUpdater");
-                fileStream.WriteLine(cmdWdStr);
-                fileStream.WriteLine("del \"{0}\"", fiUpdate.FullName);
-                fileStream.WriteLine("TIMEOUT /T 2 /NOBREAK");
-                fileStream.WriteLine(cmdStr);
-#if DEBUG
-                fileStream.WriteLine("pause");
-#endif
-                fileStream.WriteLine("GOTO:eof");
-
-                fileStream.WriteLine("exit");
-            }
-
-
-
-
-
-            _logger.Info("Démarrage de la mise à jour");
-
-            ProcessStartInfo processStartInfo = new ProcessStartInfo(cmdsUpdate.FullName, "0");
-            processStartInfo.WorkingDirectory = cmdsUpdate.DirectoryName;
-            Process.Start(processStartInfo);
-
-            Exit();
-        }
 
         private static void CheckIfAppRunning()
         {
             Process processExeBadger =
-                Process.GetProcessesByName(prgParams.BadgerExeFileInfo.Name.Replace(prgParams.BadgerExeFileInfo.Extension, ""))
+                Process.GetProcessesByName(PrgParams.BadgerExeFileInfo.Name.Replace(PrgParams.BadgerExeFileInfo.Extension, ""))
                     .FirstOrDefault();
             if (processExeBadger != null)
             {
@@ -288,7 +195,7 @@ namespace BadgerUpdater
                 {
                     _logger.Error(
                         "L'application Badger2018 est toujours active. Impossible de procéder à la mise à jour.");
-                    Exit(EnumExitCodes.ERROR_WAIT_PROGRAM_CLOSE.ExitCodeInt);
+                    Exit(EnumExitCodes.U_ERROR_WAIT_PROGRAM_CLOSE.ExitCodeInt);
                 }
                 else
                 {
@@ -305,10 +212,10 @@ namespace BadgerUpdater
         {
             try
             {
-                prgParams.BadgerExeFileInfo = new FileInfo(prgParams.InArgs.BadgerAppExe);
-                prgParams.BadgerExeVersion =
-                    Version.Parse(FileVersionInfo.GetVersionInfo(prgParams.BadgerExeFileInfo.FullName).ProductVersion);
-                _logger.Info("Version de l'executable de Badger2018: {0}", prgParams.BadgerExeVersion.ToString());
+                PrgParams.BadgerExeFileInfo = new FileInfo(PrgParams.InArgs.BadgerAppExe);
+                PrgParams.BadgerExeVersion =
+                    Version.Parse(FileVersionInfo.GetVersionInfo(PrgParams.BadgerExeFileInfo.FullName).ProductVersion);
+                _logger.Info("Version de l'executable de Badger2018: {0}", PrgParams.BadgerExeVersion.ToString());
 
                 /*
                 string sevenZexeStr = (string) Settings.Default["SevenZipFilePath"];
@@ -343,29 +250,43 @@ namespace BadgerUpdater
 
         private static void InitsUpdate(string[] args)
         {
+            AppArgsParser argsParser = null;
             try
             {
                 _logger.Info("Initiation de la mise à jour");
                 _logger.Info("============================");
 
 
-                Console.WriteLine("");
+                Console.WriteLine();
                 _logger.Info("<*white*>Lecture des paramètres en entrée :<*/*>");
-                Console.WriteLine("");
+                Console.WriteLine();
 
-                prgParams.InArgs = LoadArgs(args);
+                _logger.Debug("Lecteurs des options et paramètres");
+                argsParser = new AppArgsParser();
+                PrgParams.InArgs = argsParser.ParseDirect(args);
 
                 _logger.Info("Paramètres en entrée :");
-                _logger.Info(" Fichier xml des mises à jour : {0}", prgParams.InArgs.XmlUpdateFile);
-                _logger.Info(" Version cible: {0}", prgParams.InArgs.VergionTarget);
-                _logger.Info(" Exécutable Badger2018: {0}", prgParams.InArgs.BadgerAppExe);
+                _logger.Info(" Fichier xml des mises à jour : {0}", PrgParams.InArgs.XmlUpdateFile);
+                _logger.Info(" Version cible: {0}", PrgParams.InArgs.VergionTarget);
+                _logger.Info(" Exécutable Badger2018: {0}", PrgParams.InArgs.BadgerAppExe);
+                _logger.Info(" Redémarrer Badger2018 si succés: {0}", PrgParams.InArgs.LaunchAppIfSucess ? "oui" : "non");
+                _logger.Info(" Reprise de la mise à jour: {0}", PrgParams.InArgs.IsReprise() ? "oui (" + PrgParams.InArgs.NumRunReprise + ")" : "non");
+            }
+            catch (CliParsingException ex)
+            {
+                _logger.Error("Erreur lors de la lecture des paramètres en entrée :");
+                _logger.Error(ex.Message);
+                argsParser.ShowSyntax();
+
+                Exit(EnumExitCodes.U_ERROR_IN_PARAMS.ExitCodeInt);
             }
             catch (Exception ex)
             {
-                ExceptionHandlingUtils.LogAndEndsProgram(ex, EnumExitCodes.ERROR_IN_PARAMS.ExitCodeInt,
-                    "Une erreur est survenue lors de la lecture des paramètres en entrée. Le programme va se terminer."
+                ExceptionHandlingUtils.LogAndHideException(ex, "Une erreur est survenue lors de la lecture des paramètres en entrée. Le programme va se terminer."
                     );
-                // And the program ends here...
+
+                Exit(EnumExitCodes.U_ERROR_IN_PARAMS.ExitCodeInt);
+
             }
         }
 
@@ -373,126 +294,144 @@ namespace BadgerUpdater
         {
 
             _logger.Info("<*white*>Recherche des mises à jour :<*/*>");
-            Console.WriteLine("");
+            Console.WriteLine();
 
 
             _logger.Debug("RunName: {0}", runName);
 
             UpdaterManager updMgr = new UpdaterManager();
-            updMgr.XmlUpdFilePath = prgParams.InArgs.XmlUpdateFile;
+            updMgr.XmlUpdFilePath = PrgParams.InArgs.XmlUpdateFile;
 
             _logger.Info("Vérification des mises à jour");
-            updMgr.CheckForUpdates(runName, prgParams.BadgerExeVersion.ToString(), prgParams.InArgs.VergionTarget);
+            updMgr.CheckForUpdates(runName, PrgParams.BadgerExeVersion.ToString(), PrgParams.InArgs.VergionTarget);
 
             if (!updMgr.IsUpdaterFileLoaded)
             {
-                _logger.Info("Impossible de trouver le fichier contenant les mises à jours");
+                _logger.Error(
+                    "Impossible de trouver le fichier détaillant les mises à jours (fichier recherché : {0}). Vérifiez que ce dernier existe, et qu'il est accessible en lecteur.",
+                    PrgParams.InArgs.XmlUpdateFile);
 
-                Exit(EnumExitCodes.ERROR_IN_PARAMS_UPDXML_FILM.ExitCodeInt);
+                Exit(EnumExitCodes.U_ERROR_IN_PARAMS_UPDXML_FILM.ExitCodeInt);
             }
 
             if (!updMgr.IsNewUpdateAvalaible)
             {
-                _logger.Info("Badger2018 est déjà à jour (0).");
+                _logger.Info("Badger2018 est déjà à jour (version de Badger2018 : {0}). Le programme de mise à jour va s'arrêter.", PrgParams.BadgerExeVersion);
 
-                Exit(EnumExitCodes.OK_NO_UPDATE_NEEDED.ExitCodeInt);
+                Exit(EnumExitCodes.U_OK_NO_UPDATE_NEEDED.ExitCodeInt);
             }
 
             List<UpdateInfoDto> lstUpd =
-                updMgr.ListReleases.Where(r => r.Version.CompareTo(prgParams.BadgerExeVersion) > 0).ToList();
+                updMgr.ListReleases.Where(r => r.Version.CompareTo(PrgParams.BadgerExeVersion) > 0).ToList();
             bool updAval = lstUpd.Any();
 
             if (!updAval)
             {
-                _logger.Info("Badger2018 est déjà à jour (1).");
+                _logger.Info("Badger2018 est déjà à jour (version de Badger2018 : {0}). Le programme de mise à jour va s'arrêter.", PrgParams.BadgerExeVersion);
 
-                Exit(EnumExitCodes.OK_NO_UPDATE_NEEDED.ExitCodeInt);
+                Exit(EnumExitCodes.U_OK_NO_UPDATE_NEEDED.ExitCodeInt);
             }
             return lstUpd;
         }
 
         private static void DoUpdates(string runName, List<UpdateInfoDto> lstUpd)
         {
-            FileInfo backupOptions = null;
-            FileInfo backupBinaries = null;
 
             _logger.Info("Démarrage de la mise à jour. Run {0}", runName);
             Console.WriteLine("================================================");
 
-            if (!prgParams.InArgs.IsReprise())
-            {
-                Console.WriteLine("");
-                _logger.Info("<*white*>Sauvegarde de l'application :<*/*>");
-                Console.WriteLine("");
-                backupOptions = CreateBackupOptions(prgParams.BadgerExeFileInfo, runName);
-                backupBinaries = CreateBackupFiles(prgParams.BadgerExeFileInfo.Directory, runName);
-                Console.WriteLine("");
-            }
-            else
-            {
-                Console.WriteLine("");
-                _logger.Info("<*white*>Reprise de la mise à jour :<*/*>");
-                Console.WriteLine("");
-                backupOptions = new FileInfo(Path.Combine(prgParams.BadgerExeFileInfo.DirectoryName, String.Format("{0}.xml", runName)));
-                backupBinaries = new FileInfo(Path.Combine(prgParams.BadgerExeFileInfo.DirectoryName, String.Format("{0}.zip", runName)));
-                Console.WriteLine("");
-            }
+
 
             try
             {
-                Console.WriteLine("");
+                Console.WriteLine();
                 _logger.Info("<*white*>Mise à jour :<*/*>");
-                Console.WriteLine("");
+                Console.WriteLine();
 
-                foreach (UpdateInfoDto release in lstUpd.OrderBy(r => r.Version))
+                List<UpdateInfoDto> listUpds = lstUpd.OrderBy(r => r.Version).ToList();
+                for (int i = 0; i < listUpds.Count; i++)
                 {
+                    UpdateInfoDto release = listUpds[i];
 
                     TrtOneRelease(release);
-                    DoUpdaterUpdateSeconde(runName, prgParams.BadgerExeFileInfo.Directory);
-                    Console.WriteLine("");
+
+                    DoUpdaterUpdateSeconde(runName, PrgParams.BadgerExeFileInfo.Directory);
+
+                    Console.WriteLine();
                 }
             }
             catch (Exception ex)
             {
                 ExceptionHandlingUtils.LogAndHideException(ex);
 
-                Console.WriteLine("");
+                Console.WriteLine();
                 _logger.Info("<*white*>Retour en arrière :<*/*>");
-                Console.WriteLine("");
+                Console.WriteLine();
 
                 try
                 {
-                    LoadBackupBinaries(backupBinaries, prgParams.BadgerExeFileInfo.Directory);
-                    LoadBackupOptions(prgParams.BadgerExeFileInfo, backupOptions);
+                    bool outBool = false;
+                    BackupUtils.LoadBackupBinaries(_backupBinaries, PrgParams.BadgerExeFileInfo.Directory, out outBool);
+                    BackupUtils.LoadBackupOptions(PrgParams.BadgerExeFileInfo, _fiXmlBackupOption);
+
+                    Exit(EnumExitCodes.U_ERROR_UPD_ROOLBACK_OK.ExitCodeInt);
                 }
-                finally
+                catch (Exception exIn)
                 {
-                    Exit(50);
+                    ExceptionHandlingUtils.LogAndHideException(exIn, "Erreur lors du retour en arrière");
+                    Exit(EnumExitCodes.U_ERROR_UPD_ROOLBACK_KO.ExitCodeInt);
                 }
+
             }
 
 
-            if (backupBinaries.Exists)
+
+        }
+
+        private static void InitUpdFilesInfo(string runName)
+        {
+            if (!PrgParams.InArgs.IsReprise())
+            {
+                Console.WriteLine();
+                _logger.Info("<*white*>Sauvegarde de l'application :<*/*>");
+                Console.WriteLine();
+                _fiXmlBackupOption = BackupUtils.CreateBackupOptions(PrgParams.BadgerExeFileInfo, runName);
+                _backupBinaries = BackupUtils.CreateBackupFiles(PrgParams.BadgerExeFileInfo.Directory, runName);
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine();
+                _logger.Info("<*white*>Reprise de la mise à jour :<*/*>");
+                Console.WriteLine();
+                _fiXmlBackupOption = new FileInfo(Path.Combine(PrgParams.BadgerExeFileInfo.DirectoryName, String.Format("{0}.xml", runName)));
+                _backupBinaries = new FileInfo(Path.Combine(PrgParams.BadgerExeFileInfo.DirectoryName, String.Format("{0}.zip", runName)));
+                Console.WriteLine();
+            }
+        }
+
+        private static void CleanAfterInstall()
+        {
+            if (_backupBinaries.Exists)
             {
                 _logger.Debug("Suppression du backup de l'application...");
-                backupBinaries.Delete();
-                _logger.Debug(" Réalisée: {0}", backupBinaries.Exists);
+                _backupBinaries.Delete();
+                _logger.Debug(" Réalisée: {0}", _backupBinaries.Exists);
             }
 
-            LoadBackupOptions(prgParams.BadgerExeFileInfo, backupOptions);
 
-            if (backupOptions.Exists)
+            if (_fiXmlBackupOption.Exists)
             {
                 _logger.Debug("Suppression du backup des options...");
-                backupOptions.Delete();
-                _logger.Debug(" Réalisée: {0}", backupBinaries.Exists);
+                _fiXmlBackupOption.Delete();
+                _logger.Debug(" Réalisée: {0}", _backupBinaries.Exists);
             }
 
 
             FileInfo tmpRlsOptFileInfo = new FileInfo(
-                Path.Combine(prgParams.BadgerExeFileInfo.DirectoryName,
-                String.Format("{0}.xml", TmpReleaseBackupOptFilename))
-            );
+                Path.Combine(PrgParams.BadgerExeFileInfo.DirectoryName,
+                    String.Format("{0}.xml", TmpReleaseBackupOptFilename))
+                );
             if (tmpRlsOptFileInfo.Exists)
             {
                 _logger.Debug("Suppression du backup intermédiaire des options...");
@@ -500,13 +439,14 @@ namespace BadgerUpdater
                 _logger.Debug(" Réalisée: {0}", tmpRlsOptFileInfo.Exists);
             }
 
-
-
-
-
+            DirectoryInfo dirTmp = new DirectoryInfo(Path.Combine(PrgParams.BadgerExeFileInfo.Directory.FullName, "TMP"));
+            if (dirTmp.Exists)
+            {
+                _logger.Debug("Suppression du dossier temporaire de mise à jour...");
+                dirTmp.Delete(true);
+                _logger.Debug(" Réalisée: {0}", tmpRlsOptFileInfo.Exists);
+            }
         }
-
-
 
 
         private static void TrtOneRelease(UpdateInfoDto release)
@@ -516,7 +456,7 @@ namespace BadgerUpdater
             Console.WriteLine("----------------------------");
             _logger.Info("Badger2018  : version {0} - {1}", release.Version, release.Title);
             _logger.Info("Description : {0}", release.Description);
-            Console.WriteLine("");
+            Console.WriteLine();
 
             FileInfo updateFileInfo = new FileInfo(release.FileUpdate);
 
@@ -535,203 +475,19 @@ namespace BadgerUpdater
             FileInfo optionXmlSaved = null;
             if (release.NeedIntermediateLaunch)
             {
-                optionXmlSaved = CreateBackupOptions(prgParams.BadgerExeFileInfo, TmpReleaseBackupOptFilename);
+                optionXmlSaved = BackupUtils.CreateBackupOptions(PrgParams.BadgerExeFileInfo, TmpReleaseBackupOptFilename);
             }
 
             // Décompression
-            LoadBackupBinaries(updateFileInfo, prgParams.BadgerExeFileInfo.Directory, "AlBadger2018");
+            BackupUtils.LoadBackupBinaries(updateFileInfo, PrgParams.BadgerExeFileInfo.Directory, out _isUpdateUpdaterAvailable, "AlBadger2018");
 
             if (release.NeedIntermediateLaunch)
             {
-                LoadBackupOptions(prgParams.BadgerExeFileInfo, optionXmlSaved);
+                BackupUtils.LoadBackupOptions(PrgParams.BadgerExeFileInfo, optionXmlSaved);
             }
 
         }
 
-
-
-
-        private static FileInfo CreateBackupFiles(DirectoryInfo directory, string backupName)
-        {
-            try
-            {
-
-                _logger.Info("Sauvegarde des fichiers de l'application...");
-
-                List<FileSystemInfo> listFiles = new List<FileSystemInfo>(5);
-                List<FileInfo> rawListFile = FileUtils.GetFilesRecursively(directory);
-
-                listFiles.AddRange(rawListFile);
-
-
-                String zipArchiveMonth = Path.Combine(directory.FullName, String.Format("{0}.zip", backupName));
-
-                foreach (FileSystemInfo f in listFiles)
-                {
-                    try
-                    {
-                        using (ZipFile zipFile = new ZipFile(zipArchiveMonth))
-                        {
-
-                            String dir = FileUtils.GetRelativePath(((FileInfo)f).DirectoryName + @"\",
-                                directory.FullName);
-                            //_logger.Debug("Fichier: {0}, relPAth : {1}", f.FullName, dir);
-                            zipFile.AddFile(f.FullName, dir);
-
-                            zipFile.Save();
-                        }
-
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Error(" Echec de l'ajout du fichier {0} dans l'archive {1}", f.Name, zipArchiveMonth);
-                        _logger.Debug("{0} ::: {1}", e.Message, e.StackTrace);
-
-                    }
-                }
-
-                _logger.Info(" <*white*>========>><*/*> [<*green*>OK<*/*>]");
-                return new FileInfo(zipArchiveMonth);
-            }
-            catch (Exception ex)
-            {
-                _logger.Info(" <*white*>========>><*/*> [<*red*>ECHEC<*/*>]");
-                ExceptionHandlingUtils.LogAndRethrows(ex);
-            }
-
-            return null;
-
-
-        }
-
-        private static FileInfo CreateBackupOptions(FileInfo badgerExeFi, String backupName)
-        {
-            try
-            {
-                _logger.Info("Sauvegarde des paramètres...");
-
-                FileInfo fiXmlBackupOption = new FileInfo(Path.Combine(badgerExeFi.DirectoryName, String.Format("{0}.xml", backupName)));
-                ProcessStartInfo psInfo = new ProcessStartInfo(badgerExeFi.FullName,
-                    String.Format("-e {0}", fiXmlBackupOption.Name));
-                psInfo.WorkingDirectory = badgerExeFi.DirectoryName;
-
-                Process p = new Process();
-                p.StartInfo = psInfo;
-
-
-                p.Start();
-                p.WaitForExit();
-                while (!p.HasExited)
-                {
-                    Thread.Sleep(100);
-                }
-
-                if (!fiXmlBackupOption.Exists)
-                {
-                    throw new Exception(String.Format("Erreur : le fichier {0} n'existe pas.", fiXmlBackupOption.FullName));
-                }
-
-                _logger.Info(" <*white*>========>><*/*> [<*green*>OK<*/*>]");
-                return fiXmlBackupOption;
-
-
-
-            }
-            catch (Exception ex)
-            {
-                _logger.Info(" <*white*>========>><*/*> [<*red*>ECHEC<*/*>]");
-                ExceptionHandlingUtils.LogAndRethrows(ex);
-            }
-
-            return null;
-        }
-
-        private static void LoadBackupOptions(FileInfo badgerExeFi, FileInfo fiXmlBackupOption)
-        {
-            try
-            {
-                _logger.Info("Chargement des options...");
-
-                if (!fiXmlBackupOption.Exists)
-                {
-                    throw new Exception(String.Format("Erreur : le fichier {0} n'existe pas.", fiXmlBackupOption.FullName));
-                }
-
-                ProcessStartInfo psInfo = new ProcessStartInfo(badgerExeFi.FullName,
-                    String.Format("-i {0}", fiXmlBackupOption.Name));
-                psInfo.WorkingDirectory = badgerExeFi.DirectoryName;
-
-                Process p = new Process();
-                p.StartInfo = psInfo;
-
-
-                p.Start();
-                p.WaitForExit();
-
-                _logger.Info(" <*white*>========>><*/*> [<*green*>OK<*/*>]");
-            }
-            catch (Exception ex)
-            {
-                _logger.Info(" <*white*>========>><*/*> [<*red*>ECHEC<*/*>]");
-                ExceptionHandlingUtils.LogAndRethrows(ex);
-            }
-
-        }
-
-        private static void LoadBackupBinaries(FileInfo archiveBackup, DirectoryInfo directoryToExtract, string password = null)
-        {
-            try
-            {
-                _logger.Info("Extraction des fichiers");
-
-                _logger.Debug("Pré-nettoyage");
-                foreach (FileInfo file in directoryToExtract.GetFiles("*.tmp"))
-                {
-                    file.Delete();
-                }
-                foreach (FileInfo file in directoryToExtract.GetFiles("*.PendingOverwrite"))
-                {
-                    file.Delete();
-                }
-
-                _logger.Debug("Extraction dans {0}", directoryToExtract.FullName);
-                using (ZipFile zipRelease = new ZipFile(archiveBackup.FullName))
-                {
-                    if (password != null)
-                    {
-                        zipRelease.Password = password;
-                    }
-
-                    foreach (ZipEntry entryInArchive in zipRelease.Entries)
-                    {
-                        //_logger.Info(entryInArchive.FileName);
-                        if (filesIgnored.Contains(entryInArchive.FileName))
-                        {
-                            _logger.Warn("Fichiers ignorés car faisant partie du programme de mise à jour : {0}",
-                                entryInArchive.FileName);
-
-                            _isUpdateUpdaterAvailable = true;
-                            entryInArchive.Extract(Path.Combine(directoryToExtract.FullName, "BKP"), ExtractExistingFileAction.OverwriteSilently);
-
-                            continue;
-                        }
-                        entryInArchive.Extract(directoryToExtract.FullName, ExtractExistingFileAction.OverwriteSilently);
-                    }
-                    //zipRelease.ExtractAll(directoryToExtract.FullName, ExtractExistingFileAction.OverwriteSilently);
-                }
-
-                _logger.Info(" <*white*>========>><*/*> [<*green*>OK<*/*>]");
-            }
-            catch (Exception ex)
-            {
-                _logger.Info(" <*white*>========>><*/*> [<*red*>ECHEC<*/*>]");
-                ExceptionHandlingUtils.LogAndRethrows(ex);
-            }
-            finally
-            {
-                Console.ReadLine();
-            }
-        }
 
         public static bool ContainsOneShotUpdate(FileInfo archiveBackup, string password)
         {
@@ -763,31 +519,37 @@ namespace BadgerUpdater
 
         }
 
-        private static AppArgsDto LoadArgs(string[] args)
-        {
-            try
-            {
-
-                _logger.Debug("Lecteurs des options et paramètres");
-                AppArgsParser argsParser = new AppArgsParser();
-                AppArgsDto argsDto = argsParser.ParseDirect(args);
-
-                return argsDto;
-
-            }
-            catch (Exception ex)
-            {
-                ExceptionHandlingUtils.LogAndRethrows(ex, "<*red*>Erreur lors du chargement des paramètres en entrée du programme.<*/*>");
-
-            }
-
-            return null;
-        }
-
-
-
         private static void Exit(int exitCode = 0)
         {
+            Console.WriteLine();
+
+            if (exitCode > 0)
+            {
+                Console.WriteLine("Appuyer sur la touche \"Entrer\" pour continuer (ou attendez 5sec)...");
+
+                string line;
+                ConsoleUtils.Reader.TryReadLine(out line, 5000);
+            }
+
+            if (exitCode == EnumExitCodes.OK.ExitCodeInt
+                || (exitCode == EnumExitCodes.U_OK_NO_UPDATE_NEEDED.ExitCodeInt
+                    && PrgParams.InArgs.IsReprise()))
+            {
+                CleanAfterInstall();
+            }
+
+
+            if (exitCode <= EnumExitCodes.U_OK_NO_UPDATE_NEEDED.ExitCodeInt
+                && PrgParams.InArgs.LaunchAppIfSucess
+                && !_isUpdateUpdaterAvailable)
+            {
+                _logger.Info("<*green*>Démarrage de Badger2018<*/*>");
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(PrgParams.BadgerExeFileInfo.FullName);
+                processStartInfo.WorkingDirectory = PrgParams.BadgerExeFileInfo.DirectoryName;
+                Process.Start(processStartInfo);
+
+            }
+            Console.WriteLine();
             Environment.Exit(exitCode);
         }
 

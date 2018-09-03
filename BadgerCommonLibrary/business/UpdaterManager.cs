@@ -10,6 +10,7 @@ using System.Xml;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AryxDevLibrary.utils.xml;
+using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.dto;
 
 namespace BadgerCommonLibrary.business
@@ -79,7 +80,10 @@ namespace BadgerCommonLibrary.business
                 {
                     XmlNode releaseXml = releasesXml[i];
                     UpdateInfoDto releaseDto = ParseReleaseXml(releaseXml);
-                    listReleasesLoc.Add(releaseDto);
+                    if (releaseDto.IsActive)
+                    {
+                        listReleasesLoc.Add(releaseDto);
+                    }
                 }
 
                 Version vsIn;
@@ -126,6 +130,8 @@ namespace BadgerCommonLibrary.business
 
             UpdateInfoDto updRet = new UpdateInfoDto();
 
+
+
             string title = XmlUtils.GetValueXpath(releaseXml, ".//title");
             updRet.Title = title;
             _logger.Debug(" Titre {0}", title);
@@ -134,11 +140,22 @@ namespace BadgerCommonLibrary.business
             updRet.Version = Version.Parse(newVersion);
             _logger.Debug(" Version {0}", newVersion);
 
+            string isActiveStr = XmlUtils.GetValueXpath(releaseXml, ".//active");
+            updRet.IsActive = !StringUtils.IsNullOrWhiteSpace(isActiveStr) && Boolean.Parse(isActiveStr);
+            _logger.Debug(" IsActive {0}", updRet.NeedIntermediateLaunch);
+                       
+
             string description = XmlUtils.GetValueXpath(releaseXml, ".//description");
             updRet.Description = description;
             _logger.Debug(" Description {0}", description);
 
-            string fileUpdate = XmlUtils.GetValueXpath(releaseXml, ".//fileUpdate");
+            if (!updRet.IsActive)
+            {
+                _logger.Debug(" Mise à jour désactivée");
+                return updRet;
+            }
+
+                string fileUpdate = XmlUtils.GetValueXpath(releaseXml, ".//fileUpdate");
             updRet.FileUpdate = fileUpdate;
             _logger.Debug(" FileUpdate {0}", fileUpdate);
 
@@ -173,11 +190,19 @@ namespace BadgerCommonLibrary.business
 
                 var processUpd = Process.Start(processStartInfo);
                 processUpd.WaitForExit(2000);
-                if (processUpd.HasExited)
+                if (processUpd.HasExited )
                 {
-                    string msg = "Erreur lors du lancement du programme de mise à jour :  celui-ci s'est arrêté précocement";
 
-                    throw new Exception(msg);
+                    if (processUpd.ExitCode > EnumExitCodes.U_OK_NO_UPDATE_NEEDED.ExitCodeInt)
+                    {
+
+                        string msg = "Erreur lors du lancement du programme de mise à jour :  celui-ci s'est arrêté précocement";
+
+                        throw new Exception(msg);
+                    } else
+                    {
+                        return false;
+                    }
                 }
 
                 return true;

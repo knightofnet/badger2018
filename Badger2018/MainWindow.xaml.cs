@@ -862,7 +862,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
             //UpdateChecker chk = UpdateChecker.Instance;
 
             bool isOkToSignalUpd = false;
-            if (!isForceCheck && EtatBadger <= 0 && UpdaterMgr.IsNewUpdateAvalaible &&
+            if (!isForceCheck && EtatBadger == 0 && UpdaterMgr.IsNewUpdateAvalaible &&
                 UpdaterMgr.UpdateCheckTag.Equals("launch"))
             {
                 UpdaterMgr.UpdateCheckTag = "-1";

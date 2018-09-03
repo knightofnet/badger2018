@@ -11,7 +11,7 @@
             <RowDefinition Height="121*"/>
         </Grid.RowDefinitions>
         <Rectangle x:Name="rectDebug" Fill="Red" Height="11" VerticalAlignment="Top" Margin="0,0,0,0" ToolTip="VERSION DEBUG"/>
-        <Label x:Name="lblVersion" Content="v. {0} {1}" Margin="0,0,241.2,5.8" HorizontalAlignment="Right" Width="173" Height="27" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Grid.Row="2" ToolTip="par Arnaud Leblanc" />
+        <Label x:Name="lblVersion" Content="v. {0} {1}" Margin="0,0,241,6" HorizontalAlignment="Right" Width="217" Height="27" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Grid.Row="2" ToolTip="par Arnaud Leblanc" />
         <Rectangle x:Name="rectMatin" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Left" Width="179" Margin="0,0,0,0"/>
         <Rectangle x:Name="rectAprem" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Right" Width="179" Margin="0,0,0,0"/>
 
@@ -87,7 +87,7 @@
             <AccessText x:Name="lblInfos" TextWrapping="Wrap" Text="" TextAlignment="Justify" />
         </Label>
 
-        <Grid Margin="0,86,10.2,7" HorizontalAlignment="Right" Width="203">
+        <Grid Margin="0,86,10,7" HorizontalAlignment="Right" Width="226">
             <Label x:Name="lblTpsTravReelLbl"  Content="Compteur temps travaillé du jour :" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="-1,0,1,0" HorizontalContentAlignment="Right"/>
             <WrapPanel Height="25" Margin="10,0,4,0" VerticalAlignment="Bottom" FlowDirection="RightToLeft">
                 <Label x:Name="lblTpsTravReelSuppl" Content="(+2:30)"  VerticalAlignment="Bottom" FontSize="20" Padding="0" HorizontalAlignment="Right"  FlowDirection="LeftToRight"/>

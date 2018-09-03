@@ -47,7 +47,7 @@ namespace BadgerUpdater.utils
                 }
                 else if ("WARN ".Equals(levelLbl))
                 {
-                    levelLbl = "<*orange*>WARN <*/*>";
+                    levelLbl = "<*yellow*>WARN <*/*>";
                 } if ("INFO ".Equals(levelLbl))
                 {
                     levelLbl = "<*cyan*>INFO <*/*>";

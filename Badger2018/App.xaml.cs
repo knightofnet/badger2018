@@ -33,6 +33,11 @@ namespace Badger2018
             _logger.Info("/***********************");
             _logger.Info("*  Application lancée (v. {0})", Assembly.GetExecutingAssembly().GetName().Version);
             _logger.Info("***********************/");
+            if (ProcessUtils.CountAppInstanceOf(Assembly.GetExecutingAssembly().Location) > 1)
+            {
+                _logger.Error("Une autre instance de Badger2018 est déjà chargée...");
+                Environment.Exit(EnumExitCodes.M_ALREADY_RUNNING_INSTANCE.ExitCodeInt);
+            }
 
             AppOptions prgOptions = null;
             UpdaterManager updaterManager = null;
@@ -81,7 +86,7 @@ namespace Badger2018
                 ExceptionMsgBoxView.ShowException(ex);
                 ExceptionHandlingUtils.LogAndEndsProgram(
                     ex,
-                    90,
+                    EnumExitCodes.M_ERROR_LOADING_APP.ExitCodeInt,
                     "Erreur lors de la phase de chargement de la configuration et des divers traitements pré-interface");
 
             }
@@ -101,11 +106,12 @@ namespace Badger2018
                 ExceptionMsgBoxView.ShowException(ex);
                 ExceptionHandlingUtils.LogAndEndsProgram(
                     ex,
-                    95,
+                   EnumExitCodes.M_ERROR_UNKNOW_IN_APP.ExitCodeInt,
                     "Erreur lors du programme");
             }
             _logger.Info("Fin du programme");
-            Environment.Exit(0);
+
+            Environment.Exit(EnumExitCodes.OK.ExitCodeInt);
 
         }
 
@@ -155,7 +161,7 @@ namespace Badger2018
                 _logger.Info(
                     "Fin du traitement. Utiliser l'option -l pour démarrer l'application après une tâche d'export/import de la configuration");
 
-                Environment.Exit(3);
+                Environment.Exit(EnumExitCodes.M_OK_IMPORT_EXPORT_OK.ExitCodeInt);
             }
 
         }

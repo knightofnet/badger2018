@@ -9,7 +9,7 @@ namespace Badger2018.constants
     {
 
         public static readonly EnumTypesJournees Complete = new EnumTypesJournees(0, "Journée complète");
-        public static readonly EnumTypesJournees Matin = new EnumTypesJournees(1, "Matin travaillé");
+        public static readonly EnumTypesJournees Matin = new EnumTypesJournees(1, "Matinée travaillée");
         public static readonly EnumTypesJournees ApresMidi = new EnumTypesJournees(2, "Après-midi travaillée");
 
         public static IEnumerable<EnumTypesJournees> Values
@@ -31,7 +31,6 @@ namespace Badger2018.constants
         {
             Index = index;
             Libelle = libelle;
-
 
         }
 
