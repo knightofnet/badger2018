@@ -30,6 +30,8 @@ namespace Badger2018
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+
             _logger.Info("/***********************");
             _logger.Info("*  Application lancée (v. {0})", Assembly.GetExecutingAssembly().GetName().Version);
             _logger.Info("***********************/");
@@ -90,6 +92,7 @@ namespace Badger2018
                     "Erreur lors de la phase de chargement de la configuration et des divers traitements pré-interface");
 
             }
+
 
             /*
              * Bloc chargeant l'interface
@@ -183,6 +186,18 @@ namespace Badger2018
 
             }
             return argsDto;
+        }
+
+
+        private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception ex = (Exception)args.ExceptionObject;
+            ExceptionMsgBoxView.ShowException(ex, "Erreur non prévue");
+            ExceptionHandlingUtils.LogAndEndsProgram(
+                ex,
+               EnumExitCodes.M_ERROR_UNKNOW_IN_APP.ExitCodeInt,
+                "Erreur non catchée lors du programme");
+
         }
     }
 }
