@@ -7,6 +7,8 @@ namespace Badger2018.dto
 {
     public class TimesBadgerDto
     {
+
+        public DateTime TimeRef { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndTheoDateTime { get; set; }
         public DateTime EndDateTime { get; set; }

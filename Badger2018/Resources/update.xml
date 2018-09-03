@@ -1,10 +1,30 @@
 <?xml version="1.0"?>
-<package >
-  <metadata>   
-    <version>1.0.0728.1708</version>
-    <title>Badger2018 - Alpha Aigle</title>
+<package>
+  <release>
+    <version>1.0.801.517</version>
+    <title>Bravo Barracuda</title>
     <authors>Arnaud Leblanc</authors>
-    <description>Corrections diverses</description>
-    <fileUpdate>C:\Users\ARyx\Documents\Visual Studio 2013\Projects\Badger2018\Badger2018\Badger2018\bin\Release\Badger2018r.exe</fileUpdate>
-  </metadata>
+    <description>Version initiale</description>
+    <levelUpdate>0</levelUpdate>
+    <needIntermediateLaunch>True</needIntermediateLaunch>
+    <fileUpdate>E:\CSharp\Données accessoires\Badger\badgerA.exe</fileUpdate>
+  </release>
+  <release>
+    <version>1.0.0826.1723</version>
+    <title>Bravo Barracuda</title>
+    <authors>Arnaud Leblanc</authors>
+    <description>v2</description>
+    <levelUpdate>0</levelUpdate>
+    <needIntermediateLaunch>True</needIntermediateLaunch>
+    <fileUpdate>C:\Users\ARyx\Desktop\tttt\REPO\v2.exe</fileUpdate>
+  </release>
+  <release>
+    <version>1.0.0824.1001</version>
+    <title>Bravo Barracuda</title>
+    <authors>Arnaud Leblanc</authors>
+    <description>v1</description>
+    <levelUpdate>0</levelUpdate>
+    <needIntermediateLaunch>False</needIntermediateLaunch>
+    <fileUpdate>C:\Users\ARyx\Desktop\tttt\REPO\v1.exe</fileUpdate>
+  </release>
 </package>

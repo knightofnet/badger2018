@@ -94,7 +94,7 @@ namespace Badger2018.business
                 Thread.Sleep(2000);
 
 
-                BadgingUtils.SaveScreenshot(Pwin.EtatBadger + "", driver);
+                BadgingUtils.SaveScreenshot(Pwin.Times.TimeRef, Pwin.EtatBadger + "", driver);
 
                 if (!StringUtils.IsNullOrWhiteSpace(IdVerif))
                 {
