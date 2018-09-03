@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -126,6 +128,7 @@ namespace Badger2018
 
             InitializeComponent();
             Times = new TimesBadgerDto();
+            Times.TimeRef = AppDateUtils.DtNow();
             //imgOptions.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "iconSetting.png");
             lblVersion.Content = String.Format(lblVersion.Content.ToString(), Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
             pbarTime.IsIndeterminate = true;
@@ -233,7 +236,7 @@ namespace Badger2018
 #if DEBUG
 args.Key == Key.F12 ||
 #endif
-KonamiCodeListener.IsCompletedBy(args.Key))
+ KonamiCodeListener.IsCompletedBy(args.Key))
                 {
                     DebugCommandView d = new DebugCommandView();
                     d.Show();
@@ -439,12 +442,15 @@ KonamiCodeListener.IsCompletedBy(args.Key))
         {
             //_notifyIcon.Visible = true;
             ShowInTaskbar = false;
+
         }
 
         private void Window_Activated(object sender, EventArgs e)
         {
             //_notifyIcon.Visible = false;
             ShowInTaskbar = true;
+
+
         }
 
         private void CurrentOnSessionEnding(object sender, SessionEndingCancelEventArgs eventArgs)
@@ -717,6 +723,12 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                 pbarTime.Value = 100 * diff.TotalSeconds / diffTotal.TotalSeconds;
             }
 
+            if (RealTimeDtNow.DayOfYear != Times.TimeRef.DayOfYear)
+            {
+                // Le jour a changé. Il faut redémarrer.
+                SaveCurrentDayTimes();
+                RestartApp();
+            }
 
             //DoNotification();
             NotifManager.DoNotification(RealTimeTsNow, EnumTypesTemps.RealTime, PrgOptions.IsGlobalShowNotifications);
@@ -885,21 +897,46 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                 imgBtnUpdate.Visibility = UpdaterMgr.IsNewUpdateAvalaible ? Visibility.Visible : Visibility.Collapsed;
                 return;
             }
+
+            // Invite différente selon le nombre de mises à jour à effectuer.
+            bool isGoToUpd = false;
             UpdateInfoDto upd = UpdaterMgr.ListReleases[0];
-            var result = MiscAppUtils.TopMostMessageBox("Une nouvelle version du programme est disponible :" + Environment.NewLine +
-                                                        " Titre : " + upd.Title + Environment.NewLine +
-                                                        " Version : " + upd.Version + Environment.NewLine +
-                                                        " Description : " + upd.Description + Environment.NewLine + Environment.NewLine +
-                                                        "Voulez-vous effectuer la mise à jour ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Information);
-            if (result == MessageBoxResult.Yes)
+            if (UpdaterMgr.ListReleases.Count == 1)
+            {
+                var result =
+                    MiscAppUtils.TopMostMessageBox(
+                        "Une nouvelle version du programme est disponible :" + Environment.NewLine +
+                        " Titre : " + upd.Title + Environment.NewLine +
+                        " Version : " + upd.Version + Environment.NewLine +
+                        " Description : " + upd.Description + Environment.NewLine + Environment.NewLine +
+                        "Voulez-vous effectuer la mise à jour ?", "Information", MessageBoxButton.YesNo,
+                        MessageBoxImage.Information);
+
+                isGoToUpd = MessageBoxResult.Yes.Equals(result);
+            }
+            else
+            {
+                var result =
+                   MiscAppUtils.TopMostMessageBox(
+                       "Des nouvelles mises à jour sont disponibles." + Environment.NewLine + Environment.NewLine +
+                       "Voulez-vous passer en revue les mises à jour, puis démarrer la procédure de mise à jour ?", "Information", MessageBoxButton.YesNo,
+                       MessageBoxImage.Information);
+                if (MessageBoxResult.Yes.Equals(result))
+                {
+                    UpdatesReviewerView upView = new UpdatesReviewerView(UpdaterMgr.ListReleases);
+                    upView.ShowDialog();
+                    isGoToUpd = upView.IsDoUpdate;
+                }
+            }
+
+            // Tout est OK, on lance la mise à jour
+            if (isGoToUpd)
             {
                 try
                 {
-                    if (UpdaterMgr.UpdateProgramTo(upd))
-                    {
-                        PrgSwitch.IsRealClose = true;
-                        Close();
-                    }
+                    if (!UpdaterMgr.UpdateProgramTo(upd)) return;
+                    PrgSwitch.IsRealClose = true;
+                    Close();
                 }
                 catch (Exception ex)
                 {
@@ -1905,7 +1942,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
 
             try
             {
-                String sFile = Cst.PointagesDirName + "/" + MiscAppUtils.GetFileNamePointageCurrentDay();
+                String sFile = Cst.PointagesDirName + "/" + MiscAppUtils.GetFileNamePointageCurrentDay(Times.TimeRef);
 
                 PointageElt pElt = new PointageElt
                 {
@@ -1965,13 +2002,13 @@ KonamiCodeListener.IsCompletedBy(args.Key))
 
         private bool MustReloadIncomplete()
         {
-            string sFile = Cst.PointagesDirName + "/" + MiscAppUtils.GetFileNamePointageCurrentDay();
+            string sFile = Cst.PointagesDirName + "/" + MiscAppUtils.GetFileNamePointageCurrentDay(Times.TimeRef);
             _logger.Debug("Test de l'existence du fichier " + sFile);
             return File.Exists(sFile);
         }
         private PointageElt LoadIncomplete()
         {
-            string sFile = Cst.PointagesDirName + "/" + MiscAppUtils.GetFileNamePointageCurrentDay();
+            string sFile = Cst.PointagesDirName + "/" + MiscAppUtils.GetFileNamePointageCurrentDay(Times.TimeRef);
 
             if (File.Exists(sFile))
             {
@@ -2267,6 +2304,41 @@ KonamiCodeListener.IsCompletedBy(args.Key))
         private void imgBtnUpdate_MouseUp(object sender, MouseButtonEventArgs e)
         {
             SignalUpdate(true);
+        }
+
+
+        private void RestartApp()
+        {
+            FileInfo watchDogRestarter = new FileInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Resources/WatchDogRestart.exe"));
+            if (!watchDogRestarter.Exists)
+            {
+                _logger.Error("Impossible de redémarrer l'application : l'exécutable du watchdog ({0}) n'existe pas.",
+                    watchDogRestarter.FullName);
+                return;
+            }
+            string args = String.Format("{0}", Assembly.GetEntryAssembly().GetName().Name);
+            ProcessStartInfo processStartInfo = new ProcessStartInfo(watchDogRestarter.FullName, args);
+            processStartInfo.UseShellExecute = true;
+            processStartInfo.WorkingDirectory = Assembly.GetEntryAssembly().Location;
+
+            var processWatchDogRestarter = Process.Start(processStartInfo);
+            if (processWatchDogRestarter == null)
+            {
+                _logger.Warn("L'application n'a pas pu redémarrée");
+                return;
+            }
+            processWatchDogRestarter.WaitForExit(1000);
+            if (!processWatchDogRestarter.HasExited)
+            {
+
+                _logger.Info("Redémarrage de l'application");
+                PrgSwitch.IsRealClose = true;
+                Close();
+            }
+            else
+            {
+                _logger.Warn("L'application n'a pas pu redémarrer");
+            }
         }
     }
 }

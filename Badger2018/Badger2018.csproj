@@ -42,6 +42,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="AryxDevViewLibrary">
+      <HintPath>..\..\..\AryxDevLibrary\AryxDevViewLibrary\bin\Release\AryxDevViewLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
       <HintPath>..\packages\AudioSwitcher.AudioApi.3.0.0\lib\net40\AudioSwitcher.AudioApi.dll</HintPath>
     </Reference>
@@ -191,6 +194,9 @@
     <Compile Include="views\SaisieManuelleTsView.xaml.cs">
       <DependentUpon>SaisieManuelleTsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\UpdatesReviewerView.xaml.cs">
+      <DependentUpon>UpdatesReviewerView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\usercontrols\FriseDayControl.xaml.cs">
       <DependentUpon>FriseDayControl.xaml</DependentUpon>
     </Compile>
@@ -264,6 +270,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\SaisieManuelleTsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\UpdatesReviewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

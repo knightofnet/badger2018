@@ -51,15 +51,15 @@ namespace Badger2018.utils
             return new Icon(Application.GetResourceStream(oUri).Stream);
         }
 
-        public static string GetFileNamePointageCurrentDay()
+        public static string GetFileNamePointageCurrentDay(DateTime refDtTime)
         {
-            return "pointage-" + AppDateUtils.DtNow().ToString("yyyy-MM-dd") + ".xml";
+            return "pointage-" + refDtTime.ToString("yyyy-MM-dd") + ".xml";
         }
 
-        public static string GetFileNameScreenshot(String more = null)
+        public static string GetFileNameScreenshot(DateTime refDtTime, String more = null)
         {
 
-            return "screenshot-" + (more ?? "") + "-" + AppDateUtils.DtNow().ToString("yyyy-MM-dd-HH-mm-ss") + ".png";
+            return "screenshot-" + (more ?? "") + "-" + refDtTime.ToString("yyyy-MM-dd-HH-mm-ss") + ".png";
         }
 
 

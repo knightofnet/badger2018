@@ -106,7 +106,8 @@ namespace BadgerCommonLibrary.business
                             versionTarget);
                         throw new Exception("Impossible de vérifier les mise à jour. Version cible invalide");
                     }
-                } else
+                }
+                else
                 {
                     listReleasesLoc = listReleasesLoc.Where(r => r.Version.CompareTo(vsIn) > 0).ToList();
                 }
@@ -141,9 +142,9 @@ namespace BadgerCommonLibrary.business
             _logger.Debug(" Version {0}", newVersion);
 
             string isActiveStr = XmlUtils.GetValueXpath(releaseXml, ".//active");
-            updRet.IsActive = !StringUtils.IsNullOrWhiteSpace(isActiveStr) && Boolean.Parse(isActiveStr);
+            updRet.IsActive = StringUtils.IsNullOrWhiteSpace(isActiveStr) || Boolean.Parse(isActiveStr);
             _logger.Debug(" IsActive {0}", updRet.NeedIntermediateLaunch);
-                       
+
 
             string description = XmlUtils.GetValueXpath(releaseXml, ".//description");
             updRet.Description = description;
@@ -155,7 +156,11 @@ namespace BadgerCommonLibrary.business
                 return updRet;
             }
 
-                string fileUpdate = XmlUtils.GetValueXpath(releaseXml, ".//fileUpdate");
+            string auteurXml = XmlUtils.GetValueXpath(releaseXml, ".//authors");
+            updRet.Authors = auteurXml;
+            _logger.Debug(" Authors {0}", auteurXml);
+
+            string fileUpdate = XmlUtils.GetValueXpath(releaseXml, ".//fileUpdate");
             updRet.FileUpdate = fileUpdate;
             _logger.Debug(" FileUpdate {0}", fileUpdate);
 
@@ -190,7 +195,7 @@ namespace BadgerCommonLibrary.business
 
                 var processUpd = Process.Start(processStartInfo);
                 processUpd.WaitForExit(2000);
-                if (processUpd.HasExited )
+                if (processUpd.HasExited)
                 {
 
                     if (processUpd.ExitCode > EnumExitCodes.U_OK_NO_UPDATE_NEEDED.ExitCodeInt)
@@ -199,7 +204,8 @@ namespace BadgerCommonLibrary.business
                         string msg = "Erreur lors du lancement du programme de mise à jour :  celui-ci s'est arrêté précocement";
 
                         throw new Exception(msg);
-                    } else
+                    }
+                    else
                     {
                         return false;
                     }

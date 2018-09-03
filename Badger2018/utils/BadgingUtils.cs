@@ -18,10 +18,10 @@ namespace Badger2018.utils
     {
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
-        public static void SaveScreenshot(string str, RemoteWebDriver driver)
+        public static void SaveScreenshot(DateTime refDtTime, string str, RemoteWebDriver driver)
         {
 
-            driver.GetScreenshot().SaveAsFile(Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(str + ""));
+            driver.GetScreenshot().SaveAsFile(Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(refDtTime, str + ""));
         }
 
         public static IWebElement FindEltById(string idVerif, IWebDriver driver, int nbTentative = 4)
