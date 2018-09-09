@@ -27,10 +27,12 @@ namespace Badger2018.dto
 
         public bool IsNotif2Showed { get; set; }
 
+        public List<IntervalTemps> Pauses { get; set; }
+
 
         public override string ToString()
         {
-            return string.Format("IsComplete: {0}, DateDay: {1}, EtatBadger: {2}, OldEtatBadger: {3}, B0: {4}, B1: {5}, B2: {6}, B3: {7}, TypeJournee: {8}, IsNotif1Showed: {9}, IsNotif2Showed: {10}", IsComplete, DateDay, EtatBadger, OldEtatBadger, B0, B1, B2, B3, TypeJournee, IsNotif1Showed, IsNotif2Showed);
+            return string.Format("IsComplete: {0}, DateDay: {1}, EtatBadger: {2}, OldEtatBadger: {3}, B0: {4}, B1: {5}, B2: {6}, B3: {7}, TypeJournee: {8}, IsNotif1Showed: {9}, IsNotif2Showed: {10}, Pauses: {11}", IsComplete, DateDay, EtatBadger, OldEtatBadger, B0, B1, B2, B3, TypeJournee, IsNotif1Showed, IsNotif2Showed, Pauses);
         }
     }
 }

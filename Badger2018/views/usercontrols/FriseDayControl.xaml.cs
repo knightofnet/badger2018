@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Badger2018.utils;
 
 namespace Badger2018.views.usercontrols
 {
@@ -19,9 +20,25 @@ namespace Badger2018.views.usercontrols
     /// </summary>
     public partial class FriseDayControl : UserControl
     {
-        public FriseDayControl()
+        public static FriseDayControl NewInstance(DateTime hour, string name, string more, Color color)
+        {
+            FriseDayControl f = new FriseDayControl(hour, name, more);
+            f.rectColor.Fill = new SolidColorBrush(color);
+            f.rectSep.Fill = new SolidColorBrush(color);
+
+            return f;
+        }
+
+        public FriseDayControl(DateTime hour, string name, string more)
         {
             InitializeComponent();
+            mainGrid.Background = null;
+
+            lblHours.ContentShortTime(hour);
+            lblName.Content = name;
+            lblMoreStr.Content = more;
+
+
         }
     }
 }

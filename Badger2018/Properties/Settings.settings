@@ -86,9 +86,6 @@
     <Setting Name="IsAutoBadgeMeridienne" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="specUser" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Z016287;Z017855;Z017405;ARyx;Z015828</Value>
-    </Setting>
     <Setting Name="IsLastBadgeIsAutoShutdown" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -163,6 +160,9 @@
     </Setting>
     <Setting Name="SoundPlayedAtLockMidiVolume" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">75</Value>
+    </Setting>
+    <Setting Name="IsStopCptAtMaxDemieJournee" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

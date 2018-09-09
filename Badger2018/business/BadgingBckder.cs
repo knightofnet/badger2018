@@ -106,6 +106,7 @@ namespace Badger2018.business
 
                 }
 
+
                 HasSucceedTrt = true;
                 return;
             }

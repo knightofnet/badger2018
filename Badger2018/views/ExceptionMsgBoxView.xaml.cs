@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -10,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using BadgerCommonLibrary.constants;
 
 namespace Badger2018.views
 {
@@ -64,6 +66,9 @@ namespace Badger2018.views
         private void btnSentMail_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
+
+
+
             proc.StartInfo.FileName = "mailto:arnaud.leblanc@cnav.fr?" +
                                       "subject=[Badger2018] Erreur lors de l'utilisation du programme" +
                                       "&body=" +

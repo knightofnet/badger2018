@@ -52,6 +52,7 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions DeltaAutoBadgeageMinute = new EnumAppOptions("DeltaAutoBadgeageMinute", typeof(int), "0", true);
         public static readonly EnumAppOptions IsDailyDisableAutoBadgeMerid = new EnumAppOptions("IsDailyDisableAutoBadgeMerid", typeof(bool), "True", true);
         public static readonly EnumAppOptions IsStopCptAtMax = new EnumAppOptions("IsStopCptAtMax", typeof(bool), "True", false);
+        public static readonly EnumAppOptions IsStopCptAtMaxDemieJournee = new EnumAppOptions("IsStopCptAtMaxDemieJournee", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsAdd5MinCpt = new EnumAppOptions("IsAdd5minCpt", typeof(bool), "True", false);
 
         public static readonly EnumAppOptions UrlMesPointages = new EnumAppOptions("UrlMesPointages", typeof(string), "http://zvpw068.r12.an.cnav:7796/Pages/Espace%20RH/Mon%20Suivi%20RH/GTA/GTA_MesBageages.aspx?Rubrique=ERHMSRHMB", false);

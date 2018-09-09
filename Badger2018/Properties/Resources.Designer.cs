@@ -19,7 +19,7 @@ namespace Badger2018.Properties {
     // à l'aide d'un outil, tel que ResGen ou Visual Studio.
     // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
     // avec l'option /str ou régénérez votre projet VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -277,6 +277,26 @@ namespace Badger2018.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap pauseBlinkOn {
+            get {
+                object obj = ResourceManager.GetObject("pauseBlinkOn", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pauseExists {
+            get {
+                object obj = ResourceManager.GetObject("pauseExists", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap planTab {
             get {
                 object obj = ResourceManager.GetObject("planTab", resourceCulture);
@@ -316,15 +336,20 @@ namespace Badger2018.Properties {
         
         /// <summary>
         ///   Recherche une chaîne localisée semblable à &lt;?xml version=&quot;1.0&quot;?&gt;
-        ///&lt;package &gt;
-        ///  &lt;metadata&gt;   
-        ///    &lt;version&gt;1.0.0728.1708&lt;/version&gt;
-        ///    &lt;title&gt;Badger2018 - Alpha Aigle&lt;/title&gt;
+        ///&lt;package&gt;
+        ///  &lt;release&gt;
+        ///    &lt;version&gt;1.0.801.517&lt;/version&gt;
+        ///    &lt;title&gt;Bravo Barracuda&lt;/title&gt;
         ///    &lt;authors&gt;Arnaud Leblanc&lt;/authors&gt;
-        ///    &lt;description&gt;Corrections diverses&lt;/description&gt;
-        ///    &lt;fileUpdate&gt;C:\Users\ARyx\Documents\Visual Studio 2013\Projects\Badger2018\Badger2018\Badger2018\bin\Release\Badger2018r.exe&lt;/fileUpdate&gt;
-        ///  &lt;/metadata&gt;
-        ///&lt;/package&gt;.
+        ///    &lt;description&gt;Version initiale&lt;/description&gt;
+        ///    &lt;levelUpdate&gt;0&lt;/levelUpdate&gt;
+        ///    &lt;needIntermediateLaunch&gt;True&lt;/needIntermediateLaunch&gt;
+        ///    &lt;fileUpdate&gt;E:\CSharp\DonnÃ©es accessoires\Badger\badgerA.exe&lt;/fileUpdate&gt;
+        ///  &lt;/release&gt;
+        ///  &lt;release&gt;
+        ///    &lt;version&gt;1.0.0826.1723&lt;/version&gt;
+        ///    &lt;title&gt;Bravo Barracuda&lt;/title&gt;
+        ///    &lt;authors&gt;Arnaud Leblanc&lt;/au [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string update {
             get {
@@ -343,7 +368,7 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Bravo Barracuda.
+        ///   Recherche une chaîne localisée semblable à Charlie Chaméléon.
         /// </summary>
         internal static string versionName {
             get {

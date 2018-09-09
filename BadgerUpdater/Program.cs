@@ -68,26 +68,49 @@ namespace BadgerUpdater
                     runName = runName = String.Format(Cst.RunNameTpl, DateTime.Now.ToString("yyyyMMdd-hhmmss"));
                 }
 
-                InitUpdFilesInfo(runName);
-
-
+                
+                CheckIfAppRunning();
                 if (!PrgParams.InArgs.IsReprise())
                 {
                     CleanGenericOldBackups(Cst.RunNameTpl, PrgParams.BadgerExeFileInfo.Directory);
                 }
+                InitUpdFilesInfo(runName);
+
+
+
 
                 Console.WriteLine();
-                List<UpdateInfoDto> lstUpd = SearchAndControlUpdates(runName);
+                List<UpdateInfoDto> lstUpd = null;
+                if (PrgParams.InArgs.IsSideloadUpdate)
+                {
+                    UpdateInfoDto updateInfo = new UpdateInfoDto();
+                    updateInfo.Description = String.Format("Mise à jour chargée à partir du fichier {0}", PrgParams.InArgs.UpdateExeFile);
+                    updateInfo.FileUpdate = new FileInfo(PrgParams.InArgs.UpdateExeFile).FullName;
+                    updateInfo.IsActive = true;
+                    updateInfo.Title = "Sideload update";
+                    updateInfo.Version = new Version("9.9.999.9999");
 
-                CheckIfAppRunning();
-                DoUpdaterUpdateSeconde(runName, PrgParams.BadgerExeFileInfo.Directory);
+                    lstUpd = new List<UpdateInfoDto>();
+                    lstUpd.Add(updateInfo);
+                } else
+                {
+                    lstUpd = SearchAndControlUpdates(runName);
+                }
+
+
+                if (!PrgParams.InArgs.IsSideloadUpdate)
+                {
+                    DoUpdaterUpdateSeconde(runName, PrgParams.BadgerExeFileInfo.Directory);
+                }
 
 
 
                 Console.WriteLine();
                 DoUpdates(runName, lstUpd);
 
-
+                Console.WriteLine();
+                _logger.Info("<*white*>Rechargement des options<*/*>");
+                Console.WriteLine();
                 BackupUtils.LoadBackupOptions(PrgParams.BadgerExeFileInfo, _fiXmlBackupOption);
 
 
@@ -140,14 +163,15 @@ namespace BadgerUpdater
             string cmdWdStr = String.Format("cd \"{0}\"",
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
                 );
-            string cmdStr = String.Format("\"{0}\" -f \"{1}\" -v {2} -a \"{3}\" {4} -r {5}",
+            string cmdStr = String.Format("\"{0}\" -f \"{1}\" -v {2} -a \"{3}\" {4} {6} -r {5}",
             new[]{
                 Assembly.GetExecutingAssembly().Location,
                 PrgParams.InArgs.XmlUpdateFile,
                 PrgParams.InArgs.VergionTarget.ToString(),
                 PrgParams.InArgs.BadgerAppExe,
                 PrgParams.InArgs.LaunchAppIfSucess ? "-l" : "",
-                runName
+                runName,
+                PrgParams.InArgs.IsForceDebug ? "-d" : "",
             }
                 );
 
@@ -182,6 +206,8 @@ namespace BadgerUpdater
             Process processExeBadger =
                 Process.GetProcessesByName(PrgParams.BadgerExeFileInfo.Name.Replace(PrgParams.BadgerExeFileInfo.Extension, ""))
                     .FirstOrDefault();
+
+      
             if (processExeBadger != null)
             {
                 string[] colorsWait = { "gray", "white", "yellow", "magenta", "red", "DarkRed" };
@@ -265,8 +291,21 @@ namespace BadgerUpdater
                 argsParser = new AppArgsParser();
                 PrgParams.InArgs = argsParser.ParseDirect(args);
 
+                if (PrgParams.InArgs.IsForceDebug)
+                {
+                    _logger.Info("Passage de log en debug");
+                    _logger = new AltLogger(_logger.FileLog.FullName, Logger.LogLvl.DEBUG, Logger.LogLvl.DEBUG);
+                }
+
                 _logger.Info("Paramètres en entrée :");
-                _logger.Info(" Fichier xml des mises à jour : {0}", PrgParams.InArgs.XmlUpdateFile);
+                _logger.Info(" Chargement manuelle de la mise à jour : {0}", PrgParams.InArgs.IsSideloadUpdate ? "oui" : "non");
+                if (PrgParams.InArgs.IsSideloadUpdate)
+                {
+                    _logger.Info(" Fichier exe de la mise à jour : {0}", PrgParams.InArgs.UpdateExeFile);
+                } else
+                {
+                    _logger.Info(" Fichier xml des mises à jour : {0}", PrgParams.InArgs.XmlUpdateFile);
+                }                
                 _logger.Info(" Version cible: {0}", PrgParams.InArgs.VergionTarget);
                 _logger.Info(" Exécutable Badger2018: {0}", PrgParams.InArgs.BadgerAppExe);
                 _logger.Info(" Redémarrer Badger2018 si succés: {0}", PrgParams.InArgs.LaunchAppIfSucess ? "oui" : "non");
@@ -355,7 +394,10 @@ namespace BadgerUpdater
 
                     TrtOneRelease(release);
 
-                    DoUpdaterUpdateSeconde(runName, PrgParams.BadgerExeFileInfo.Directory);
+                    if (!PrgParams.InArgs.IsSideloadUpdate)
+                    {
+                        DoUpdaterUpdateSeconde(runName, PrgParams.BadgerExeFileInfo.Directory);
+                    }
 
                     Console.WriteLine();
                 }
@@ -523,7 +565,7 @@ namespace BadgerUpdater
         {
             Console.WriteLine();
 
-            if (exitCode > 0)
+            if (exitCode > 0 && exitCode != EnumExitCodes.U_OK_UPD_UPDATE_RELAUNCH.ExitCodeInt)
             {
                 Console.WriteLine("Appuyer sur la touche \"Entrer\" pour continuer (ou attendez 5sec)...");
 

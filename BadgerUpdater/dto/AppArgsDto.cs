@@ -14,6 +14,9 @@ namespace BadgerUpdater.dto
 
         public bool LaunchAppIfSucess { get; set; }
         public string NumRunReprise { get; set; }
+        public bool IsSideloadUpdate { get; internal set; }
+        public string UpdateExeFile { get; internal set; }
+        public bool IsForceDebug { get; internal set; }
 
         public bool IsReprise()
         {

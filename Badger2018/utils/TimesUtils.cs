@@ -63,7 +63,133 @@ namespace Badger2018.utils
         }
 
 
+        public static TimeSpan GetTempsTravaille(DateTime now, int etatBadger, TimesBadgerDto times, AppOptions appOptions, EnumTypesJournees tyJournee, bool isGetPausesInCalcul, ref bool isMaxDepass)
+        {
 
+            TimeSpan retTsTpsTrav = TimeSpan.Zero;
+
+            if (etatBadger == 0)
+            {
+                retTsTpsTrav = now.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
+
+                retTsTpsTrav -= times.GetTpsPause();
+
+                if (appOptions.IsStopCptAtMaxDemieJournee && retTsTpsTrav.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
+                {
+                    retTsTpsTrav = appOptions.TempsMaxDemieJournee;
+                    isMaxDepass = true;
+                }
+
+
+            }
+            else if (etatBadger == 1)
+            {
+                retTsTpsTrav = times.PlageTravMatin.EndOrDft.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
+                retTsTpsTrav -= times.GetTpsPause();
+                if (appOptions.IsStopCptAtMaxDemieJournee && retTsTpsTrav.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
+                {
+                    retTsTpsTrav = appOptions.TempsMaxDemieJournee;
+                    isMaxDepass = true;
+                }
+
+
+            }
+            else if (etatBadger == 2)
+            {
+                TimeSpan matin = TimeSpan.Zero;
+                TimeSpan current = TimeSpan.Zero;
+
+                if (tyJournee == EnumTypesJournees.Complete)
+                {
+                    current = now.TimeOfDay;
+
+                    if (appOptions.TempsMinPause.CompareTo(times.PlageTravAprem.Start.TimeOfDay - times.PlageTravMatin.EndOrDft.TimeOfDay) > 0)
+                    {
+                        current -= (times.PlageTravMatin.EndOrDft.TimeOfDay + appOptions.TempsMinPause);
+                    }
+                    else
+                    {
+                        current -= times.PlageTravAprem.Start.TimeOfDay;
+                    }
+
+                }
+
+                if (tyJournee == EnumTypesJournees.Complete)
+                {
+                    matin = times.PlageTravMatin.EndOrDft.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
+                }
+                else if (EnumTypesJournees.IsDemiJournee(tyJournee))
+                {
+                    current = now.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
+                }
+
+                if (appOptions.IsStopCptAtMaxDemieJournee && matin.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
+                {
+                    matin = appOptions.TempsMaxDemieJournee;
+                }
+                if (appOptions.IsStopCptAtMaxDemieJournee && current.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
+                {
+                    current = appOptions.TempsMaxDemieJournee;
+                    isMaxDepass = true;
+                }
+
+                retTsTpsTrav = current + matin;
+                retTsTpsTrav -= times.GetTpsPause();
+
+            }
+            else if (etatBadger == 3)
+            {
+
+                if (tyJournee == EnumTypesJournees.Complete)
+                {
+                    TimeSpan matin = times.PlageTravMatin.EndOrDft.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
+                    TimeSpan aprem = times.PlageTravAprem.EndOrDft.TimeOfDay;
+
+                    if (appOptions.TempsMinPause.CompareTo(times.PlageTravAprem.Start.TimeOfDay - times.PlageTravMatin.EndOrDft.TimeOfDay) > 0)
+                    {
+                        aprem -= (times.PlageTravMatin.EndOrDft.TimeOfDay + appOptions.TempsMinPause);
+                    }
+                    else
+                    {
+                        aprem -= times.PlageTravAprem.Start.TimeOfDay;
+                    }
+
+
+
+
+                    if (appOptions.IsStopCptAtMaxDemieJournee && matin.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
+                    {
+                        matin = appOptions.TempsMaxDemieJournee;
+                    }
+                    if (appOptions.IsStopCptAtMaxDemieJournee && aprem.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
+                    {
+                        aprem = appOptions.TempsMaxDemieJournee;
+                    }
+
+                    retTsTpsTrav = aprem + matin;
+                    retTsTpsTrav -= times.GetTpsPause();
+
+                }
+                else
+                {
+                    retTsTpsTrav = times.PlageTravAprem.EndOrDft.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
+                }
+            }
+
+            if (appOptions.IsAdd5minCpt && !isMaxDepass)
+            {
+                retTsTpsTrav = retTsTpsTrav + new TimeSpan(0, 5, 0);
+            }
+
+
+            if (appOptions.IsStopCptAtMax && retTsTpsTrav.CompareTo(appOptions.TempsMaxJournee) >= 0)
+            {
+                retTsTpsTrav = appOptions.TempsMaxJournee;
+                isMaxDepass = true;
+            }
+
+            return retTsTpsTrav;
+        }
 
 
     }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2037
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger2018", "Badger2018\Badger2018.csproj", "{F9C1FD0D-7A86-408E-8B4F-6D65F7E642BC}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadgerUpdater", "BadgerUpdater\BadgerUpdater.csproj", "{8E5B4C1E-21BA-4897-9330-7FA078EAA1D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadgerCommonLibrary", "BadgerCommonLibrary\BadgerCommonLibrary.csproj", "{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadgerPluginExtender", "BadgerPluginExtender\BadgerPluginExtender.csproj", "{37891904-B191-4B4A-8699-91CFD9CE08DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetaUserAddons", "BetaUserAddons\BetaUserAddons.csproj", "{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +47,22 @@ Global
 		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
 		{3791E4D9-286F-4C7A-A9F6-DD4E53F36605}.Release-cli|Any CPU.Build.0 = Release|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Debug-cli|Any CPU.ActiveCfg = Debug|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Debug-cli|Any CPU.Build.0 = Debug|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
+		{37891904-B191-4B4A-8699-91CFD9CE08DA}.Release-cli|Any CPU.Build.0 = Release|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Debug-cli|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Debug-cli|Any CPU.Build.0 = Debug|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
+		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Release-cli|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

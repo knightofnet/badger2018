@@ -35,8 +35,8 @@ namespace BadgerUpdater.business
         private static readonly Option _configFilePathOption = new Option()
         {
             ShortOpt = "f",
-            LongOpt = "config-filepath",
-            Description = "Chemin vers le fichier XML de mise à jour",
+            LongOpt = "upd-filepath",
+            Description = "Chemin vers le fichier XML de mise à jour, ou du fichier exe pour charger une mise à jour",
             HasArgs = true,
             IsMandatory = true,
             Name = "configFilePath"
@@ -106,7 +106,17 @@ namespace BadgerUpdater.business
                 {
                     throw new CliParsingException(String.Format("Le fichier indiqué avec le paramètre -{0} n'existe pas. ({1})", _configFilePathOption.ShortOpt.ToString(), configFilePah));
                 }
-                appArgsDto.XmlUpdateFile = configFilePah;
+
+                if (configFilePah.EndsWith(".exe"))
+                {
+                    appArgsDto.IsSideloadUpdate = true;
+                    appArgsDto.UpdateExeFile = configFilePah;
+                }
+                else
+                {
+                    appArgsDto.IsSideloadUpdate = false;
+                    appArgsDto.XmlUpdateFile = configFilePah;
+                }
             }
 
             if (HasOption(_appFilePathOption, dictionary))
@@ -129,7 +139,7 @@ namespace BadgerUpdater.business
 
             appArgsDto.LaunchAppIfSucess = HasOption(_launchAppIfSucessOption, dictionary);
 
-
+            appArgsDto.IsForceDebug = HasOption(_forceLogDebugOption, dictionary);
 
             return appArgsDto;
         }

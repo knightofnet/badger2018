@@ -51,7 +51,7 @@ namespace BadgerCommonLibrary.business
             IsUpdaterFileLoaded = false;
             if (!fileInfo.Exists)
             {
-                _logger.Error("Le fichier contenant les mise à jour n'existe pas ou n'est pas lisible. Fichier {}", filepath);
+                _logger.Error("Le fichier contenant les mise à jour n'existe pas ou n'est pas lisible. Fichier {}", filepath ?? "null");
                 throw new FileNotFoundException(filepath);
             }
 

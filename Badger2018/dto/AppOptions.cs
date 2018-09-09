@@ -130,6 +130,8 @@ namespace Badger2018.dto
 
         public bool IsStopCptAtMax { get; set; }
 
+        public bool IsStopCptAtMaxDemieJournee { get; set; }
+
         public bool IsAdd5minCpt { get; set; }
 
         public String UrlMesPointages { get; set; }

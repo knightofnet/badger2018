@@ -40,7 +40,7 @@ namespace Badger2018.business
                 if (Pwin.EtatBadger != -1)
                 {
                     _logger.Info("Sauvegarde de la session (EtatBadger: {0})", Pwin.EtatBadger);
-                    Pwin.SaveCurrentDayTimes();
+                    Pwin.PointageXml.SaveCurrentDayTimes();
                 }
             };
         }
@@ -81,7 +81,8 @@ namespace Badger2018.business
                 }
                 catch (Exception ex)
                 {
-
+                    ExceptionHandlingUtils.ShowStackTrace = true;
+                    ExceptionHandlingUtils.LogAndHideException(ex);
                 }
             }
 
@@ -176,6 +177,7 @@ namespace Badger2018.business
 
                 if (args.Error == null)
                 {
+                    _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
                     afterWork(dtNow);
                     _actionAfterBadgeage();
                     if (progress != null)
@@ -205,6 +207,7 @@ namespace Badger2018.business
                     if (response == EnumErrorCodeRetour.ANNULER)
                     {
                         _logger.Info("Erreur lors du badgeage : aucune action");
+                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork(null)");
                         afterWork(null);
                         if (progress != null)
                         {
@@ -220,6 +223,7 @@ namespace Badger2018.business
                         Pwin.RestoreWindow();
                         DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
                         _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
+                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
                         afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
                         if (progress != null)
                         {
@@ -235,6 +239,7 @@ namespace Badger2018.business
                         Pwin.RestoreWindow();
                         DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
                         _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
+                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
                         afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
                         if (progress != null)
                         {
@@ -250,6 +255,7 @@ namespace Badger2018.business
                         Pwin.RestoreWindow();
                         DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
                         _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
+                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
                         afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
                         if (progress != null)
                         {
@@ -360,7 +366,7 @@ namespace Badger2018.business
         private void BadgeageEtapeP1(bool forceWhenMsg)
         {
             DateTime tempPauseEndTime = AppDateUtils.DtNow().AtSec(Cst.SecondeOffset);
-            TimeSpan tmpsPause = tempPauseEndTime - Pwin.Times.PauseStartDateTime;
+            TimeSpan tmpsPause = tempPauseEndTime - Pwin.Times.PlageTravMatin.Start;
 
             // Si la pause du midi fait moins de 45min, alors on mets 45 min d'office.
             if (!forceWhenMsg && tmpsPause.CompareTo(Pwin.PrgOptions.TempsMinPause) < 0)
@@ -391,9 +397,9 @@ namespace Badger2018.business
                     _logger.Error("Badgeage non effectué, ou incomplet");
                     return;
                 }
-                Pwin.Times.PauseEndDateTime = b.Value;
+                Pwin.Times.PlageTravAprem.Start = b.Value;
 
-                tmpsPause = Pwin.Times.PauseEndDateTime - Pwin.Times.PauseStartDateTime;
+                tmpsPause = Pwin.Times.PlageTravAprem.Start - Pwin.Times.PlageTravMatin.EndOrDft;
 
                 Pwin.EtatBadger = 2;
 
@@ -431,7 +437,7 @@ namespace Badger2018.business
                 }
 
 
-                Pwin.Times.PauseStartDateTime = b.Value.AtSec(Cst.SecondeOffset);
+                Pwin.Times.PlageTravMatin.EndOrDft = b.Value.AtSec(Cst.SecondeOffset);
 
                 Pwin.EtatBadger = 1;
 
@@ -455,10 +461,10 @@ namespace Badger2018.business
                     _logger.Error("Badgeage non effectué, ou incomplet");
                     return;
                 }
-                Pwin.Times.StartDateTime = b.Value.AtSec(Cst.SecondeOffset);
-                if (Pwin.Times.StartDateTime.TimeOfDay.CompareTo(Pwin.PrgOptions.HeureMinJournee) < 0)
+                Pwin.Times.PlageTravMatin.Start = b.Value.AtSec(Cst.SecondeOffset);
+                if (Pwin.Times.PlageTravMatin.Start.TimeOfDay.CompareTo(Pwin.PrgOptions.HeureMinJournee) < 0)
                 {
-                    Pwin.Times.StartDateTime = Pwin.Times.StartDateTime.ChangeTime(Pwin.PrgOptions.HeureMinJournee);
+                    Pwin.Times.PlageTravMatin.Start = Pwin.Times.PlageTravMatin.Start.ChangeTime(Pwin.PrgOptions.HeureMinJournee);
                 }
                 Pwin.EtatBadger = 0;
                 Pwin.AdaptUiFromState(Pwin.EtatBadger, null);
@@ -483,7 +489,7 @@ namespace Badger2018.business
                     _logger.Error("Badgeage non effectué, ou incomplet");
                     return;
                 }
-                Pwin.Times.EndDateTime = b.Value.AtSec(Cst.SecondeOffset);
+                Pwin.Times.PlageTravAprem.EndOrDft = b.Value.AtSec(Cst.SecondeOffset);
 
                 Pwin.EtatBadger = 3;
                 Pwin.AdaptUiFromState(Pwin.EtatBadger, null);

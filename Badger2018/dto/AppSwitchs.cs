@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Badger2018.constants;
 
 namespace Badger2018.dto
 {
     public class AppSwitchs
     {
+        private EnumStatePause _pauseCurrentState;
 
         // public bool IsEndNotifierPlageFixeAprem { get; set; }
         //
@@ -30,5 +32,27 @@ namespace Badger2018.dto
         public bool CanCheckUpdate { get; set; }
         public bool IsSoundOver { get; set; }
         public bool IsShowOnStartupDone { get; internal set; }
+
+        public EnumStatePause PauseCurrentState
+        {
+            get { return _pauseCurrentState; }
+            set
+            {
+                _pauseCurrentState = value;
+                if (OnPauseCurrentStateChange != null)
+                {
+                    OnPauseCurrentStateChange(value);
+                }
+            }
+        }
+
+        public event Action<EnumStatePause> OnPauseCurrentStateChange;
+
+
+        public AppSwitchs()
+        {
+            PauseCurrentState = EnumStatePause.NONE;
+
+        }
     }
 }

@@ -14,8 +14,9 @@ namespace Badger2018.constants
 
 
         public const string TimeSpanFormat = "hh':'mm";
+        public const string TimeSpanFormatWithH = "hh'h'mm";
 
-        public const string TimeSpanAltFormat = "h':'mm";
+        public const string TimeSpanAltFormat = "h'h'mm";
 
         public const string MatineeStartStr = "Matiné: {0}";
 

@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using AryxDevViewLibrary.utils;
 using Badger2018.constants;
 using Badger2018.utils;
 
@@ -85,14 +86,15 @@ namespace Badger2018.views
         {
             if (isWarning)
             {
-                imgA.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "sign-warning-icon.png");
-            } else
+                imgA.Source = PresentationImageUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "sign-warning-icon.png");
+            }
+            else
             {
-                imgA.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "sign-error-icon.png");
+                imgA.Source = PresentationImageUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "sign-error-icon.png");
             }
         }
 
-        public static EnumErrorCodeRetour ShowMessageError(Exception e, DateTime dt, Window progessWindow, bool isConsultRecommand=false )
+        public static EnumErrorCodeRetour ShowMessageError(Exception e, DateTime dt, Window progessWindow, bool isConsultRecommand = false)
         {
             MessageErrorBadgeageView m = new MessageErrorBadgeageView();
             m.SetIsWarning(isConsultRecommand);
@@ -101,9 +103,9 @@ namespace Badger2018.views
             m.WindowStartupLocation = WindowStartupLocation.Manual;
             m.Top = progessWindow.Top;
             m.Left = progessWindow.Left + progessWindow.Width + 10;
-            if(isConsultRecommand) { m.MarkConsultAsRecommend(); };
+            if (isConsultRecommand) { m.MarkConsultAsRecommend(); };
 
-            m.ShowDialog();            
+            m.ShowDialog();
 
             if (m.CodeRetour == null)
             {
@@ -113,6 +115,6 @@ namespace Badger2018.views
 
         }
 
-     
+
     }
 }

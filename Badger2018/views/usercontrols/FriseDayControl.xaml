@@ -3,9 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Height="150" Width="350">
-    <Grid Background="White">
-        <Label Content="Premier badgeage" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+             mc:Ignorable="d" Height="66.8" Width="350">
+    <Grid x:Name="mainGrid" Background="White">
+        <Label x:Name="lblHours" Content="28h59" HorizontalAlignment="Left" Margin="10,10,0,10" Width="56" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Rectangle x:Name="rectSep" Fill="Tomato" HorizontalAlignment="Left" Margin="66,10,0,10"  Width="1"/>
+        <Label x:Name="lblName" Content="Premier badgeage du jour" Margin="72,10,10.4,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblMoreStr" Content="Matinée" Margin="72,36,10.4,0" VerticalAlignment="Top"/>
+        <Rectangle x:Name="rectColor" Fill="#FFF4F4F5" HorizontalAlignment="Left" Margin="0,0,0,0.2" Width="6"/>
 
     </Grid>
 </UserControl>

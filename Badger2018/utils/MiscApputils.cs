@@ -30,26 +30,10 @@ namespace Badger2018.utils
     public class MiscAppUtils
     {
         private static readonly Logger _logger = Logger.LastLoggerInstance;
-        public static bool CsvStringContains(string toSearch, string csvSepString)
-        {
-            string[] splitted = csvSepString.Split(';');
-            return splitted.Any<string>(r => r.Equals(toSearch));
-        }
 
 
-        public static ImageSource DoGetImageSourceFromResource(string psAssemblyName, string psResourceName)
-        {
-            Uri oUri = new Uri(@"pack://application:,,,/" + psAssemblyName + ";component/Resources/" + psResourceName, UriKind.RelativeOrAbsolute);
 
-            return new BitmapImage(oUri);
-        }
 
-        public static Icon DoGetIconSourceFromResource(string psAssemblyName, string psResourceName)
-        {
-            Uri oUri = new Uri(@"pack://application:,,,/" + psAssemblyName + ";component/Resources/" + psResourceName, UriKind.RelativeOrAbsolute);
-
-            return new Icon(Application.GetResourceStream(oUri).Stream);
-        }
 
         public static string GetFileNamePointageCurrentDay(DateTime refDtTime)
         {
@@ -126,96 +110,7 @@ namespace Badger2018.utils
             }
         }
 
-        public static MessageBoxResult TopMostMessageBox(String msg, String title, MessageBoxButton buttonParam,
-            MessageBoxImage iconParam)
-        {
-            MessageBoxButtons button = MessageBoxButtons.OK;
-            switch (buttonParam)
-            {
-                case MessageBoxButton.OK:
-                    button = MessageBoxButtons.OK;
-                    break;
-                case MessageBoxButton.OKCancel:
-                    button = MessageBoxButtons.OKCancel;
-                    break;
-                case MessageBoxButton.YesNo:
-                    button = MessageBoxButtons.YesNo;
-                    break;
-                case MessageBoxButton.YesNoCancel:
-                    button = MessageBoxButtons.YesNoCancel;
-                    break;
-            }
 
-            MessageBoxIcon icon = MessageBoxIcon.None;
-            switch (iconParam)
-            {
-                case MessageBoxImage.Asterisk:
-                    icon = MessageBoxIcon.Asterisk;
-                    break;
-                case MessageBoxImage.Error:
-                    icon = MessageBoxIcon.Error;
-                    break;
-                /* case MessageBoxImage.Exclamation:
-                     icon = MessageBoxIcon.Exclamation;
-                     break;*/
-                /*case MessageBoxImage.Hand:
-                    icon = MessageBoxIcon.Hand;
-                    break;*/
-                /* case MessageBoxImage.Information:
-                     icon = MessageBoxIcon.Information;
-                     break;*/
-                case MessageBoxImage.None:
-                    icon = MessageBoxIcon.None;
-                    break;
-                case MessageBoxImage.Question:
-                    icon = MessageBoxIcon.Question;
-                    break;
-                /*case MessageBoxImage.Stop:
-                    icon = MessageBoxIcon.Stop;
-                    break;*/
-                case MessageBoxImage.Warning:
-                    icon = MessageBoxIcon.Warning;
-                    break;
-                default:
-                    icon = MessageBoxIcon.None;
-                    break;
-
-            }
-
-            return TopMostMessageBox(msg, title, button, icon);
-
-        }
-
-        [Obsolete("Not recommended direct usage.")]
-        public static MessageBoxResult TopMostMessageBox(String msg, String title, MessageBoxButtons button, MessageBoxIcon icon)
-        {
-            var r = MessageBox.Show(new Form { TopMost = true },
-                    msg,
-                    title,
-                    button,
-                    icon
-                    );
-
-            switch (r)
-            {
-                case DialogResult.Cancel:
-                    return MessageBoxResult.Cancel;
-
-                case DialogResult.No:
-                    return MessageBoxResult.No;
-
-                case DialogResult.OK:
-                    return MessageBoxResult.OK;
-
-                case DialogResult.None:
-                    return MessageBoxResult.None;
-
-                case DialogResult.Yes:
-                    return MessageBoxResult.Yes;
-            }
-
-            return MessageBoxResult.None;
-        }
 
         public static Task Delay(int milliseconds)
         {
@@ -226,8 +121,11 @@ namespace Badger2018.utils
 
         public static void RecDelayAction(Action<Task> stepAction, int numberAction, int timeoutStep, Action<Task> finalAction)
         {
+            _logger.Debug("RecDelayAction");
+
             MiscAppUtils.Delay(0).ContinueWith(delegate
             {
+                _logger.Debug("RecDelayAction.Inner");
                 stepAction.Invoke(null);
                 numberAction--;
                 if (numberAction > 0)
@@ -241,9 +139,11 @@ namespace Badger2018.utils
                 {
                     finalAction.Invoke(null);
                 }
+                _logger.Debug("FIN - RecDelayAction.Inner");
             }
                 );
 
+            _logger.Debug("FIN - RecDelayAction");
         }
     }
 }

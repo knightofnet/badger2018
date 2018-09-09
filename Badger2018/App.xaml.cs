@@ -7,7 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.business;
@@ -18,6 +21,8 @@ using Badger2018.views;
 using BadgerCommonLibrary.business;
 using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
+using BadgerPluginExtender;
+using BadgerPluginExtender.dto;
 
 namespace Badger2018
 {
@@ -28,9 +33,11 @@ namespace Badger2018
     {
         private static Logger _logger = new Logger(CommonCst.AppLogFile, CommonCst.ConsoleLogLvl, CommonCst.FileLogLvl, "1 Mo");
 
+
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
 
             _logger.Info("/***********************");
             _logger.Info("*  Application lancée (v. {0})", Assembly.GetExecutingAssembly().GetName().Version);
@@ -43,12 +50,19 @@ namespace Badger2018
 
             AppOptions prgOptions = null;
             UpdaterManager updaterManager = null;
+            PluginManager pManager = null;
+
+            // BetaSpec(prgOptions);
+
 
             /*
              * Bloc chargement de la configuration et divers traitement pré-interface
              */
             try
             {
+                pManager = new PluginManager();
+                pManager.LoadPluginsFromDir("dll");
+
 
                 Cst.ApplicationDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
 
@@ -100,7 +114,7 @@ namespace Badger2018
             try
             {
 
-                MainWindow mainWindow = new MainWindow(prgOptions, updaterManager);
+                MainWindow mainWindow = new MainWindow(prgOptions, updaterManager, pManager);
                 mainWindow.ShowDialog();
 
             }
@@ -117,6 +131,9 @@ namespace Badger2018
             Environment.Exit(EnumExitCodes.OK.ExitCodeInt);
 
         }
+
+
+
 
         private static void PreLoadActions(AppArgsDto argsDto, AppOptions prgOptions)
         {
@@ -197,6 +214,30 @@ namespace Badger2018
                 ex,
                EnumExitCodes.M_ERROR_UNKNOW_IN_APP.ExitCodeInt,
                 "Erreur non catchée lors du programme");
+
+        }
+
+        private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs args)
+        {
+            AggregateException ex = args.Exception;
+
+            StringBuilder strException = new StringBuilder();
+            foreach (Exception exInner in ex.InnerExceptions)
+            {
+                ExceptionHandlingUtils.LogAndHideException(exInner, "InnerException");
+                strException.AppendLine(String.Format("Exception: {0}", exInner.GetType().Name));
+                strException.AppendLine(String.Format("Message: {0}", exInner.Message));
+                strException.AppendLine(String.Format("StackTrace: {0}", exInner.StackTrace));
+                strException.AppendLine("---");
+            }
+
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                new Action(() =>
+                {
+                    ExceptionMsgBoxView.ShowException(ex.Flatten(), "Erreur non prévue" + Environment.NewLine + "---" + Environment.NewLine + strException);
+                    Environment.Exit(EnumExitCodes.U_ERROR_UNKNOW_IN_APP.ExitCodeInt);
+                })
+                );
 
         }
     }

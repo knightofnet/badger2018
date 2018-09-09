@@ -54,10 +54,10 @@ namespace Badger2018.views
             }
             cboxTyJournee.SelectedItem = tyJournees.Libelle;
 
-            c0.SetTextTime(Times.StartDateTime);
-            c1.SetTextTime(Times.PauseStartDateTime);
-            c2.SetTextTime(Times.PauseEndDateTime);
-            c3.SetTextTime(Times.EndDateTime);
+            c0.SetTextTime(Times.PlageTravMatin.Start);
+            c1.SetTextTime(Times.PlageTravMatin.EndOrDft);
+            c2.SetTextTime(Times.PlageTravAprem.Start);
+            c3.SetTextTime(Times.PlageTravAprem.EndOrDft);
 
 
             EnumTypesJournees locTyJournees = TypeJournee;
@@ -243,10 +243,10 @@ namespace Badger2018.views
 
                 DateTime dtNow = AppDateUtils.DtNow();
 
-                Times.StartDateTime = c0.GetStrictDateTime().ChangeDate(dtNow);
-                Times.PauseStartDateTime = c1.GetStrictDateTime().ChangeDate(dtNow);
-                Times.PauseEndDateTime = c2.GetStrictDateTime().ChangeDate(dtNow);
-                Times.EndDateTime = c3.GetStrictDateTime().ChangeDate(dtNow);
+                Times.PlageTravMatin.Start = c0.GetStrictDateTime().ChangeDate(dtNow);
+                Times.PlageTravMatin.End = c1.GetStrictDateTime().ChangeDate(dtNow);
+                Times.PlageTravAprem.Start = c2.GetStrictDateTime().ChangeDate(dtNow);
+                Times.PlageTravAprem.End = c3.GetStrictDateTime().ChangeDate(dtNow);
 
                 if (TypeJournee == EnumTypesJournees.Complete)
                 {

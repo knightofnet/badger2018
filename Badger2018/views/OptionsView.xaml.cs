@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -26,6 +27,7 @@ using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
+using BadgerCommonLibrary.utils;
 using IWshRuntimeLibrary;
 using CheckBox = System.Windows.Controls.CheckBox;
 using File = System.IO.File;
@@ -109,9 +111,9 @@ namespace Badger2018.views
                 }
             }
 
-            using (CoreAudioController audioController = new CoreAudioController())
+            using (CoreAudioCtrlerFactory audioController = Pwin.CoreAudioFactory)
             {
-                foreach (string sndDevFullName in audioController.GetPlaybackDevices().Select(r => r.FullName))
+                foreach (string sndDevFullName in audioController.CoreAudioCtrler.GetPlaybackDevices().Select(r => r.FullName))
                 {
                     cboxSonDevice.Items.Add(sndDevFullName);
                 }
@@ -156,7 +158,7 @@ namespace Badger2018.views
 
         private void LoadOptionsFrom(AppOptions opt)
         {
-            tboxPfMS.Text = opt.PlageFixeMatinStart.ToString(Cst.TimeSpanFormat);
+            tboxPfMS.Text = opt.PlageFixeMatinStart.ToString(Cst.TimeSpanFormatWithH);
             tboxPfME.Text = opt.PlageFixeMatinFin.ToString(Cst.TimeSpanFormat);
 
             tboxPfAS.Text = opt.PlageFixeApremStart.ToString(Cst.TimeSpanFormat);
@@ -219,6 +221,7 @@ namespace Badger2018.views
             txtN2.IsEnabled = opt.IsNotif2Enabled;
 
             chkStopAfterMaxTravTime.IsChecked = opt.IsStopCptAtMax;
+            chkStopAfterMaxTravTimeJournee.IsChecked = opt.IsStopCptAtMaxDemieJournee;
             chkCount5minAdded.IsChecked = opt.IsAdd5minCpt;
 
             chkPlaySoundBeforePauseMidi.IsChecked = opt.IsPlaySoundAtLockMidi;
@@ -279,6 +282,7 @@ namespace Badger2018.views
 
             PostActions();
 
+            Pwin.CoreAudioFactory.IsDisposed = true;
 
             Close();
 
@@ -330,7 +334,7 @@ namespace Badger2018.views
             }
 
             // SoundPlayedAtLockMidiVolume
-            int soundVol = (int) sliderVolume.Value;
+            int soundVol = (int)sliderVolume.Value;
             if (soundVol != OrigOptions.SoundPlayedAtLockMidiVolume)
             {
                 HasChangeOption = true;
@@ -472,7 +476,7 @@ namespace Badger2018.views
             {
                 tboxTsStr = tboxTsN1.Text;
                 tboxTs = new TimeSpan();
-                if (TimeSpan.TryParse(tboxTsStr, out tboxTs))
+                if (TryParseAlt(tboxTsStr, out tboxTs))
                 {
                     if (!tboxTs.Equals(OrigOptions.Notif1Time))
                     {
@@ -493,7 +497,7 @@ namespace Badger2018.views
             {
                 tboxTsStr = tboxTsN2.Text;
                 tboxTs = new TimeSpan();
-                if (TimeSpan.TryParse(tboxTsStr, out tboxTs))
+                if (TryParseAlt(tboxTsStr, out tboxTs))
                 {
                     if (!tboxTs.Equals(OrigOptions.Notif2Time))
                     {
@@ -572,6 +576,11 @@ namespace Badger2018.views
             if (NewOptions.BrowserIndex == EnumBrowser.FF)
             {
                 String tempExecFf = tboxExecFf.Text;
+                if (tempExecFf.EndsWith("\"") || tempExecFf.StartsWith("\""))
+                {
+                    tempExecFf = tempExecFf.Trim('\"');
+                    tboxExecFf.Text = tempExecFf;
+                }
                 if ((tempExecFf == null || tempExecFf.IsEmpty()) || !File.Exists(tempExecFf))
                 {
                     MessageBox.Show("Le chemin vers l'exécutable FF n'est pas correct.");
@@ -683,6 +692,14 @@ namespace Badger2018.views
                 NewOptions.IsStopCptAtMax = chkStopAfterMaxTravTime.IsChecked.Value;
             }
 
+            // Option IsStopCptAtMaxDemieJournee
+            if (chkStopAfterMaxTravTimeJournee.IsChecked != null &&
+                chkStopAfterMaxTravTimeJournee.IsChecked.Value != OrigOptions.IsStopCptAtMaxDemieJournee)
+            {
+                HasChangeOption = true;
+                NewOptions.IsStopCptAtMaxDemieJournee = chkStopAfterMaxTravTimeJournee.IsChecked.Value;
+            }
+
             // Option IsAdd5minCpt
             if (chkCount5minAdded.IsChecked != null &&
                 chkCount5minAdded.IsChecked.Value != OrigOptions.IsAdd5minCpt)
@@ -698,7 +715,7 @@ namespace Badger2018.views
 
             // Plage fixe matin start
             TimeSpan newTboxPfMS = new TimeSpan();
-            if (TimeSpan.TryParse(tboxPfMS.Text, out newTboxPfMS))
+            if (TryParseAlt(tboxPfMS.Text, out newTboxPfMS))
             {
                 if (!newTboxPfMS.Equals(OrigOptions.PlageFixeMatinStart))
                 {
@@ -715,7 +732,7 @@ namespace Badger2018.views
 
             // Plage fixe matin fin
             TimeSpan newTboxPfME = new TimeSpan();
-            if (TimeSpan.TryParse(tboxPfME.Text, out newTboxPfME))
+            if (TryParseAlt(tboxPfME.Text, out newTboxPfME))
             {
                 if (!newTboxPfME.Equals(OrigOptions.PlageFixeMatinFin))
                 {
@@ -732,7 +749,7 @@ namespace Badger2018.views
 
             // Plage fixe aprem start
             TimeSpan newTboxPfAS = new TimeSpan();
-            if (TimeSpan.TryParse(tboxPfAS.Text, out newTboxPfAS))
+            if (TryParseAlt(tboxPfAS.Text, out newTboxPfAS))
             {
                 if (!newTboxPfAS.Equals(OrigOptions.PlageFixeApremStart))
                 {
@@ -749,7 +766,7 @@ namespace Badger2018.views
 
             // Plage fixe aprem fin
             TimeSpan newTboxPfAE = new TimeSpan();
-            if (TimeSpan.TryParse(tboxPfAE.Text, out newTboxPfAE))
+            if (TryParseAlt(tboxPfAE.Text, out newTboxPfAE))
             {
                 if (!newTboxPfAE.Equals(OrigOptions.PlageFixeApremFin))
                 {
@@ -766,7 +783,7 @@ namespace Badger2018.views
 
             // tps pause
             TimeSpan newTboxTpause = new TimeSpan();
-            if (TimeSpan.TryParse(tboxPtmpsPause.Text, out newTboxTpause))
+            if (TryParseAlt(tboxPtmpsPause.Text, out newTboxTpause))
             {
                 if (!newTboxTpause.Equals(OrigOptions.TempsMinPause))
                 {
@@ -783,7 +800,7 @@ namespace Badger2018.views
 
             // tps max trav
             TimeSpan newTboxTmax = new TimeSpan();
-            if (TimeSpan.TryParse(tboxMaxTravTime.Text, out newTboxTmax))
+            if (TryParseAlt(tboxMaxTravTime.Text, out newTboxTmax))
             {
                 if (!newTboxTmax.Equals(OrigOptions.TempsMaxJournee))
                 {
@@ -800,7 +817,7 @@ namespace Badger2018.views
 
             // tps max trav
             TimeSpan newTboxTmaxD = new TimeSpan();
-            if (TimeSpan.TryParse(tboxMaxTravTimeDemi.Text, out newTboxTmaxD))
+            if (TryParseAlt(tboxMaxTravTimeDemi.Text, out newTboxTmaxD))
             {
                 if (!newTboxTmaxD.Equals(OrigOptions.TempsMaxDemieJournee))
                 {
@@ -817,7 +834,7 @@ namespace Badger2018.views
 
             // tps min trav
             TimeSpan newTboxTmin = new TimeSpan();
-            if (TimeSpan.TryParse(tboxMinTravTime.Text, out newTboxTmin))
+            if (TryParseAlt(tboxMinTravTime.Text, out newTboxTmin))
             {
                 if (newTboxTmin.CompareTo(NewOptions.PlageFixeMatinStart) >= 0)
                 {
@@ -840,7 +857,7 @@ namespace Badger2018.views
 
             // tboxTpsReglementaireDemieJournee
             TimeSpan newTboxTpsRegl = new TimeSpan();
-            if (TimeSpan.TryParse(tboxTpsReglementaireDemieJournee.Text, out newTboxTpsRegl))
+            if (TryParseAlt(tboxTpsReglementaireDemieJournee.Text, out newTboxTpsRegl))
             {
                 if (newTboxTpsRegl.CompareTo(NewOptions.TempsMaxDemieJournee) >= 0)
                 {
@@ -880,6 +897,20 @@ namespace Badger2018.views
                 return true;
             }
             return false;
+        }
+
+        public static bool TryParseAlt(string text, out TimeSpan newTboxPfAS)
+        {
+            if (TimeSpan.TryParse(text, out newTboxPfAS))
+            {
+                return true;
+            }
+
+            return TimeSpan.TryParseExact(text, new string[] { Cst.TimeSpanFormat, Cst.TimeSpanFormatWithH }, CultureInfo.InvariantCulture,
+                       TimeSpanStyles.None,
+                       out newTboxPfAS);
+
+
         }
 
         private void PostActions()
@@ -1110,6 +1141,10 @@ namespace Badger2018.views
                 return;
             }
 
+            CoreAudioController CoreAudioCtrler = Pwin.CoreAudioFactory.CoreAudioCtrler;
+
+
+
             Pwin.PrgSwitch.IsSoundOver = false;
 
             bool wasMuted = false;
@@ -1118,17 +1153,17 @@ namespace Badger2018.views
             IDevice originalDftDevice = null;
 
 
-            originalDftDevice = Pwin.CoreAudioCtrler.GetPlaybackDevices().FirstOrDefault(r => r.FullName.Equals(Pwin.CoreAudioCtrler.DefaultPlaybackDevice.FullName));
+            originalDftDevice = CoreAudioCtrler.GetPlaybackDevices().FirstOrDefault(r => r.FullName.Equals(CoreAudioCtrler.DefaultPlaybackDevice.FullName));
             _logger.Debug("OrigDftDevice: {0}", originalDftDevice.FullName);
 
-            IDevice device = Pwin.CoreAudioCtrler.GetPlaybackDevices().FirstOrDefault(r => r.FullName.Equals(deviceFullName)) ??
+            IDevice device = CoreAudioCtrler.GetPlaybackDevices().FirstOrDefault(r => r.FullName.Equals(deviceFullName)) ??
                              originalDftDevice;
 
             _logger.Debug("DeviceChoosed: {0}", device.FullName);
 
             if (!device.Equals(originalDftDevice))
             {
-                Pwin.CoreAudioCtrler.SetDefaultDevice(device);
+                CoreAudioCtrler.SetDefaultDevice(device);
                 wasDftDeviceChanged = true;
                 _logger.Debug("2-OrigDftDevice: {0}", originalDftDevice.FullName);
             }
@@ -1162,14 +1197,15 @@ namespace Badger2018.views
                     if (wasDftDeviceChanged)
                     {
 
-                        Pwin.CoreAudioCtrler.SetDefaultDevice(originalDftDevice);
+                        CoreAudioCtrler.SetDefaultDevice(originalDftDevice);
                         _logger.Debug("3-OrigDftDevice: {0}", originalDftDevice.FullName);
 
-                        _logger.Debug("Real DftDevice: {0}", Pwin.CoreAudioCtrler.DefaultPlaybackDevice.FullName);
+                        _logger.Debug("Real DftDevice: {0}", CoreAudioCtrler.DefaultPlaybackDevice.FullName);
 
                     }
 
                     Pwin.PrgSwitch.IsSoundOver = true;
+                    Pwin.CoreAudioFactory.IsDisposed = true;
                 });
             };
 

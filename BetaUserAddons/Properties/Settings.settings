@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BetaUserAddons.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="specUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Z016287;Z017855;Z017405;ARyx;Z015828</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

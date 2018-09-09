@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
+using AryxDevViewLibrary.utils;
 using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
@@ -158,7 +159,7 @@ namespace Badger2018.views
                 {
                     var msg = String.Format("L'{0} a réussi.", IsImportJob ? "importation" : "exportation");
                     _logger.Info(msg);
-                    MiscAppUtils.TopMostMessageBox(msg,
+                    MessageBoxUtils.TopMostMessageBox(msg,
                         "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
