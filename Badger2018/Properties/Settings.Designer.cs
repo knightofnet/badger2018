@@ -672,5 +672,17 @@ namespace Badger2018.Properties {
                 this["IsStopCptAtMaxDemieJournee"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int TypeBadgeageBtnM {
+            get {
+                return ((int)(this["TypeBadgeageBtnM"]));
+            }
+            set {
+                this["TypeBadgeageBtnM"] = value;
+            }
+        }
     }
 }

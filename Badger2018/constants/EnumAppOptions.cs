@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using BadgerCommonLibrary.constants;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.constants
 {
@@ -69,6 +71,7 @@ namespace Badger2018.constants
 
         public static readonly EnumAppOptions TipsLastInt = new EnumAppOptions("TipsLastInt", typeof(int), "1", false);
         public static readonly EnumAppOptions ShowTipsAtStart = new EnumAppOptions("ShowTipsAtStart", typeof(bool), "False", false);
+        public static readonly EnumAppOptions TypeBadgeageBtnM = new EnumAppOptions("TypeBadgeageBtnM", typeof(IEnumSerializableWithIndex<EnumActionBtnBadgeM>), "" + EnumActionBtnBadgeM.BadgerInterval.GetIndex(), false);
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -115,6 +118,7 @@ namespace Badger2018.constants
                 yield return DeltaAutoBadgeageMinute;
                 yield return IsDailyDisableAutoBadgeMerid;
                 yield return IsStopCptAtMax;
+                yield return IsStopCptAtMaxDemieJournee;
                 yield return IsAdd5MinCpt;
                 yield return UrlMesPointages;
                 yield return UrlSirhius;
@@ -126,6 +130,7 @@ namespace Badger2018.constants
                 yield return UpdateXmlUri;
                 yield return TipsLastInt;
                 yield return ShowTipsAtStart;
+                yield return TypeBadgeageBtnM;
 
 
             }

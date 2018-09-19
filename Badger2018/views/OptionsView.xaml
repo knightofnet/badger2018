@@ -25,7 +25,7 @@
                     <Label Content="Tps travail maximum par jour :" HorizontalAlignment="Left" Margin="10,122,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="tboxMaxTravTime" Height="23" TextWrapping="Wrap" Text="09:30" Margin="10,148,330,0" VerticalAlignment="Top"/>
 
-                    <CheckBox x:Name="chkStopAfterMaxTravTime" Margin="78,148,0,0" VerticalAlignment="Top" ToolTip="Une fois le temps de travail maximum par jour atteint, le compteur arrête de s'incrémenter" HorizontalAlignment="Left" Width="91" Height="28">
+                    <CheckBox x:Name="chkStopAfterMaxTravTime" Margin="78,148,0,0" VerticalAlignment="Top" ToolTip="Une fois le temps de travail maximum par jour atteint, le compteur arrête de s'incrémenter" HorizontalAlignment="Left" Width="108" Height="28">
                         <AccessText TextWrapping="Wrap" Height="39">Borner le tps travaillé</AccessText>
                     </CheckBox>
 
@@ -39,7 +39,7 @@
                     <Label Content="Tps Travail par 1/2 journée :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="167" Margin="191,68,0,0"/>
                     <TextBox x:Name="tboxTpsReglementaireDemieJournee" HorizontalAlignment="Left" Height="23" Margin="191,94,0,0" TextWrapping="Wrap" Text="23:45" VerticalAlignment="Top" Width="63" />
                    
-                    <CheckBox x:Name="chkStopAfterMaxTravTimeJournee" Margin="259,148,0,0" VerticalAlignment="Top" ToolTip="Une fois le temps de travail maximum par jour atteint, le compteur arrête de s'incrémenter" HorizontalAlignment="Left" Width="91" Height="28">
+                    <CheckBox x:Name="chkStopAfterMaxTravTimeJournee" Margin="259,148,0,0" VerticalAlignment="Top" ToolTip="Une fois le temps de travail maximum par jour atteint, le compteur arrête de s'incrémenter" HorizontalAlignment="Left" Width="133" Height="28">
                         <AccessText TextWrapping="Wrap" Height="39">Borner le tps travaillé</AccessText>
                     </CheckBox>
 

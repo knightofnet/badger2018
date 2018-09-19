@@ -266,7 +266,7 @@ args.Key == Key.F12 ||
 
             };
 
-            btnModTimes.Visibility = prgOptions.IsFirstRun ? Visibility.Visible : Visibility.Hidden;
+            //   btnModTimes.Visibility = prgOptions.IsFirstRun ? Visibility.Visible : Visibility.Hidden;
 
             EtatBadger = -1;
             TypeJournee = EnumTypesJournees.Complete;
@@ -432,7 +432,7 @@ args.Key == Key.F12 ||
 
             MenuItem badgerShowPausesItem = new MenuItem();
             badgerShowPausesItem.Header = "Consulter les pauses";
-            badgerShowPausesItem.Click += (sender, args) => ShowDayDetails();
+            badgerShowPausesItem.Click += (sender, args) => LoadDetailView();
 
             System.Windows.Controls.ContextMenu btnMContextMenu = new System.Windows.Controls.ContextMenu();
             btnMContextMenu.Items.Add(badgerTitleItem);
@@ -554,6 +554,8 @@ args.Key == Key.F12 ||
 
         private void btnBadger_Click(object sender, RoutedEventArgs e)
         {
+            btnBadger.IsEnabled = false;
+
             if (EtatBadger == -1)
             {
                 bool isSpecBadgeage = BadgeageM1Manuell();
@@ -571,11 +573,10 @@ args.Key == Key.F12 ||
                 PrgOptions.LastBadgeDelay = 0;
             }
 
-            btnBadger.IsEnabled = false;
+
             BadgerWorker.BadgeFullAction();
 
             PrgOptions.LastBadgeDelay = origDelay;
-            btnBadger.IsEnabled = true;
 
             ClockUpdTimerOnTick(null, null);
 
@@ -643,6 +644,12 @@ args.Key == Key.F12 ||
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 PrgSwitch.IsRealClose = true;
+
+                if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                {
+                    RestartApp();
+                    return;
+                }
             }
 
             Close();
@@ -1322,6 +1329,7 @@ args.Key == Key.F12 ||
             {
                 AdaptUiForState3();
             }
+            btnBadger.IsEnabled = true;
 
             _logger.Debug("FIN - AdaptUiFromState(...)");
         }
@@ -1764,7 +1772,7 @@ args.Key == Key.F12 ||
                 NotifManager.SetNotifShow(Cst.NotifCust2Name, false);
                 NotifManager.SetNotifShow(Cst.NotifTpsMaxJournee, false);
 
-                btnBadgerM.ToolTip = opt.IsBtnManuelBadgeIsWithHotKeys ? "Maintenir CTRL pour badger manuellement" : "Badger manuellement";
+                btnBadgerM.ToolTip = opt.IsBtnManuelBadgeIsWithHotKeys ? "Maintenir CTRL pour badger" : "Badger";
 
                 if (EtatBadger <= 1)
                 {
@@ -2164,6 +2172,29 @@ args.Key == Key.F12 ||
 
         private void btnModTimes_Click(object sender, RoutedEventArgs e)
         {
+            LoadDetailView();
+        }
+
+        private void LoadDetailView()
+        {
+            bool isReloadView = true;
+
+            while (isReloadView)
+            {
+                var mDetailsView = new MoreDetailsView(Times, EtatBadger, TypeJournee, PrgOptions);
+                mDetailsView.ShowDialog();
+
+                isReloadView = mDetailsView.IsMustLoadsModTimeView;
+
+                if (isReloadView)
+                {
+                    LoadModTimeView();
+                }
+            }
+        }
+
+        private void LoadModTimeView()
+        {
             ModTimeView m = new ModTimeView(Times, TypeJournee, EtatBadger, PrgOptions.UrlMesPointages);
             m.ShowDialog();
 
@@ -2204,90 +2235,25 @@ args.Key == Key.F12 ||
                 _logger.Debug("Son en cours...");
                 return;
             }
-
             try
             {
-
-                CoreAudioController CoreAudioCtrler = CoreAudioFactory.CoreAudioCtrler;
                 PrgSwitch.IsSoundOver = false;
-
-                bool wasMuted = false;
-                bool wasDftDeviceChanged = false;
-                double originalVolume = 0;
-                IDevice originalDftDevice = null;
-
-
-                originalDftDevice =
-                    CoreAudioCtrler.GetPlaybackDevices()
-                        .FirstOrDefault(r => r.FullName.Equals(CoreAudioCtrler.DefaultPlaybackDevice.FullName));
-                _logger.Debug("OrigDftDevice: {0}", originalDftDevice.FullName);
-
-                IDevice device =
-                    CoreAudioCtrler.GetPlaybackDevices()
-                        .FirstOrDefault(r => r.FullName.Equals(PrgOptions.SoundDeviceFullName)) ??
-                    originalDftDevice;
-
-                _logger.Debug("DeviceChoosed: {0}", device.FullName);
-
-                if (!device.Equals(originalDftDevice))
+                Action onSucessAction = () =>
                 {
-                    CoreAudioCtrler.SetDefaultDevice(device);
-                    wasDftDeviceChanged = true;
-                    _logger.Debug("2-OrigDftDevice: {0}", originalDftDevice.FullName);
-                }
-
-                if (device.IsMuted)
-                {
-                    wasMuted = true;
-                    device.Mute(false);
-                }
-
-                originalVolume = device.Volume;
-                device.Volume = PrgOptions.SoundPlayedAtLockMidiVolume;
-
-
-                Action<Task> stepAction = delegate
-                {
-                    _logger.Debug("Action Sound");
-                    PrgOptions.SoundPlayedAtLockMidi.Play();
-                    _logger.Debug("FIN - Action Sound");
-
-
-
+                    PrgSwitch.IsSoundOver = true;
                 };
-                Action<Task> finalAction = delegate
+                Action<Exception> onFailAction = (ex) =>
                 {
-                    _logger.Debug("FinalAction");
-                    MiscAppUtils.Delay(1200).ContinueWith(delegate
-                    {
-                        _logger.Debug("MiscAppUtils.Delay(1200)");
-
-                        device.Volume = originalVolume;
-                        if (wasMuted)
-                        {
-                            device.Mute(true);
-                        }
-
-                        if (wasDftDeviceChanged)
-                        {
-
-                            CoreAudioCtrler.SetDefaultDevice(originalDftDevice);
-                            _logger.Debug("3-OrigDftDevice: {0}", originalDftDevice.FullName);
-
-                            _logger.Debug("Real DftDevice: {0}", CoreAudioCtrler.DefaultPlaybackDevice.FullName);
-
-                        }
-
-                        PrgSwitch.IsSoundOver = true;
-                        CoreAudioFactory.IsDisposed = true;
-
-                        _logger.Debug("FIN - MiscAppUtils.Delay(1200)");
-                    });
-
-                    _logger.Debug("FIN - FinalAction");
+                    PrgSwitch.IsSoundOver = true;
+                    ExceptionMsgBoxView.ShowException(ex, null, "Une erreur s'est produite lors de la lecture du son.");
                 };
 
-                MiscAppUtils.RecDelayAction(stepAction, 1, 300, finalAction);
+                CoreAudioFactory.AsyncPlaySound(PrgOptions.SoundPlayedAtLockMidi,
+                    PrgOptions.SoundDeviceFullName,
+                    (int)PrgOptions.SoundPlayedAtLockMidiVolume,
+                    onSucessAction, onFailAction);
+
+
 
             }
             catch (Exception ex)
@@ -2327,14 +2293,10 @@ args.Key == Key.F12 ||
 
         private void imgBtnPauseReport_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            ShowDayDetails();
+            LoadDetailView();
         }
 
-        private void ShowDayDetails()
-        {
-            MoreDetailsView mDetailsView = new MoreDetailsView(Times, EtatBadger, TypeJournee, PrgOptions);
-            mDetailsView.ShowDialog();
-        }
+
 
 
         private void RestartApp()

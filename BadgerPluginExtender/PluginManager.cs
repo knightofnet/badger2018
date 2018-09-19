@@ -15,6 +15,7 @@ namespace BadgerPluginExtender
 
         public IDictionary<String, IGenericPluginInterface> PluginsInstance { get; private set; }
 
+        public bool IsAnyPluginLoaded { get; set; }
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
         public void LoadPluginsFromDir(string directoryPath)
@@ -67,8 +68,10 @@ namespace BadgerPluginExtender
             {
                 IGenericPluginInterface plugin = (IGenericPluginInterface)Activator.CreateInstance(type);
                 PluginsInstance.Add(plugin.GetPluginInfo().Name, plugin);
+                IsAnyPluginLoaded = true;
             }
 
+           
         }
 
 
@@ -82,7 +85,7 @@ namespace BadgerPluginExtender
         {
             HookReturns retList = new HookReturns();
             retList.ReturnType = returnType;
-            if (!PluginsInstance.Any())
+            if (!IsAnyPluginLoaded || (PluginsInstance != null && !PluginsInstance.Any()) )
             {
                 return retList;
             }
@@ -132,8 +135,7 @@ namespace BadgerPluginExtender
 
                     if (method.GetParameters().Length > 0 && (arg1 == null || arg1.Length == 0))
                     {
-                        throw new Exception(
-                            "Erreur lors d'appel de l'ancre XX : le nombre d'arguments ne correspond pas");
+                        throw new Exception(String.Format("PluginManager::PlayOneMethodRecord : La méthode {0} est attendue avec {1} paramètre(s). {2} transmi(s). Le nombre de paramètres obligatoire ne correspond pas", method.Name, method.GetParameters().Length, arg1.Length));
                     }
 
                     object ret = null;
@@ -144,7 +146,7 @@ namespace BadgerPluginExtender
                         {
                             if (!(parameterInfo.ParameterType == arg1[i].GetType()))
                             {
-                                throw new Exception(String.Format("Le parametre {0} est de type {1}. {2} fournit. Les types ne correspondent pas", parameterInfo.Name, parameterInfo.ParameterType.Name, arg1[i].GetType().Name));
+                                throw new Exception(String.Format("PluginManager::PlayOneMethodRecord : Le parametre {0} est de type {1}. {2} fournit. Les types ne correspondent pas", parameterInfo.Name, parameterInfo.ParameterType.Name, arg1[i].GetType().Name));
                             }
                             i++;
                         }

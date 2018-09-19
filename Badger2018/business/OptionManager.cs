@@ -64,6 +64,10 @@ namespace Badger2018.business
                     eOptCurrent = eOpt.Name;
 
                     PropertyInfo propertyInfo = opt.GetType().GetProperty(eOpt.Name);
+                    if (propertyInfo == null)
+                    {
+                        throw new Exception("La propriété " + eOptCurrent + " n'existe pas dans " + typeof(AppOptions).Name);
+                    }
 
                     if (propertyInfo.PropertyType == typeof(TimeSpan))
                     {
@@ -97,7 +101,7 @@ namespace Badger2018.business
             {
                 MessageBox.Show(
     "Une erreur s'est produite lors du chargement des paramètres. Le programme ne peut pas démarrer. Consulter le journal pour plus d'informations",
-    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+    "Erreur avec  l'option: " + eOptCurrent, MessageBoxButton.OK, MessageBoxImage.Error);
 
                 ExceptionHandlingUtils.LogAndRethrows(e, "Une erreur s'est produite lors du chargement des paramètres. Le programme ne peut pas démarrer. Consulter le journal pour plus d'informations");
 

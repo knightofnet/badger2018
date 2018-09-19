@@ -10,6 +10,7 @@ namespace BadgerCommonLibrary.constants
     {
         public const string UpdaterLogFile = "logUpd.log";
         public const string AppLogFile = "log.log";
+        public const string WavePlayerLogFile = "logWave.log";
 
 
 #if DEBUG

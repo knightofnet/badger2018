@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadgerPluginExtender", "Bad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetaUserAddons", "BetaUserAddons\BetaUserAddons.csproj", "{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaveCompagnonPlayer", "WaveCompagnonPlayer\WaveCompagnonPlayer.csproj", "{D6ECF5ED-F432-484A-B825-AF0C5861D64A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,14 @@ Global
 		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
 		{7E35E5CB-2409-48F4-ABC5-C090192EFBDB}.Release-cli|Any CPU.Build.0 = Release|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Debug-cli|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Debug-cli|Any CPU.Build.0 = Debug|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Release-cli|Any CPU.ActiveCfg = Release|Any CPU
+		{D6ECF5ED-F432-484A-B825-AF0C5861D64A}.Release-cli|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

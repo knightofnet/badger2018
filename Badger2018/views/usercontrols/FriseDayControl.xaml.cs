@@ -20,25 +20,59 @@ namespace Badger2018.views.usercontrols
     /// </summary>
     public partial class FriseDayControl : UserControl
     {
-        public static FriseDayControl NewInstance(DateTime hour, string name, string more, Color color)
-        {
-            FriseDayControl f = new FriseDayControl(hour, name, more);
-            f.rectColor.Fill = new SolidColorBrush(color);
-            f.rectSep.Fill = new SolidColorBrush(color);
 
-            return f;
-        }
+        public event Action<DateTime> OnClickBtnSeeScreenshot;
 
-        public FriseDayControl(DateTime hour, string name, string more)
+        public DateTime DtTimeIn { get; set; }
+
+        public String Title { get; set; }
+        public String SubTitle { get; set; }
+
+        public String LTag { get; set; }
+        public Color Color { get; set; }
+
+
+
+        public FriseDayControl()
         {
             InitializeComponent();
             mainGrid.Background = null;
 
-            lblHours.ContentShortTime(hour);
-            lblName.Content = name;
-            lblMoreStr.Content = more;
-
 
         }
+        public FriseDayControl(DateTime hour, string title, string subtitle)
+            : this()
+        {
+
+            DtTimeIn = hour;
+            Title = title;
+            SubTitle = subtitle;
+
+            RefreshUi();
+        }
+
+        public void RefreshUi()
+        {
+            lblHours.ContentShortTime(DtTimeIn);
+            lblName.Content = Title;
+            lblMoreStr.Content = SubTitle;
+            rectColor.Fill = new SolidColorBrush(Color);
+            rectSep.Fill = new SolidColorBrush(Color);
+        }
+
+        public void SetBtnScreenshotVisible(bool isVisible)
+        {
+            lblBtnSeeScreenShot.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void btnSeeScreenShot_Click(object sender, RoutedEventArgs e)
+        {
+            if (OnClickBtnSeeScreenshot != null)
+            {
+                OnClickBtnSeeScreenshot(DtTimeIn);
+            }
+        }
+
+
     }
 }

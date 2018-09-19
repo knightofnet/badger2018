@@ -68,7 +68,7 @@ namespace BadgerUpdater
                     runName = runName = String.Format(Cst.RunNameTpl, DateTime.Now.ToString("yyyyMMdd-hhmmss"));
                 }
 
-                
+
                 CheckIfAppRunning();
                 if (!PrgParams.InArgs.IsReprise())
                 {
@@ -92,7 +92,8 @@ namespace BadgerUpdater
 
                     lstUpd = new List<UpdateInfoDto>();
                     lstUpd.Add(updateInfo);
-                } else
+                }
+                else
                 {
                     lstUpd = SearchAndControlUpdates(runName);
                 }
@@ -207,7 +208,7 @@ namespace BadgerUpdater
                 Process.GetProcessesByName(PrgParams.BadgerExeFileInfo.Name.Replace(PrgParams.BadgerExeFileInfo.Extension, ""))
                     .FirstOrDefault();
 
-      
+
             if (processExeBadger != null)
             {
                 string[] colorsWait = { "gray", "white", "yellow", "magenta", "red", "DarkRed" };
@@ -302,10 +303,11 @@ namespace BadgerUpdater
                 if (PrgParams.InArgs.IsSideloadUpdate)
                 {
                     _logger.Info(" Fichier exe de la mise à jour : {0}", PrgParams.InArgs.UpdateExeFile);
-                } else
+                }
+                else
                 {
                     _logger.Info(" Fichier xml des mises à jour : {0}", PrgParams.InArgs.XmlUpdateFile);
-                }                
+                }
                 _logger.Info(" Version cible: {0}", PrgParams.InArgs.VergionTarget);
                 _logger.Info(" Exécutable Badger2018: {0}", PrgParams.InArgs.BadgerAppExe);
                 _logger.Info(" Redémarrer Badger2018 si succés: {0}", PrgParams.InArgs.LaunchAppIfSucess ? "oui" : "non");
@@ -394,7 +396,7 @@ namespace BadgerUpdater
 
                     TrtOneRelease(release);
 
-                    if (!PrgParams.InArgs.IsSideloadUpdate)
+                    if (!PrgParams.InArgs.IsSideloadUpdate && i < listUpds.Count - 1)
                     {
                         DoUpdaterUpdateSeconde(runName, PrgParams.BadgerExeFileInfo.Directory);
                     }

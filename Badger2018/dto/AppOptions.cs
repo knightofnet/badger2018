@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Badger2018.constants;
+using BadgerCommonLibrary.constants;
 
 namespace Badger2018.dto
 {
@@ -145,6 +146,7 @@ namespace Badger2018.dto
         public int TipsLastInt { get; set; }
         public bool ShowTipsAtStart { get; set; }
         public int SoundPlayedAtLockMidiVolume { get; set; }
+        public EnumActionBtnBadgeM TypeBadgeageBtnM { get; set; }
 
         public void ResetSpecOption()
         {

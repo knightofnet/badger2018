@@ -10,8 +10,10 @@ using System.Windows;
 using System.Windows.Threading;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
+using AryxDevViewLibrary.utils;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.exceptions;
 using Badger2018.utils;
 using Badger2018.views;
 using BadgerCommonLibrary.utils;
@@ -159,7 +161,9 @@ namespace Badger2018.business
             };
 
             _badgeageBackgrounder = new BackgroundWorker();
+            progress.BackgrounderRef = _badgeageBackgrounder;
             _badgeageBackgrounder.DoWork += b.BadgeageBackgrounderOnDoWork;
+            _badgeageBackgrounder.WorkerSupportsCancellation = true;
             _badgeageBackgrounder.WorkerReportsProgress = true;
             _badgeageBackgrounder.ProgressChanged += (sender, args) =>
             {
@@ -168,6 +172,10 @@ namespace Badger2018.business
                 {
                     progress.ValidStep(pInt - 1);
                     progress.EnterStep(pInt);
+                    if (pInt == 3)
+                    {
+                        progress.ToogleBtnCancel();
+                    }
                 }
 
             };
@@ -198,6 +206,40 @@ namespace Badger2018.business
                         progress.Topmost = false;
                     }
 
+                    if (ex is UserCancelBadgeageException)
+                    {
+
+                        string msg = "L'action de badgeage a été annulée suite à la demande de l'utilisateur.";
+                        MessageBoxButton msgButton = MessageBoxButton.OK;
+                        if (b.EtapeTrt == 3)
+                        {
+                            msg += " L'annulation étant tardive vérifiez vos badgeage en vous rendant sur la page Mes Badgeages. Voulez-vous vous y rendre maintenant ?";
+                            msgButton = MessageBoxButton.YesNo;
+                        }
+                        MessageBoxResult result = MessageBoxUtils.TopMostMessageBox("L'action de badgeage a été annulée suite à la demande de l'utilisateur.", "Information", msgButton, MessageBoxImage.Information);
+                        _logger.Info("Erreur lors du badgeage : " + msg);
+                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork(null)");
+
+                        Action<MessageBoxResult> actionAfter = (resultat) =>
+                        {
+                            Pwin.RestoreWindow();
+                            Pwin.SetBtnBadgerEnabled(true);
+
+                            if (resultat == MessageBoxResult.Yes)
+                            {
+                                MiscAppUtils.GoTo(Pwin.PrgOptions.UrlMesPointages);
+                            }
+                        };
+
+                        actionAfter(result);
+                        afterWork(null);
+                        if (progress != null)
+                        {
+                            progress.Hide();
+                        }
+                        return;
+                    }
+
                     //Pwin.RestoreWindow();
                     IntPtr hwnd = new System.Windows.Interop.WindowInteropHelper(Pwin).Handle;
 
@@ -209,6 +251,7 @@ namespace Badger2018.business
                         _logger.Info("Erreur lors du badgeage : aucune action");
                         _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork(null)");
                         afterWork(null);
+                        Pwin.SetBtnBadgerEnabled(true);
                         if (progress != null)
                         {
                             progress.Hide();

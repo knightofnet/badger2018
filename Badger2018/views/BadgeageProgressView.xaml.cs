@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -21,6 +22,7 @@ namespace Badger2018.views
     {
         private readonly List<Image> _lstImage;
         private readonly List<Label> _lstLabel;
+        public BackgroundWorker BackgrounderRef { get; internal set; }
 
         public BadgeageProgressView()
         {
@@ -32,6 +34,8 @@ namespace Badger2018.views
             RaZProgress();
 
         }
+
+
 
         private void RaZProgress()
         {
@@ -79,6 +83,19 @@ namespace Badger2018.views
 
             _lstImage[i].Visibility = Visibility.Hidden;
             _lstLabel[i].Foreground = Cst.SCBDarkRed;
+        }
+
+        public void ToogleBtnCancel ()
+        {
+            btnCancelBadgeage.Visibility = btnCancelBadgeage.Visibility == Visibility.Hidden ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void btnCancelBadgeage_Click(object sender, RoutedEventArgs e)
+        {
+            if (BackgrounderRef != null && !BackgrounderRef.CancellationPending)
+            {
+                BackgrounderRef.CancelAsync();
+            }
         }
     }
 }

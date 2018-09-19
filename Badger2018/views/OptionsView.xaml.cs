@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -27,9 +28,11 @@ using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
+using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
 using IWshRuntimeLibrary;
 using CheckBox = System.Windows.Controls.CheckBox;
+using ComboBox = System.Windows.Controls.ComboBox;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 
@@ -50,12 +53,14 @@ namespace Badger2018.views
         private bool IsSpecUse { get; set; }
 
         private NotifyIcon NotifyIcon { get; set; }
+        public CoreAudioController CoreAuCtrl { get; private set; }
 
         private OptionsCtxtHelpView c = null;
 
         public OptionsView(AppOptions appOptions, bool isSpecUse, NotifyIcon notifyIcon, bool specShowSpecOpt, MainWindow parentWindow)
         {
             InitializeComponent();
+            OrigOptions = appOptions;
 
             KeyUp += (sender, args) =>
             {
@@ -111,13 +116,10 @@ namespace Badger2018.views
                 }
             }
 
-            using (CoreAudioCtrlerFactory audioController = Pwin.CoreAudioFactory)
-            {
-                foreach (string sndDevFullName in audioController.CoreAudioCtrler.GetPlaybackDevices().Select(r => r.FullName))
-                {
-                    cboxSonDevice.Items.Add(sndDevFullName);
-                }
-            }
+            AsyncLoadListOfSoundDevices();
+
+
+
 
             for (int i = 0; i < 6; i++)
             {
@@ -146,14 +148,54 @@ namespace Badger2018.views
             }
 
 
-            OrigOptions = appOptions;
+
 
 
             LoadOptionsFrom(OrigOptions);
 
         }
 
+        private void AsyncLoadListOfSoundDevices()
+        {
+            cboxSonDevice.Items.Add("En chargement...");
+            cboxSonDevice.SelectedIndex = 0;
+            cboxSonDevice.IsEnabled = false;
+            cboxSonChoosed.IsEnabled = false;
+            chkPlaySoundBeforePauseMidi.IsEnabled = false;
 
+            Action<IList<String>> actionSuccess = listDevices =>
+            {
+                cboxSonDevice.Items.Clear();
+                foreach (string device in listDevices)
+                {
+                    cboxSonDevice.Items.Add(device);
+                }
+
+                cboxSonDevice.SelectedIndex = 0;
+                cboxSonDevice.IsEnabled = true;
+                cboxSonChoosed.IsEnabled = true;
+                chkPlaySoundBeforePauseMidi.IsEnabled = true;
+
+
+                cboxSonDevice.SelectedItem = OrigOptions.SoundDeviceFullName;
+            };
+
+            Action<Exception> actionFail = (ex) =>
+            {
+                cboxSonDevice.Items.Clear();
+                ExceptionMsgBoxView.ShowException(ex, null, "Une erreur s'est produite lors de la récupération des périphériques sonores de lecture.");
+            };
+
+            if (Pwin.CoreAudioFactory.ListOfSoundDevices.Count > 0)
+            {
+                actionSuccess.Invoke(Pwin.CoreAudioFactory.ListOfSoundDevices);
+            }
+            else
+            {
+                Pwin.CoreAudioFactory.AsyncLoadListOfSoundDevice(actionSuccess, actionFail);
+            }
+
+        }
 
 
         private void LoadOptionsFrom(AppOptions opt)
@@ -226,13 +268,12 @@ namespace Badger2018.views
 
             chkPlaySoundBeforePauseMidi.IsChecked = opt.IsPlaySoundAtLockMidi;
             cboxSonChoosed.SelectedItem = opt.SoundPlayedAtLockMidi.Libelle;
-            cboxSonDevice.SelectedItem = opt.SoundDeviceFullName;
+            //cboxSonDevice.SelectedItem = opt.SoundDeviceFullName;
+
+
             if (StringUtils.IsNullOrWhiteSpace(opt.SoundDeviceFullName))
             {
-                using (CoreAudioController audioController = new CoreAudioController())
-                {
-                    cboxSonDevice.SelectedItem = audioController.DefaultPlaybackDevice.FullName;
-                }
+                cboxSonDevice.SelectedIndex = 0;
             }
             sliderVolume.Value = opt.SoundPlayedAtLockMidiVolume;
 
@@ -282,7 +323,7 @@ namespace Badger2018.views
 
             PostActions();
 
-            Pwin.CoreAudioFactory.IsDisposed = true;
+
 
             Close();
 
@@ -1141,75 +1182,22 @@ namespace Badger2018.views
                 return;
             }
 
-            CoreAudioController CoreAudioCtrler = Pwin.CoreAudioFactory.CoreAudioCtrler;
-
-
-
             Pwin.PrgSwitch.IsSoundOver = false;
 
-            bool wasMuted = false;
-            bool wasDftDeviceChanged = false;
-            double originalVolume = 0;
-            IDevice originalDftDevice = null;
-
-
-            originalDftDevice = CoreAudioCtrler.GetPlaybackDevices().FirstOrDefault(r => r.FullName.Equals(CoreAudioCtrler.DefaultPlaybackDevice.FullName));
-            _logger.Debug("OrigDftDevice: {0}", originalDftDevice.FullName);
-
-            IDevice device = CoreAudioCtrler.GetPlaybackDevices().FirstOrDefault(r => r.FullName.Equals(deviceFullName)) ??
-                             originalDftDevice;
-
-            _logger.Debug("DeviceChoosed: {0}", device.FullName);
-
-            if (!device.Equals(originalDftDevice))
+            Action onSucessAction = () =>
             {
-                CoreAudioCtrler.SetDefaultDevice(device);
-                wasDftDeviceChanged = true;
-                _logger.Debug("2-OrigDftDevice: {0}", originalDftDevice.FullName);
-            }
-
-            if (device.IsMuted)
-            {
-                wasMuted = true;
-                device.Mute(false);
-            }
-
-            originalVolume = device.Volume;
-            device.Volume = sliderVolume.Value;
-
-
-            Action<Task> stepAction = delegate
-            {
-                _logger.Debug("Action Sound");
-                sonChoosed.Play();
-
+                Pwin.PrgSwitch.IsSoundOver = true;
             };
-            Action<Task> finalAction = delegate
+            Action<Exception> onFailAction = (ex) =>
             {
-                MiscAppUtils.Delay(1200).ContinueWith(delegate
-                {
-                    device.Volume = originalVolume;
-                    if (wasMuted)
-                    {
-                        device.Mute(true);
-                    }
-
-                    if (wasDftDeviceChanged)
-                    {
-
-                        CoreAudioCtrler.SetDefaultDevice(originalDftDevice);
-                        _logger.Debug("3-OrigDftDevice: {0}", originalDftDevice.FullName);
-
-                        _logger.Debug("Real DftDevice: {0}", CoreAudioCtrler.DefaultPlaybackDevice.FullName);
-
-                    }
-
-                    Pwin.PrgSwitch.IsSoundOver = true;
-                    Pwin.CoreAudioFactory.IsDisposed = true;
-                });
+                Pwin.PrgSwitch.IsSoundOver = true;
+                ExceptionMsgBoxView.ShowException(ex, null, "Une erreur s'est produite lors de la lecture du son.");
             };
 
-            MiscAppUtils.RecDelayAction(stepAction, 1, 300, finalAction);
+            Pwin.CoreAudioFactory.AsyncPlaySound(sonChoosed, deviceFullName, (int)sliderVolume.Value, onSucessAction, onFailAction);
+
+
+
 
         }
 

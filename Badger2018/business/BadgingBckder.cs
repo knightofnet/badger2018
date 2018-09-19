@@ -7,6 +7,7 @@ using System.Threading;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
+using Badger2018.exceptions;
 using Badger2018.utils;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -67,16 +68,31 @@ namespace Badger2018.business
                 _logger.Debug(" GoToUrl: {0}", Url);
 
                 EtapeTrt = 1;
+                if (bkg.CancellationPending)
+                {
+                    doWorkEventArgs.Cancel = true;
+                    throw new UserCancelBadgeageException();
+                }
                 bkg.ReportProgress(EtapeTrt);
                 driver.Navigate().GoToUrl(Url);
 
                 EtapeTrt = 2;
+                if (bkg.CancellationPending)
+                {
+                    doWorkEventArgs.Cancel = true;
+                    throw new UserCancelBadgeageException();
+                }
                 bkg.ReportProgress(EtapeTrt);
                 _logger.Debug(" Recherche de l'élément: {0}", IdElt);
                 IWebElement b = BadgingUtils.FindEltById(IdElt, driver);
                 if (Pwin.PrgOptions.ModeBadgement == EnumModePointage.FORM)
                 {
                     EtapeTrt = 3;
+                    if (bkg.CancellationPending)
+                    {
+                        doWorkEventArgs.Cancel = true;
+                        throw new UserCancelBadgeageException();
+                    }
                     bkg.ReportProgress(EtapeTrt);
                     _logger.Debug(" Soumission du formulaire");
                     b.Submit();
@@ -84,6 +100,11 @@ namespace Badger2018.business
                 else if (Pwin.PrgOptions.ModeBadgement == EnumModePointage.ELEMENT)
                 {
                     EtapeTrt = 3;
+                    if (bkg.CancellationPending)
+                    {
+                        doWorkEventArgs.Cancel = true;
+                        throw new UserCancelBadgeageException();
+                    }
                     bkg.ReportProgress(EtapeTrt);
                     _logger.Debug(" Clic sur l'élément");
                     b.Click();

@@ -72,22 +72,22 @@ namespace BadgerPluginExtender
 
 
 
-        private static object PlayOneMethodRecord(string hookName, object[] arg1, MethodRecordWithInstance a, Type returnType)
+        private static object PlayOneMethodRecord(string hookName, object[] arg1, MethodRecordWithInstance methodRecord, Type returnType)
         {
-            if (a == null) return null;
+            if (methodRecord == null) return null;
 
             MethodInfo method = null;
             object instance = null;
-            if (a.Instance == null && a.StaticType != null)
+            if (methodRecord.Instance == null && methodRecord.StaticType != null)
             {
                 instance = null;
-                method = a.StaticType.GetMethod(a.MethodResponder);
+                method = methodRecord.StaticType.GetMethod(methodRecord.MethodResponder);
             }
-            else if (a.Instance != null)
+            else if (methodRecord.Instance != null)
             {
 
-                instance = a.Instance;
-                method = instance.GetType().GetMethod(a.MethodResponder);
+                instance = methodRecord.Instance;
+                method = instance.GetType().GetMethod(methodRecord.MethodResponder);
             }
             else
             {
@@ -117,19 +117,20 @@ namespace BadgerPluginExtender
                 {
                     if (!(parameterInfo.ParameterType == arg1[i].GetType()))
                     {
-                        throw new Exception(String.Format("Le parametre {0} est de type {1}. {2} fournit. Les types ne correspondent pas", parameterInfo.Name, parameterInfo.ParameterType.Name, arg1[i].GetType().Name));
-                        i++;
+                        throw new Exception(String.Format("CoreAppBridge::PlayOneMethodRecord : Le parametre {0} est de type {1}. {2} fournit. Les types ne correspondent pas", parameterInfo.Name, parameterInfo.ParameterType.Name, arg1[i].GetType().Name));
+                       
                     }
+                    i++;
                 }
 
-                ret = RunMethod(arg1, a, method, instance);
+                ret = RunMethod(arg1, methodRecord, method, instance);
 
 
             }
             else
             {
 
-                ret = RunMethod(arg1, a, method, instance);
+                ret = RunMethod(arg1, methodRecord, method, instance);
 
             }
 
@@ -160,7 +161,7 @@ namespace BadgerPluginExtender
             }
             catch (Exception ex)
             {
-                _logger.Error("Erreur lors du lancement de la méthode {0} avec comme paramétres {1}.", methodInfo.Name, argsObjectArray);
+                _logger.Error("Erreur lors du lancement de la méthode {0} avec comme paramétre(s) {1}.", methodInfo.Name, argsObjectArray);
                 throw ex;
             }
         }

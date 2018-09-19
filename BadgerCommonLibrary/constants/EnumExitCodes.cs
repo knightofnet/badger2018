@@ -78,6 +78,12 @@ namespace BadgerCommonLibrary.constants
         /// </summary>
         public static readonly EnumExitCodes U_ERROR_UNKNOW_IN_APP = new EnumExitCodes(299, "Erreur inconnue");
 
+
+        public static readonly EnumExitCodes W_ERROR_IN_PARAMS = new EnumExitCodes(310, "Erreur lors de la lecture des paramètres en entrée");
+        public static readonly EnumExitCodes W_ERROR_UNKNOW = new EnumExitCodes(399, "Erreur inconnue");
+
+
+
         public static IEnumerable<EnumExitCodes> Values
         {
             get

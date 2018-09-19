@@ -8,8 +8,12 @@
         <Label x:Name="lblHours" Content="28h59" HorizontalAlignment="Left" Margin="10,10,0,10" Width="56" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
         <Rectangle x:Name="rectSep" Fill="Tomato" HorizontalAlignment="Left" Margin="66,10,0,10"  Width="1"/>
         <Label x:Name="lblName" Content="Premier badgeage du jour" Margin="72,10,10.4,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblMoreStr" Content="Matinée" Margin="72,36,10.4,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblMoreStr" Content="Matinée" Margin="72,36,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="169"/>
         <Rectangle x:Name="rectColor" Fill="#FFF4F4F5" HorizontalAlignment="Left" Margin="0,0,0,0.2" Width="6"/>
-
+        <Label x:Name="lblBtnSeeScreenShot" Margin="0,0,10.4,5.2" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Right" Width="94" Height="26" VerticalAlignment="Bottom" >
+            <Hyperlink x:Name="btnSeeScreenShot" Click="btnSeeScreenShot_Click">
+                <Run Text="Voir la capture"/>
+            </Hyperlink>
+        </Label>
     </Grid>
 </UserControl>

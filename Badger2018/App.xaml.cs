@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -221,12 +222,40 @@ namespace Badger2018
         {
             AggregateException ex = args.Exception;
 
+            bool isExceptionTrapped = false;
+
+            if (ex.InnerExceptions.Count == 1)
+            {
+                StackTrace stackTrace = new StackTrace(ex.InnerExceptions[0]);
+                foreach (var a in stackTrace.GetFrames())
+                {
+                    _logger.Debug("a.GetMethod().DeclaringType.FullName : ##{0}##", a.GetMethod().DeclaringType.FullName);
+                    _logger.Debug("a.GetMethod().DeclaringType.Name     : ##{0}##", a.GetMethod().DeclaringType.Name);
+                    _logger.Debug("a.GetMethod().DeclaringType.Namespace: ##{0}##", a.GetMethod().DeclaringType.Namespace);
+
+                    if ("AudioSwitcher.AudioApi.Observables".Equals(a.GetMethod().DeclaringType.Namespace))
+                    {
+                        isExceptionTrapped = true;
+
+                    }
+                }
+                //if (stackTrace.GetFrames().Where(r=>r.GetMethod().DeclaringType.Name)
+            }
+
+            if (isExceptionTrapped)
+            {
+                _logger.Warn("On prend l'exception, et on doucement on la glisse sous le tapis...");
+                _logger.Warn("Chut ! [Le programme peut continuer]");
+                return;
+            }
+
             StringBuilder strException = new StringBuilder();
             foreach (Exception exInner in ex.InnerExceptions)
             {
+
                 ExceptionHandlingUtils.LogAndHideException(exInner, "InnerException");
-                strException.AppendLine(String.Format("Exception: {0}", exInner.GetType().Name));
-                strException.AppendLine(String.Format("Message: {0}", exInner.Message));
+                strException.AppendLine(String.Format("Exception : {0}", exInner.GetType().Name));
+                strException.AppendLine(String.Format("Message   : {0}", exInner.Message));
                 strException.AppendLine(String.Format("StackTrace: {0}", exInner.StackTrace));
                 strException.AppendLine("---");
             }

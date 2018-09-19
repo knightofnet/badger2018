@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AryxDevLibrary.utils;
 
 namespace Badger2018.dto
 {
@@ -116,5 +117,24 @@ namespace Badger2018.dto
                         r.EndOrDft.CompareTo(PlageTravAprem.EndOrDft) <= 0));
         }
 
+        public bool IsStartMatinBadged()
+        {
+            return !PlageTravMatin.Start.Equals(ReflexionUtils.GetDefaultValue(typeof(DateTime)));
+        }
+
+        public bool IsStartApremBadged()
+        {
+            return !PlageTravAprem.Start.Equals(ReflexionUtils.GetDefaultValue(typeof(DateTime)));
+        }
+
+        public bool IsEndMatinBadged()
+        {
+            return PlageTravMatin.End.HasValue;
+        }
+
+        public bool IsEndApremBadged()
+        {
+            return PlageTravAprem.End.HasValue;
+        }
     }
 }

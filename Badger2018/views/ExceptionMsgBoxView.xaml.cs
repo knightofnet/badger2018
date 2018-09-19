@@ -31,7 +31,7 @@ namespace Badger2018.views
             ExceptionHandled = ex;
             ComplementString = complement;
 
-            if (accessText != null)
+            if (inAccessText != null)
             {
                 accessText.Text = inAccessText;
             }
