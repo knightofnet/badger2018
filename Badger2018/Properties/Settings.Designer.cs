@@ -12,7 +12,7 @@ namespace Badger2018.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -682,6 +682,30 @@ namespace Badger2018.Properties {
             }
             set {
                 this["TypeBadgeageBtnM"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsRemoveLegacyShorcutFirefox {
+            get {
+                return ((bool)(this["IsRemoveLegacyShorcutFirefox"]));
+            }
+            set {
+                this["IsRemoveLegacyShorcutFirefox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Z017695")]
+        public string licencedUser {
+            get {
+                return ((string)(this["licencedUser"]));
+            }
+            set {
+                this["licencedUser"] = value;
             }
         }
     }

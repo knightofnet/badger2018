@@ -104,8 +104,7 @@ namespace Badger2018.dto
             return
                 PausesHorsDelai.Any(
                     (r =>
-                        r.IsIntervalComplet() && r.Start.CompareTo(PlageTravMatin.Start) >= 0 &&
-                        r.EndOrDft.CompareTo(PlageTravMatin.EndOrDft) <= 0));
+                        r.Start.CompareTo(PlageTravMatin.Start) >= 0));
         }
 
         public bool IsTherePauseAprem()
@@ -113,8 +112,7 @@ namespace Badger2018.dto
             return
                 PausesHorsDelai.Any(
                     (r =>
-                        r.IsIntervalComplet() && r.Start.CompareTo(PlageTravAprem.Start) >= 0 &&
-                        r.EndOrDft.CompareTo(PlageTravAprem.EndOrDft) <= 0));
+                        r.Start.CompareTo(PlageTravAprem.Start) >= 0 ));
         }
 
         public bool IsStartMatinBadged()

@@ -12,13 +12,14 @@ namespace Badger2018.utils
 
         public static void ContentShortTime(this Label label, DateTime dateTime)
         {
-            label.Content = dateTime.TimeOfDay.ToString(Cst.TimeSpanFormatWithH);
+            label.ContentShortTime(dateTime.TimeOfDay);
         }
 
         public static void ContentShortTime(this Label label, TimeSpan ts)
         {
-            label.Content = ts.ToString(Cst.TimeSpanFormatWithH);
+            label.Content = MiscAppUtils.TimeSpanShortStrFormat(ts);
         }
+
 
     }
 }

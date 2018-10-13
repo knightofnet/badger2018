@@ -140,6 +140,7 @@ namespace Badger2018.dto
         public String UrlCptTpsReel { get; set; }
 
         public bool IsPlaySoundAtLockMidi { get; set; }
+
         public EnumSonWindows SoundPlayedAtLockMidi { get; set; }
         public String SoundDeviceFullName { get; set; }
         public String UpdateXmlUri { get; set; }
@@ -148,10 +149,12 @@ namespace Badger2018.dto
         public int SoundPlayedAtLockMidiVolume { get; set; }
         public EnumActionBtnBadgeM TypeBadgeageBtnM { get; set; }
 
+        public bool IsRemoveLegacyShorcutFirefox { get; set; }
+       
+
         public void ResetSpecOption()
         {
-            IsAutoBadgeMeridienne = false;
-            IsLastBadgeIsAutoShutdown = false;
+            IsAutoBadgeMeridienne = false;         
             IsDailyDisableAutoBadgeMerid = true;
             LastBadgeDelay = 0;
             DeltaAutoBadgeageMinute = 0;

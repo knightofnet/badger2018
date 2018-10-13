@@ -145,5 +145,16 @@ namespace Badger2018.utils
 
             _logger.Debug("FIN - RecDelayAction");
         }
+
+        public static string TimeSpanShortStrFormat(TimeSpan ts)
+        {
+            if (ts.Hours > 0)
+            {
+
+                return ts.ToString(Cst.TimeSpanFormatWithH);
+            }
+
+            return String.Format("{0}min", ts.Minutes);
+        }
     }
 }

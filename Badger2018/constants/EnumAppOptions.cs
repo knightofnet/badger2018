@@ -49,7 +49,7 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions IsFirstRun = new EnumAppOptions("IsFirstRun", typeof(bool), "True", false);
         public static readonly EnumAppOptions IsConsentUse = new EnumAppOptions("IsConsentUse", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsAutoBadgeMeridienne = new EnumAppOptions("IsAutoBadgeMeridienne", typeof(bool), "False", true);
-        public static readonly EnumAppOptions IsLastBadgeIsAutoShutdown = new EnumAppOptions("IsLastBadgeIsAutoShutdown", typeof(bool), "False", true);
+        
         public static readonly EnumAppOptions LastBadgeDelay = new EnumAppOptions("LastBadgeDelay", typeof(int), "0", true);
         public static readonly EnumAppOptions DeltaAutoBadgeageMinute = new EnumAppOptions("DeltaAutoBadgeageMinute", typeof(int), "0", true);
         public static readonly EnumAppOptions IsDailyDisableAutoBadgeMerid = new EnumAppOptions("IsDailyDisableAutoBadgeMerid", typeof(bool), "True", true);
@@ -63,6 +63,7 @@ namespace Badger2018.constants
 
 
         public static readonly EnumAppOptions IsPlaySoundAtLockMidi = new EnumAppOptions("IsPlaySoundAtLockMidi", typeof(bool), "False", false);
+        
         public static readonly EnumAppOptions SoundPlayedAtLockMidi = new EnumAppOptions("SoundPlayedAtLockMidi", typeof(IEnumSerializableWithIndex<EnumSonWindows>), "" + EnumSonWindows.Chord.GetIndex(), false);
         public static readonly EnumAppOptions SoundDeviceFullName = new EnumAppOptions("SoundDeviceFullName", typeof(string), "", false);
         public static readonly EnumAppOptions SoundPlayedAtLockMidiVolume = new EnumAppOptions("SoundPlayedAtLockMidiVolume", typeof(int), "75", false);
@@ -72,6 +73,9 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions TipsLastInt = new EnumAppOptions("TipsLastInt", typeof(int), "1", false);
         public static readonly EnumAppOptions ShowTipsAtStart = new EnumAppOptions("ShowTipsAtStart", typeof(bool), "False", false);
         public static readonly EnumAppOptions TypeBadgeageBtnM = new EnumAppOptions("TypeBadgeageBtnM", typeof(IEnumSerializableWithIndex<EnumActionBtnBadgeM>), "" + EnumActionBtnBadgeM.BadgerInterval.GetIndex(), false);
+
+        public static readonly EnumAppOptions IsRemoveLegacyShorcutFirefox = new EnumAppOptions("IsRemoveLegacyShorcutFirefox", typeof(bool), "False", false);
+        public static readonly EnumAppOptions IsLastBadgeIsAutoShutdown = new EnumAppOptions("IsLastBadgeIsAutoShutdown", typeof(bool), "False", false);
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -131,6 +135,8 @@ namespace Badger2018.constants
                 yield return TipsLastInt;
                 yield return ShowTipsAtStart;
                 yield return TypeBadgeageBtnM;
+                yield return IsRemoveLegacyShorcutFirefox;
+
 
 
             }

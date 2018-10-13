@@ -18,7 +18,7 @@
         <Image x:Name="tickEt6" HorizontalAlignment="Left" Height="18" Margin="17,204,0,0" VerticalAlignment="Top" Width="18" Source="/Badger2018;component/Resources/iconOkHover.png"/>
         <Label Content="Badgeage en cours" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
         <Label Content="Statut :" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnCancelBadgeage" Content="Annuler le badgeage en cours" Margin="17,0,10,10" VerticalAlignment="Bottom" Height="23" Foreground="#FFB80101" Click="btnCancelBadgeage_Click"/>
+        <Button x:Name="btnCancelBadgeage" Content="Annuler le badgeage en cours" Margin="10,0,10,10" VerticalAlignment="Bottom" Height="23" Foreground="#FFB80101" Click="btnCancelBadgeage_Click"/>
 
     </Grid>
 </Window>

@@ -52,8 +52,11 @@ namespace Badger2018
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
-        readonly DispatcherTimer _clockUpdTimer = new DispatcherTimer();
+        private MainTimerManager _mainTimerManager = new MainTimerManager();
+
+
         DispatcherTimer finPauseMidiTimer = null;
+        DispatcherTimer pauseHorsPeriodeTimer = null;
 
         public AppOptions PrgOptions { get; set; }
 
@@ -257,7 +260,7 @@ namespace Badger2018
 #if DEBUG
 args.Key == Key.F12 ||
 #endif
- KonamiCodeListener.IsCompletedBy(args.Key))
+KonamiCodeListener.IsCompletedBy(args.Key))
                 {
                     DebugCommandView d = new DebugCommandView();
                     d.Show();
@@ -336,13 +339,15 @@ args.Key == Key.F12 ||
 
             RegisterNotifications();
 
-            // Initialise le timer principal
-            _clockUpdTimer.Tick += ClockUpdTimerOnTick;
-            _clockUpdTimer.Interval = new TimeSpan(0, 0, 10);
-            _clockUpdTimer.Start();
+            _mainTimerManager.OnPauseToggled += MainTimerManagerOnOnPauseToggled;
+            _mainTimerManager.Interval = new TimeSpan(0, 0, 10);
+            _mainTimerManager.OnTick += ClockUpdTimerOnOnTick;
+            _mainTimerManager.Start();
+
+
 
             IsFullyLoaded = true;
-            ClockUpdTimerOnTick(null, null);
+            ClockUpdTimerOnOnTick(null, null);
             PrgSwitch.CanCheckUpdate = true;
 
 
@@ -350,9 +355,12 @@ args.Key == Key.F12 ||
             {
                 AfterLoadPostInitComponent();
                 CoreAppBridge.Instance.RegisterMethodsForPlugin(this);
+
+                ReloadPauseState();
             };
 
         }
+
 
 
 
@@ -500,6 +508,92 @@ args.Key == Key.F12 ||
 
         }
 
+        private void MainTimerManagerOnOnPauseToggled(MainTimerManager mainTimerManager)
+        {
+            // PrgSwitch.PbarMainTimerActif = mainTimerManager.IsPaused;
+            if (!mainTimerManager.IsPaused)
+            {
+                lblTpsTravReel.Foreground = Cst.SCBBlack;
+
+                pauseHorsPeriodeTimer.Start();
+                pauseHorsPeriodeTimer.Stop();
+
+
+                PrgSwitch.PbarMainTimerActif = true;
+                lblEndTime.Foreground = Cst.SCBBlack;
+                lblEndTime.ToolTip = null;
+
+                if (EtatBadger < 2)
+                {
+
+                    Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
+                        PrgOptions, EnumTypesJournees.Complete)
+                                            + Times.GetTpsPause();
+                }
+                else
+                {
+                    Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
+                        PrgOptions, EnumTypesJournees.Complete)
+                                            + Times.GetTpsPause();
+                    TimeSpan tmpsPause = Times.PlageTravAprem.Start - Times.PlageTravMatin.EndOrDft;
+                    var diffPause = tmpsPause - PrgOptions.TempsMinPause;
+
+                    if (diffPause.TotalSeconds > 0)
+                    {
+                        Times.EndTheoDateTime += diffPause;
+                    }
+
+                    if (PrgOptions.IsStopCptAtMaxDemieJournee && Times.GetTpsTravMatin().CompareTo(PrgOptions.TempsMaxDemieJournee) > 0)
+                    {
+                        Times.EndTheoDateTime += (Times.GetTpsTravMatin() - PrgOptions.TempsMaxDemieJournee);
+                    }
+
+                }
+
+                lblEndTime.ContentShortTime(Times.EndTheoDateTime);
+                lblEndTime.Content += "*";
+
+                ClockUpdTimerOnOnTick(null, null);
+            }
+            else
+            {
+                // lblTpsTravReel.Foreground = Cst.SCBGrey;
+                if (pauseHorsPeriodeTimer != null && pauseHorsPeriodeTimer.IsEnabled)
+                {
+                    pauseHorsPeriodeTimer.Stop();
+                }
+                pauseHorsPeriodeTimer = new DispatcherTimer();
+                pauseHorsPeriodeTimer.Tick += (sender, args) =>
+                {
+                    IntervalTemps ivlTemps = Times.PausesHorsDelai.First(r => !r.IsIntervalComplet());
+                    TimeSpan tpsPause = AppDateUtils.DtNow().TimeOfDay - ivlTemps.Start.TimeOfDay;
+                    lblTpsTravReel.Content = tpsPause.ToString("h':'mm':'ss");
+                    lblTpsTravReelLbl.Content = "Temps de la pause en cours :";
+
+                    DateTime newEndTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
+                                PrgOptions, EnumTypesJournees.Complete)
+                                                    + Times.GetTpsPause() + tpsPause;
+                    lblEndTime.ContentShortTime(newEndTime);
+                    lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
+
+
+                };
+                pauseHorsPeriodeTimer.Interval = new TimeSpan(0, 0, 1);
+
+                pauseHorsPeriodeTimer.Start();
+
+                lblTpsTravReel.ToolTip = null;
+
+                PrgSwitch.PbarMainTimerActif = false;
+
+                lblEndTime.Foreground = Cst.SCBGrey;
+                lblEndTime.ToolTip = "Le temps de fin de journée augmente avec la durée de la pause en cours";
+
+
+            }
+
+        }
+
         private void CurrentOnSessionEnding(object sender, SessionEndingCancelEventArgs eventArgs)
         {
             //if (eventArgs.ReasonSessionEnding == ReasonSessionEnding.Logoff)
@@ -578,7 +672,7 @@ args.Key == Key.F12 ||
 
             PrgOptions.LastBadgeDelay = origDelay;
 
-            ClockUpdTimerOnTick(null, null);
+            ClockUpdTimerOnOnTick(null, null);
 
         }
 
@@ -624,7 +718,7 @@ args.Key == Key.F12 ||
                 AdaptUiFromState(EtatBadger + 1, null);
                 EtatBadger = 0;
 
-                ClockUpdTimerOnTick(null, null);
+                ClockUpdTimerOnOnTick(null, null);
 
                 isSpecBadgeage = true;
 
@@ -682,33 +776,37 @@ args.Key == Key.F12 ||
 
                         if (Times.PausesHorsDelai.All(r => r.IsIntervalComplet()))
                         {
-                            _logger.Info(" > Début de pause ({0})", time.Value);
+                            _logger.Info(" > Début de pause ({0})", time.Value.AtSec(Cst.SecondeOffset));
 
                             IntervalTemps ivlTemps = new IntervalTemps()
                             {
-                                Start = time.Value
+                                Start = time.Value.AtSec(Cst.SecondeOffset)
                             };
                             Times.PausesHorsDelai.Add(ivlTemps);
 
                             btnBadgerM.Content = "Badger et reprendre";
                             PrgSwitch.PauseCurrentState = EnumStatePause.IN_PROGRESS;
 
+
+
+                            _mainTimerManager.Pause();
+
                         }
                         else
                         {
-                            _logger.Info(" > Fin de pause ({0})", time.Value);
+                            _logger.Info(" > Fin de pause ({0})", time.Value.AtSec(Cst.SecondeOffset));
 
                             IntervalTemps ivlTemps = Times.PausesHorsDelai.First(r => !r.IsIntervalComplet());
-                            ivlTemps.End = time.Value;
+                            ivlTemps.End = time.Value.AtSec(Cst.SecondeOffset);
 
                             btnBadgerM.Content = "Badger et suspendre";
 
                             btnBadger.IsEnabled = true;
 
                             PrgSwitch.PauseCurrentState = EnumStatePause.HAVE_PAUSES;
-
+                            _mainTimerManager.Resume();
                         }
-                    });
+                    }, -2);
                 }
                 catch (Exception ex)
                 {
@@ -737,7 +835,10 @@ args.Key == Key.F12 ||
                 {
                     Times.PlageTravMatin.Start = DateTime.Parse(p.B0).AtSec(Cst.SecondeOffset);
 
-                    Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, EnumTypesJournees.Complete);
+                    Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
+                        PrgOptions, EnumTypesJournees.Complete)
+                                            + Times.GetTpsPause();
+
 
 
                 }
@@ -761,22 +862,6 @@ args.Key == Key.F12 ||
                 if (p.Pauses != null && p.Pauses.Any())
                 {
                     Times.PausesHorsDelai = p.Pauses;
-                    _logger.Debug("Des pauses sont à charger.");
-                    if (Times.PausesHorsDelai.All(r => r.IsIntervalComplet()))
-                    {
-                        _logger.Debug("> Aucune pause en cours");
-                        btnBadger.IsEnabled = true;
-                        btnBadgerM.Content = "Badger et suspendre";
-                        PrgSwitch.PauseCurrentState = EnumStatePause.HAVE_PAUSES;
-
-                    }
-                    else
-                    {
-                        _logger.Debug("> Une ou plusieurs (!) pauses en cours");
-                        btnBadgerM.Content = "Badger et reprendre";
-                        btnBadger.IsEnabled = false;
-                        PrgSwitch.PauseCurrentState = EnumStatePause.IN_PROGRESS;
-                    }
                 }
 
                 NotifManager.SetNotifShow(Cst.NotifCust1Name, p.IsNotif1Showed);
@@ -791,7 +876,7 @@ args.Key == Key.F12 ||
 
                 AdaptUiLowerThanState();
 
-                ClockUpdTimerOnTick(null, null);
+                ClockUpdTimerOnOnTick(null, null);
 
 
                 if (EnumTypesJournees.IsDemiJournee(TypeJournee))
@@ -811,9 +896,40 @@ args.Key == Key.F12 ||
             }
         }
 
+        private void ReloadPauseState()
+        {
+            if (Times.PausesHorsDelai != null && Times.PausesHorsDelai.Any())
+            {
+
+                _logger.Debug("Des pauses sont à charger.");
+                if (Times.PausesHorsDelai.All(r => r.IsIntervalComplet()))
+                {
+                    _logger.Debug("> Aucune pause en cours");
+                    //  btnBadger.IsEnabled = true;
+                    btnBadgerM.Content = "Badger et suspendre";
+                    PrgSwitch.PauseCurrentState = EnumStatePause.HAVE_PAUSES;
+
+                    Times.EndTheoDateTime = Times.EndTheoDateTime
+                                                   + Times.GetTpsPause();
 
 
-        private void ClockUpdTimerOnTick(object sender, EventArgs eventArgs)
+                    lblEndTime.ContentShortTime(Times.EndTheoDateTime);
+                    lblEndTime.Content += "*";
+                }
+                else
+                {
+                    _logger.Debug("> Une ou plusieurs (!) pauses en cours");
+                    btnBadgerM.Content = "Badger et reprendre";
+                    //  btnBadger.IsEnabled = false;
+                    PrgSwitch.PauseCurrentState = EnumStatePause.IN_PROGRESS;
+
+                    _mainTimerManager.Pause();
+                }
+            }
+        }
+
+
+        private void ClockUpdTimerOnOnTick(object sender, EventArgs eventArgs)
         {
             if (!IsFullyLoaded)
             {
@@ -932,14 +1048,7 @@ args.Key == Key.F12 ||
         private void UpdateInfos()
         {
             TimeSpan tpsRestant = Times.EndTheoDateTime - RealTimeDtNow;
-            if (tpsRestant.TotalSeconds > 0)
-            {
-                lblEndTime.ToolTip = "Reste " + tpsRestant.ToString(Cst.TimeSpanFormatWithH);
-            }
-            else
-            {
-                lblEndTime.ToolTip = "Temps supplémentaire " + tpsRestant.ToString(Cst.TimeSpanFormatWithH);
-            }
+
 
             // Tps trav pour une journée ou une demie-journée.
             TimeSpan tTravTheo = TimesUtils.GetTpsTravTheoriqueOneDay(PrgOptions, TypeJournee);
@@ -951,7 +1060,7 @@ args.Key == Key.F12 ||
                 PrgOptions.IsAdd5minCpt ? "Le temps travaillé prend en compte les 5 min supplémentaires." + Environment.NewLine : "");
 
 
-            String strTpsTrav = RealTimeTempsTravaille.ToString(Cst.TimeSpanFormatWithH);
+            String strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(RealTimeTempsTravaille);
 
             if (PrgSwitch.IsTimeRemainingNotTimeWork)
             {
@@ -960,7 +1069,7 @@ args.Key == Key.F12 ||
                 lblTpsTrav = RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0
                     ? "Temps supplémentaire pour la journée :"
                     : "Temps restant pour la journée :";
-                strTpsTrav = tpsRestant.ToString(Cst.TimeSpanFormatWithH);
+                strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(tpsRestant);
             }
             else
             {
@@ -998,8 +1107,7 @@ args.Key == Key.F12 ||
                         lblTpsTravReel.Foreground = Cst.SCBDarkRed;
                     }
                 }
-                lblTpsTravReelSuppl.Content = String.Format(tplTpsReelSuppl,
-                   (RealTimeTempsTravaille - tTravTheo).ToString(Cst.TimeSpanFormatWithH));
+                lblTpsTravReelSuppl.Content = String.Format(tplTpsReelSuppl, MiscAppUtils.TimeSpanShortStrFormat((RealTimeTempsTravaille - tTravTheo)));
 
 
             }
@@ -1143,12 +1251,15 @@ args.Key == Key.F12 ||
         {
             bool specShowSpecOpt = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
 
+            bool isOrigOptAdd5min = PrgOptions.IsAdd5minCpt;
+
             ShowInTaskbar = true;
             _notifyIcon.Visible = false;
             RestoreWindow();
 
             OptionsView opt = new OptionsView(PrgOptions, PrgSwitch.IsBetaUser, _notifyIcon, specShowSpecOpt, this);
             _logger.Debug("Chargement fenêtre Options");
+
 
             opt.ShowDialog();
 
@@ -1160,9 +1271,19 @@ args.Key == Key.F12 ||
                 OptionManager.SaveOptions(PrgOptions);
                 AdaptUiFromOptions(PrgOptions);
                 UpdaterMgr.XmlUpdFilePath = PrgOptions.UpdateXmlUri;
+                if (EtatBadger < 3) {
+                    if (isOrigOptAdd5min && !PrgOptions.IsAdd5minCpt)
+                    {
+                        Times.EndTheoDateTime += new TimeSpan(0, 5, 0);
+                    } else if (!isOrigOptAdd5min && PrgOptions.IsAdd5minCpt)
+                    {
+                        Times.EndTheoDateTime -= new TimeSpan(0, 5, 0);
+                    }
 
-
+                    lblEndTime.ContentShortTime(Times.EndTheoDateTime);
+                }
             }
+
             if (opt.IsRazNotifs)
             {
                 NotifManager.ResetNotificationShow();
@@ -1171,7 +1292,7 @@ args.Key == Key.F12 ||
             ShowInTaskbar = false;
             _notifyIcon.Visible = true;
 
-            ClockUpdTimerOnTick(null, null);
+            ClockUpdTimerOnOnTick(null, null);
         }
 
         private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
@@ -1179,8 +1300,8 @@ args.Key == Key.F12 ||
 
             if (PrgSwitch.IsRealClose || PrgOptions.ActionButtonClose == EnumActionButtonClose.CLOSE)
             {
-                _clockUpdTimer.Tick -= ClockUpdTimerOnTick;
-                _clockUpdTimer.Stop();
+                _mainTimerManager.OnTick -= ClockUpdTimerOnOnTick;
+                _mainTimerManager.Stop();
 
                 if (PrgOptions.IsFirstRun)
                 {
@@ -1329,7 +1450,7 @@ args.Key == Key.F12 ||
             {
                 AdaptUiForState3();
             }
-            btnBadger.IsEnabled = true;
+            btnBadger.IsEnabled = !Times.PausesHorsDelai.Any(r => !r.IsIntervalComplet());
 
             _logger.Debug("FIN - AdaptUiFromState(...)");
         }
@@ -1461,6 +1582,7 @@ args.Key == Key.F12 ||
                     PrgSwitch.PbarMainTimerActif = true;
                     pbarTime.ToolTip = null;
                     pbarTime.Foreground = Cst.SCBGreenPbar;
+                    btnBadgerM.IsEnabled = true;
                 }
 
                 finPauseMidiTimer = new DispatcherTimer();
@@ -1474,6 +1596,7 @@ args.Key == Key.F12 ||
                         PrgSwitch.PbarMainTimerActif = true;
                         pbarTime.ToolTip = null;
                         pbarTime.Foreground = Cst.SCBGreenPbar;
+                       
                     }
                     else
                     {
@@ -1481,6 +1604,7 @@ args.Key == Key.F12 ||
                         ChangePBarValue(100 * remainingTimer.TotalSeconds / PrgOptions.TempsMinPause.TotalSeconds);
                         pbarTime.Foreground = Cst.SCBGold;
                         PrgSwitch.PbarMainTimerActif = false;
+                        btnBadgerM.IsEnabled = false;
                     }
                 };
                 finPauseMidiTimer.Start();
@@ -1513,6 +1637,7 @@ args.Key == Key.F12 ||
                 PrgSwitch.PbarMainTimerActif = true;
                 pbarTime.ToolTip = null;
                 pbarTime.Foreground = Cst.SCBGreenPbar;
+                btnBadgerM.IsEnabled = true;
             }
 
             PrgSwitch.PbarMainTimerActif = true;
@@ -1523,8 +1648,6 @@ args.Key == Key.F12 ||
             Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
             if (TypeJournee == EnumTypesJournees.Complete)
             {
-
-
 
                 var diffPause = tmpsPause.Value - PrgOptions.TempsMinPause;
 
@@ -1554,10 +1677,11 @@ args.Key == Key.F12 ||
                     btnBadger.ToolTip += " avec un delai de " + (PrgOptions.LastBadgeDelay / 60) + " minutes. " + Environment.NewLine +
                         "Maintenez CTRL pour badger immédiatement. Fermer l'application pour annuler le timer";
                 }
-                if (PrgOptions.IsLastBadgeIsAutoShutdown)
-                {
-                    btnBadger.ToolTip += ". " + Environment.NewLine + "L'ordinateur s'éteindra ensuite.";
-                }
+
+            }
+            if (PrgOptions.IsLastBadgeIsAutoShutdown)
+            {
+                btnBadger.ToolTip += ". " + Environment.NewLine + "L'ordinateur s'éteindra ensuite.";
             }
 
             lblEndTime.ContentShortTime(Times.EndTheoDateTime);
@@ -1565,6 +1689,7 @@ args.Key == Key.F12 ||
             btnBadger.Margin = Cst.BtnBadgerPositionAtRight;
             btnBadger.Visibility = Visibility.Visible;
 
+            btnBadgerM.IsEnabled = true;
 
             lblHmidiE.ContentShortTime(Times.PlageTravAprem.Start);
             lblHmidiE.Visibility = Visibility.Visible;
@@ -1636,7 +1761,7 @@ args.Key == Key.F12 ||
                 tempSuppl.TotalSeconds < 0 ? "-" : "+"));
 
             ctrlTyJournee.IsEnabled = false;
-
+            btnBadgerM.IsEnabled = false;
 
             _nIconBadgerManItem.ToolTipText = null;
             _notifyIconApremLblItem.Visible = true;
@@ -2165,8 +2290,11 @@ args.Key == Key.F12 ||
 
         private void lblTpsTravReel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            PrgSwitch.IsTimeRemainingNotTimeWork = !PrgSwitch.IsTimeRemainingNotTimeWork;
-            UpdateInfos();
+            if (!_mainTimerManager.IsPaused)
+            {
+                PrgSwitch.IsTimeRemainingNotTimeWork = !PrgSwitch.IsTimeRemainingNotTimeWork;
+                UpdateInfos();
+            }
 
         }
 
@@ -2210,7 +2338,7 @@ args.Key == Key.F12 ||
 
                 ChangeTypeJournee();
 
-                ClockUpdTimerOnTick(null, null);
+                ClockUpdTimerOnOnTick(null, null);
 
                 PointageXml.SaveCurrentDayTimes();
 
@@ -2223,7 +2351,7 @@ args.Key == Key.F12 ||
 
         private void pbarTime_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ClockUpdTimerOnTick(null, null);
+            ClockUpdTimerOnOnTick(null, null);
         }
 
 
@@ -2250,7 +2378,7 @@ args.Key == Key.F12 ||
 
                 CoreAudioFactory.AsyncPlaySound(PrgOptions.SoundPlayedAtLockMidi,
                     PrgOptions.SoundDeviceFullName,
-                    (int)PrgOptions.SoundPlayedAtLockMidiVolume,
+                    PrgOptions.SoundPlayedAtLockMidiVolume,
                     onSucessAction, onFailAction);
 
 

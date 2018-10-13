@@ -53,7 +53,7 @@ namespace Badger2018.views
         private bool IsSpecUse { get; set; }
 
         private NotifyIcon NotifyIcon { get; set; }
-        public CoreAudioController CoreAuCtrl { get; private set; }
+   
 
         private OptionsCtxtHelpView c = null;
 
@@ -277,21 +277,20 @@ namespace Badger2018.views
             }
             sliderVolume.Value = opt.SoundPlayedAtLockMidiVolume;
 
+            chkAutoShutdown.IsChecked = opt.IsLastBadgeIsAutoShutdown;
+            chkRemoveLegacyShorcutFirefox.IsChecked = opt.IsRemoveLegacyShorcutFirefox;
+
+
             //Spec
             if (IsSpecUse)
             {
                 chkAutoBadgeMerid.IsChecked = opt.IsAutoBadgeMeridienne;
-
-
-                chkAutoShutdown.IsChecked = opt.IsLastBadgeIsAutoShutdown;
+                             
                 chkDailyDisableAutoBadgeMerid.IsChecked = opt.IsDailyDisableAutoBadgeMerid;
 
                 cboxLastBadgeDelay.SelectedItem = opt.LastBadgeDelay / 60;
 
                 cboxDeltaAutoBadgeage.SelectedItem = opt.DeltaAutoBadgeageMinute / 60;
-
-
-
 
             }
             chkStopAfterMaxTravTime.Visibility = IsSpecUse ? Visibility.Visible : Visibility.Hidden;
@@ -415,14 +414,7 @@ namespace Badger2018.views
                 NewOptions.DeltaAutoBadgeageMinute = selValueD * 60;
             }
 
-            // Option IsLastBadgeIsAutoShutdown
-            chkBox = chkAutoShutdown;
-            if (chkBox.IsChecked != null &&
-                chkBox.IsChecked.Value != OrigOptions.IsLastBadgeIsAutoShutdown)
-            {
-                HasChangeOption = true;
-                NewOptions.IsLastBadgeIsAutoShutdown = chkBox.IsChecked.Value;
-            }
+
 
 
 
@@ -717,7 +709,23 @@ namespace Badger2018.views
                 NewOptions.IsUseAlternateNotification = chkboxAlternateNotifs.IsChecked.Value;
             }
 
+            // Option IsLastBadgeIsAutoShutdown
+            CheckBox chkBox = chkAutoShutdown;
+            if (chkBox.IsChecked != null &&
+                chkBox.IsChecked.Value != OrigOptions.IsLastBadgeIsAutoShutdown)
+            {
+                HasChangeOption = true;
+                NewOptions.IsLastBadgeIsAutoShutdown = chkBox.IsChecked.Value;
+            }
 
+            // Option IsRemoveLegacyShorcutFirefox
+            chkBox = chkRemoveLegacyShorcutFirefox;
+            if (chkBox.IsChecked != null &&
+                chkBox.IsChecked.Value != OrigOptions.IsRemoveLegacyShorcutFirefox)
+            {
+                HasChangeOption = true;
+                NewOptions.IsRemoveLegacyShorcutFirefox = chkBox.IsChecked.Value;
+            }
 
             return false;
         }

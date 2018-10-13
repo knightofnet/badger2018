@@ -38,7 +38,7 @@
 
                     <Label Content="Tps Travail par 1/2 journée :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="167" Margin="191,68,0,0"/>
                     <TextBox x:Name="tboxTpsReglementaireDemieJournee" HorizontalAlignment="Left" Height="23" Margin="191,94,0,0" TextWrapping="Wrap" Text="23:45" VerticalAlignment="Top" Width="63" />
-                   
+
                     <CheckBox x:Name="chkStopAfterMaxTravTimeJournee" Margin="259,148,0,0" VerticalAlignment="Top" ToolTip="Une fois le temps de travail maximum par jour atteint, le compteur arrête de s'incrémenter" HorizontalAlignment="Left" Width="133" Height="28">
                         <AccessText TextWrapping="Wrap" Height="39">Borner le tps travaillé</AccessText>
                     </CheckBox>
@@ -46,8 +46,8 @@
                     <Label Content="Tps travail maximum par 1/2 journée:" HorizontalAlignment="Left" Margin="191,122,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="tboxMaxTravTimeDemi" Height="23" TextWrapping="Wrap" Text="05:30" Margin="191,148,149,0" VerticalAlignment="Top"/>
 
-                    
-                    
+
+
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabNotifs" Header="Notifications">
@@ -163,6 +163,13 @@
                         <AccessText TextWrapping="Wrap" Text="Utiliser une notification alternative à celle du système. Sur des ordinateurs utilisant Windows 7, cela peut rendre les notifications plus visibles" Width="158" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextAlignment="Justify" />
                     </CheckBox>
 
+                    <CheckBox x:Name="chkAutoShutdown" VerticalAlignment="Top" HorizontalAlignment="Left" Width="181" Margin="10,183,0,0">
+                        <AccessText TextWrapping="Wrap" Text="Le dernier badgeage éteint le PC." TextAlignment="Justify" />
+                    </CheckBox>
+
+                    <CheckBox x:Name="chkRemoveLegacyShorcutFirefox" Margin="0,156,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="183">
+                        <AccessText TextWrapping="Wrap" Text="Au démarrage de l'application, dans le raccourci firefox démarrant TamTam et la page GTA, supprime l'Uri vers la page GTA (si cette suppression arrive trop tard, elle sera sans effet)" Width="159" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextAlignment="Justify" />
+                    </CheckBox>
 
                 </Grid>
 
@@ -175,12 +182,8 @@
                     <CheckBox x:Name="chkAutoBadgeMerid" Margin="10,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="181" ToolTip="Vous pouvez aussi double cliquer sur le temps de pause dans la fenêtre principale pour activer cette option">
                         <AccessText TextWrapping="Wrap" Text="Badger la fin de la pause méridienne." TextAlignment="Justify" />
                     </CheckBox>
-                    <CheckBox x:Name="chkDailyDisableAutoBadgeMerid" Margin="10,41,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="181" ToolTip="Vous pouvez aussi double cliquer sur le temps de pause dans la fenêtre principale pour activer cette option">
+                    <CheckBox x:Name="chkDailyDisableAutoBadgeMerid" Margin="10,46,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="181" ToolTip="Vous pouvez aussi double cliquer sur le temps de pause dans la fenêtre principale pour activer cette option">
                         <AccessText TextWrapping="Wrap" Text="Désactiver tous les jours l'option d'auto-badgeage, afin de la réactiver uniquement quand elle est nécessaire." TextAlignment="Justify" />
-                    </CheckBox>
-
-                    <CheckBox x:Name="chkAutoShutdown" Margin="10,125,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="181">
-                        <AccessText TextWrapping="Wrap" Text="Le dernier badgeage éteint le PC." TextAlignment="Justify" />
                     </CheckBox>
 
                     <Label HorizontalAlignment="Right" Margin="0,125,10.4,0" VerticalAlignment="Top" Width="158" Height="49">
@@ -193,8 +196,11 @@
                     <Label Content="Delta auto-badgeage midi :" HorizontalAlignment="Right" Margin="0,10,10.4,0" VerticalAlignment="Top" Width="158" ToolTip="Délai maximum (aléatoire), en minutes, après le temps minimum obligatoire de pause avant de badger automatiquement la fin de la pause méridienne"/>
                     <ComboBox x:Name="cboxDeltaAutoBadgeage" HorizontalAlignment="Right" Margin="0,36,10.4,0" VerticalAlignment="Top" Width="120" />
 
+
+
                 </Grid >
             </TabItem>
+
 
 
 

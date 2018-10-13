@@ -20,8 +20,8 @@ namespace Badger2018.utils
 
         public static void SaveScreenshot(DateTime refDtTime, string str, RemoteWebDriver driver)
         {
-
-            driver.GetScreenshot().SaveAsFile(Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(refDtTime, str + ""));
+            driver.GetScreenshot().SaveAsFile(Cst.ScreenshotDir + "tmpScreenshot.png");
+            //driver.GetScreenshot().SaveAsFile(Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(refDtTime, str + ""));
         }
 
         public static IWebElement FindEltById(string idVerif, IWebDriver driver, int nbTentative = 4)

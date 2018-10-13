@@ -74,23 +74,24 @@ namespace Badger2018.views
                 FriseDayControl fr = new FriseDayControl(lblDtime.Time, lblDtime.BadgeageName, lblDtime.BadgeageInfo);
                 fr.LTag = lblDtime.LTag;
                 fr.Color = lblDtime.Color;
+                fr.EtatBadgeageAssociated = lblDtime.EtatBadgeage;
 
                 fr.Margin = new Thickness(0, 0, 0, 10);
 
                 fr.RefreshUi();
                 fr.OnClickBtnSeeScreenshot += time =>
                 {
-                    string fileScreenshot = MiscAppUtils.GetFileNameScreenshot(time, EtatBadgeageRef + "");
+                    string fileScreenshot = MiscAppUtils.GetFileNameScreenshot(time, fr.EtatBadgeageAssociated  + "");
 
                     ProcessStartInfo processStartInfo = new ProcessStartInfo("explorer.exe", Path.GetFullPath(Path.Combine(Cst.ScreenshotDir, fileScreenshot)));
                     Process.Start(processStartInfo);
                     // FileUtils.(Path.Combine(Cst.ScreenshotDir, fileScreenshot));
                 };
 
-                string fileSshot = MiscAppUtils.GetFileNameScreenshot(lblDtime.Time, EtatBadgeageRef + "");
+                string fileSshot = MiscAppUtils.GetFileNameScreenshot(lblDtime.Time, fr.EtatBadgeageAssociated + "");
 
                 fr.SetBtnScreenshotVisible(System.IO.File.Exists(Path.Combine(Cst.ScreenshotDir, fileSshot)));
-
+                fr.SetEndBloc(lblDtime.IsEndBloc);
 
                 stackBadgeage.Children.Add(fr);
 
@@ -107,6 +108,11 @@ namespace Badger2018.views
                     lbl.Content = String.Format("Temps travaillé l'après-midi : {0}", TimesRef.PlageTravAprem.GetDuration().ToString(Cst.TimeSpanFormatWithH));
                     stackBadgeage.Children.Add(lbl);
                 }
+
+                if (!StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("Pause"))
+                {
+                    fr.Margin = new Thickness(10, fr.Margin.Top, fr.Margin.Right, fr.Margin.Bottom);
+                }
             }
         }
 
@@ -117,6 +123,7 @@ namespace Badger2018.views
             {
                 labelledDateTime = new LabelledDateTime("Premier badgeage de la journée", "Début de la matinée", times.PlageTravMatin.Start);
                 labelledDateTime.Color = Colors.DodgerBlue;
+                labelledDateTime.EtatBadgeage = -1;
                 ListIvlDay.Add(labelledDateTime);
             }
 
@@ -127,6 +134,8 @@ namespace Badger2018.views
                    times.PlageTravMatin.EndOrDft);
                 labelledDateTime.Color = Colors.DodgerBlue;
                 labelledDateTime.LTag = "FinMatin";
+                labelledDateTime.EtatBadgeage = 0;
+                labelledDateTime.IsEndBloc = true;
                 ListIvlDay.Add(labelledDateTime);
 
 
@@ -137,6 +146,7 @@ namespace Badger2018.views
                 labelledDateTime = new LabelledDateTime("Badgeage du début de l'après-midi", "Début de l'après-midi",
                    times.PlageTravAprem.Start);
                 labelledDateTime.Color = Colors.Goldenrod;
+                labelledDateTime.EtatBadgeage = 1;
                 ListIvlDay.Add(labelledDateTime);
             }
             if (etatBadgeage >= 3 && times.IsEndApremBadged())
@@ -145,18 +155,22 @@ namespace Badger2018.views
                    times.PlageTravAprem.EndOrDft);
                 labelledDateTime.Color = Colors.Goldenrod;
                 labelledDateTime.LTag = "FinAprem";
+                labelledDateTime.EtatBadgeage = 2;
+                labelledDateTime.IsEndBloc = true;
                 ListIvlDay.Add(labelledDateTime);
             }
 
             foreach (IntervalTemps pause in times.PausesHorsDelai)
             {
-                string pausePlusStr = pause.IsIntervalComplet() ? "pause terminée" : "pause en cours";
+                string pausePlusStr = pause.IsIntervalComplet() ? "" : "Pause en cours";
 
                 LabelledDateTime lStart = new LabelledDateTime(
-                    String.Format("Pause commencée à {0}", pause.Start.ToString(Cst.TimeSpanFormatWithH)),
-                    "",
+                   "Début de la pause",
+                    pausePlusStr,
                     pause.Start);
-                lStart.Color = Colors.DarkRed;
+                lStart.Color = pause.IsIntervalComplet() ? Colors.DarkRed : Colors.IndianRed;
+                lStart.LTag = "Pause";
+                lStart.EtatBadgeage = -2;
 
                 ListIvlDay.Add(lStart);
 
@@ -164,9 +178,12 @@ namespace Badger2018.views
                 {
                     LabelledDateTime lEnd = new LabelledDateTime(
                         String.Format("Fin de la pause commencée à {0}", pause.Start.ToString(Cst.TimeSpanFormatWithH)),
-                        pausePlusStr,
+                        String.Format("Durée de la pause : {0}", MiscAppUtils.TimeSpanShortStrFormat(pause.GetDuration())),
                         pause.EndOrDft);
                     lEnd.Color = Colors.DarkRed;
+                    lEnd.LTag = "Pause";
+                    lEnd.EtatBadgeage = -2;
+                    lEnd.IsEndBloc = true;
                     ListIvlDay.Add(lEnd);
                 }
             }
@@ -193,6 +210,8 @@ namespace Badger2018.views
             public DateTime Time { get; set; }
             public Color Color { get; set; }
             public string LTag { get; set; }
+            public int EtatBadgeage { get; internal set; }
+            public bool IsEndBloc { get; internal set; }
 
             public LabelledDateTime(string badgeageName, string badgeageInfo, DateTime time)
             {

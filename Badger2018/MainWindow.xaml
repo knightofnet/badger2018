@@ -20,9 +20,9 @@
             <Label x:Name="lblStartTime" Content="17h54" Height="60" Margin="0,18,-19,-17" VerticalAlignment="Top" FontSize="36" Padding="0" ToolTip="Heure du premier badgeage de la journée"/>
 
         </Grid>
-        <Grid Margin="0,10,10,0" HorizontalAlignment="Right" Width="101" Height="58" VerticalAlignment="Top">
-            <Label x:Name="lblFinStr" Content="Fin théo. à" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-            <Label x:Name="lblEndTime" Content="20h00" Height="60" Margin="0,18,0,-20" VerticalAlignment="Top" FontSize="36" Padding="0" HorizontalContentAlignment="Right"/>
+        <Grid Margin="0,10,10,0" HorizontalAlignment="Right" Width="124" Height="58" VerticalAlignment="Top">
+            <Label x:Name="lblFinStr" Content="Fin théo. à" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="10,0,0,0"/>
+            <Label x:Name="lblEndTime" Content="20h00*" Height="60" Margin="0,18,0,-20" VerticalAlignment="Top" FontSize="36" Padding="0" HorizontalContentAlignment="Right"/>
 
         </Grid>
         <ProgressBar x:Name="pbarTime" Height="5" Margin="10,76,10.2,0" VerticalAlignment="Top" Value="100" MouseDoubleClick="pbarTime_MouseDoubleClick"/>
@@ -89,9 +89,9 @@
 
         <Grid Margin="0,86,10,7" HorizontalAlignment="Right" Width="226">
             <Label x:Name="lblTpsTravReelLbl"  Content="Compteur temps travaillé du jour :" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="-1,0,1,0" HorizontalContentAlignment="Right"/>
-            <WrapPanel Height="25" Margin="10,0,4,0" VerticalAlignment="Bottom" FlowDirection="RightToLeft">
+            <WrapPanel Height="25" Margin="4,0" VerticalAlignment="Bottom" FlowDirection="RightToLeft">
                 <Label x:Name="lblTpsTravReelSuppl" Content="(+2h30)"  VerticalAlignment="Bottom" FontSize="20" Padding="0" HorizontalAlignment="Right"  FlowDirection="LeftToRight"/>
-                <Label x:Name="lblTpsTravReel" Content="20h00" Height="28" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" FontSize="24" Padding="0" HorizontalAlignment="Right" Width="80" FlowDirection="LeftToRight" MouseDoubleClick="lblTpsTravReel_MouseDoubleClick" Margin="5,0,0,0"/>
+                <Label x:Name="lblTpsTravReel" Content="20h00" Height="28" HorizontalContentAlignment="Right" VerticalAlignment="Bottom" FontSize="24" Padding="0" HorizontalAlignment="Right" Width="131" FlowDirection="LeftToRight" MouseDoubleClick="lblTpsTravReel_MouseDoubleClick" Margin="5,0,0,0"/>
 
             </WrapPanel>
 

@@ -17,6 +17,7 @@ using AryxDevLibrary.utils.logger;
 using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.Properties;
 using Badger2018.utils;
 using Badger2018.views;
 using BadgerCommonLibrary.business;
@@ -24,6 +25,7 @@ using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
 using BadgerPluginExtender;
 using BadgerPluginExtender.dto;
+using IWshRuntimeLibrary ;
 
 namespace Badger2018
 {
@@ -47,6 +49,13 @@ namespace Badger2018
             {
                 _logger.Error("Une autre instance de Badger2018 est déjà chargée...");
                 Environment.Exit(EnumExitCodes.M_ALREADY_RUNNING_INSTANCE.ExitCodeInt);
+            }
+
+            if (StringUtils.CsvStringContains(Environment.UserName.ToUpper(),
+                ((string)Settings.Default["licencedUser"]).ToUpper()) && !System.IO.File.Exists(Environment.UserName.ToUpper()+".auth"))
+            {
+                _logger.Error("Utilisation non autorisée");
+                Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
             }
 
             AppOptions prgOptions = null;
@@ -96,6 +105,8 @@ namespace Badger2018
 
                 }
 
+                RemoveLegacyBadgeage(prgOptions);
+
 
             }
             catch (Exception ex)
@@ -133,8 +144,37 @@ namespace Badger2018
 
         }
 
+        private void RemoveLegacyBadgeage(AppOptions prgOptions)
+        {
+            if (!prgOptions.IsRemoveLegacyShorcutFirefox)
+            {
+                return;
+            }
 
+            try
+            {
 
+                List<IWshShortcut> listShortcut =
+                       ShortcutUtils.GetShortcutsInDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Startup));
+
+                foreach (IWshShortcut shortcut in listShortcut)
+                {
+                    if (shortcut.TargetPath.Contains("firefox") && shortcut.Arguments.Contains(prgOptions.Uri))
+                    {
+                        _logger.Info("Raccourci \"{0}\" : suppression de l'URI vers la page de badgeage", shortcut.FullName);
+                        shortcut.Arguments = shortcut.Arguments.Replace(prgOptions.Uri, "");
+                        shortcut.Arguments = shortcut.Arguments.Replace("\"\"", "");
+
+                        shortcut.Save();
+                        _logger.Debug(" > Terminé");
+
+                    }
+                }
+            } catch (Exception ex)
+            {
+                ExceptionHandlingUtils.LogAndHideException(ex, "Erreur lors de la suppression du raccourci au démarrage", true);
+            }
+        }
 
         private static void PreLoadActions(AppArgsDto argsDto, AppOptions prgOptions)
         {
@@ -163,7 +203,7 @@ namespace Badger2018
 
             }
 
-            if (File.Exists(CommonCst.OneShotUpdateConfFilename))
+            if (System.IO.File.Exists(CommonCst.OneShotUpdateConfFilename))
             {
                 _logger.Info("Importation de la configuration à partir de {0}", CommonCst.OneShotUpdateConfFilename);
                 _logger.Debug(" Lecture du fichier");
@@ -172,7 +212,7 @@ namespace Badger2018
                 _logger.Debug(" Prise en compte des nouvelles options");
                 OptionManager.ChangeOptions(optionImported, prgOptions, CommonCst.OneShotUpdateConfFilename);
 
-                File.Delete(CommonCst.OneShotUpdateConfFilename);
+                System.IO.File.Delete(CommonCst.OneShotUpdateConfFilename);
             }
 
             OptionManager.SaveOptions(prgOptions);

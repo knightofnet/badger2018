@@ -30,15 +30,20 @@ namespace Badger2018.business
         private BackgroundWorker _badgeageBackgrounder = null;
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
-        private readonly Action _actionAfterBadgeage;
+        private readonly Action<DateTime?, int> _actionAfterBadgeage;
         public MainWindow Pwin { get; set; }
 
         public BadgerWorker(MainWindow pwin)
         {
             Pwin = pwin;
 
-            _actionAfterBadgeage = () =>
+            _actionAfterBadgeage = (dtTime, etatBadger) =>
             {
+                if (dtTime.HasValue && File.Exists(Cst.ScreenshotDir + "tmpScreenshot.png"))
+                {
+                    File.Move(Cst.ScreenshotDir + "tmpScreenshot.png", 
+                        Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(dtTime.Value.AtSec(Cst.SecondeOffset), etatBadger  + ""));
+                }
                 if (Pwin.EtatBadger != -1)
                 {
                     _logger.Info("Sauvegarde de la session (EtatBadger: {0})", Pwin.EtatBadger);
@@ -78,7 +83,7 @@ namespace Badger2018.business
                 try
                 {
 
-                    BadgeAction(url, idElt, idVerif, afterWork);
+                    BadgeAction(url, idElt, idVerif, afterWork, Pwin.EtatBadger );
                     return AppDateUtils.DtNow().AtSec(Cst.SecondeOffset);
                 }
                 catch (Exception ex)
@@ -145,7 +150,7 @@ namespace Badger2018.business
             }
         }
 
-        internal bool BadgeAction(String url, String idElt, String idVerif, Action<DateTime?> afterWork)
+        internal bool BadgeAction(String url, String idElt, String idVerif, Action<DateTime?> afterWork, int etatBadger)
         {
             BadgeageProgressView progress = new BadgeageProgressView();
             progress.Show();
@@ -187,7 +192,7 @@ namespace Badger2018.business
                 {
                     _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
                     afterWork(dtNow);
-                    _actionAfterBadgeage();
+                    _actionAfterBadgeage(dtNow, etatBadger);
                     if (progress != null)
                     {
                         progress.Hide();
@@ -262,49 +267,19 @@ namespace Badger2018.business
                     {
                         _logger.Info("Erreur lors du badgeage : consultation pointage");
                         MiscAppUtils.GoTo(Pwin.PrgOptions.UrlMesPointages);
-                        Thread.Sleep(2000);
-                        Pwin.RestoreWindow();
-                        DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
-                        _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
-                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
-                        afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
-                        if (progress != null)
-                        {
-                            progress.Hide();
-                        }
-                        _actionAfterBadgeage();
+                        CommonAfterReprise(afterWork, progress, etatBadger);
                     }
                     if (response == EnumErrorCodeRetour.OPEN_SIRHIUS)
                     {
                         _logger.Info("Erreur lors du badgeage : ouverture de Sirhius");
                         MiscAppUtils.GoTo(Pwin.PrgOptions.UrlSirhius);
-                        Thread.Sleep(2000);
-                        Pwin.RestoreWindow();
-                        DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
-                        _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
-                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
-                        afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
-                        if (progress != null)
-                        {
-                            progress.Hide();
-                        }
-                        _actionAfterBadgeage();
+                        CommonAfterReprise(afterWork, progress, etatBadger);
                     }
                     if (response == EnumErrorCodeRetour.OPEN_BADGE_PAGE)
                     {
                         _logger.Info("Erreur lors du badgeage : ouverture page badgeage");
                         MiscAppUtils.GoTo(Pwin.PrgOptions.Uri);
-                        Thread.Sleep(2000);
-                        Pwin.RestoreWindow();
-                        DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
-                        _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
-                        _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
-                        afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
-                        if (progress != null)
-                        {
-                            progress.Hide();
-                        }
-                        _actionAfterBadgeage();
+                        CommonAfterReprise(afterWork, progress, etatBadger);
 
                     }
                     if (response == EnumErrorCodeRetour.RETRY)
@@ -329,6 +304,20 @@ namespace Badger2018.business
 
         }
 
+        private void CommonAfterReprise(Action<DateTime?> afterWork, BadgeageProgressView progress, int etatBadger)
+        {
+            Thread.Sleep(2000);
+            Pwin.RestoreWindow();
+            DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
+            _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
+            _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
+            afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
+            if (progress != null)
+            {
+                progress.Hide();
+            }
+            _actionAfterBadgeage(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset), etatBadger );
+        }
 
         private void BadgeageEtapeP2(bool forceWhenMsg)
         {
@@ -440,7 +429,7 @@ namespace Badger2018.business
                     _logger.Error("Badgeage non effectué, ou incomplet");
                     return;
                 }
-                Pwin.Times.PlageTravAprem.Start = b.Value;
+                Pwin.Times.PlageTravAprem.Start = b.Value.AtSec(Cst.SecondeOffset);
 
                 tmpsPause = Pwin.Times.PlageTravAprem.Start - Pwin.Times.PlageTravMatin.EndOrDft;
 
@@ -539,7 +528,7 @@ namespace Badger2018.business
 
 
 
-                if (Pwin.PrgSwitch.IsBetaUser && Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
+                if (Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
                 {
                     var psi = new ProcessStartInfo("shutdown", "/s /t 10");
                     psi.CreateNoWindow = true;

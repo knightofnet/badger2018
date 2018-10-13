@@ -37,6 +37,12 @@ namespace BadgerCommonLibrary.constants
         public static readonly EnumExitCodes M_ERROR_LOADING_APP = new EnumExitCodes(151, "Erreur lors du chargement des options ou lors des tâches de pré-chargement de l'interface");
 
         /// <summary>
+        /// Code 152, "Erreur utilisateur non autorisé"
+        /// </summary>
+        public static readonly EnumExitCodes M_NOT_LICENCED_USER = new EnumExitCodes(152, "Erreur utilisateur non autorisé");
+
+
+        /// <summary>
         /// Code 199, "Erreur inconnue"
         /// </summary>
         public static readonly EnumExitCodes M_ERROR_UNKNOW_IN_APP = new EnumExitCodes(199, "Erreur inconnue");

@@ -30,13 +30,13 @@ namespace Badger2018.views.usercontrols
 
         public String LTag { get; set; }
         public Color Color { get; set; }
-
-
+        public int EtatBadgeageAssociated { get; internal set; }
 
         public FriseDayControl()
         {
             InitializeComponent();
             mainGrid.Background = null;
+            EtatBadgeageAssociated = -2;
 
 
         }
@@ -58,6 +58,8 @@ namespace Badger2018.views.usercontrols
             lblMoreStr.Content = SubTitle;
             rectColor.Fill = new SolidColorBrush(Color);
             rectSep.Fill = new SolidColorBrush(Color);
+            rectEndSepBottom.Stroke = new SolidColorBrush(Color);
+            rectEndSepBottom.Fill = new SolidColorBrush(Color);
         }
 
         public void SetBtnScreenshotVisible(bool isVisible)
@@ -73,6 +75,10 @@ namespace Badger2018.views.usercontrols
             }
         }
 
+        public void SetEndBloc(bool value)
+        {
+            rectEndSepBottom.Visibility = value ? Visibility.Visible : Visibility.Hidden;
+        }
 
     }
 }

@@ -15,10 +15,22 @@ namespace Badger2018.utils
         {
             DateTime retDt = startTime;
 
+            Action<DateTime, AppOptions> actionsCommunes = (dateTimeRet, locAppOption) =>
+            {
+                // Retire 5 min au temps travaillé.
+                if (appOptions.IsAdd5minCpt)
+                {
+                    retDt -= new TimeSpan(0, 5, 0);
+                }
+            };
+
+
+
             if (EnumTypesJournees.Complete == tyJournee)
             {
 
                 retDt = startTime + appOptions.TempsDemieJournee + appOptions.TempsDemieJournee + appOptions.TempsMinPause;
+                actionsCommunes(retDt, appOptions);
                 if (retDt.TimeOfDay.CompareTo(appOptions.PlageFixeApremFin) < 0)
                 {
                     retDt = retDt.ChangeTime(appOptions.PlageFixeApremFin);
@@ -29,6 +41,7 @@ namespace Badger2018.utils
             if (EnumTypesJournees.ApresMidi == tyJournee)
             {
                 retDt = startTime + appOptions.TempsDemieJournee;
+                actionsCommunes(retDt, appOptions);
                 if (retDt.TimeOfDay.CompareTo(appOptions.PlageFixeApremFin) < 0)
                 {
                     retDt = retDt.ChangeTime(appOptions.PlageFixeApremFin);
@@ -36,7 +49,10 @@ namespace Badger2018.utils
                 return retDt;
             }
 
+
+            // Matin
             retDt = startTime + appOptions.TempsDemieJournee;
+            actionsCommunes(retDt, appOptions);
             if (retDt.TimeOfDay.CompareTo(appOptions.PlageFixeMatinFin) < 0)
             {
                 retDt = retDt.ChangeTime(appOptions.PlageFixeMatinFin);
