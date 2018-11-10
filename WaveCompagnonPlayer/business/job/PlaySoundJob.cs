@@ -61,8 +61,6 @@ namespace WaveCompagnonPlayer.business.job
                     }
 
                     originalVolume = device.Volume;
-                    // TODO !!!
-                    // device.Volume = prgOptions.SoundPlayedAtLockMidiVolume;
                     device.Volume = prgOptions.SoundVolume;
 
 

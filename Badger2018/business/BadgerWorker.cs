@@ -41,13 +41,13 @@ namespace Badger2018.business
             {
                 if (dtTime.HasValue && File.Exists(Cst.ScreenshotDir + "tmpScreenshot.png"))
                 {
-                    File.Move(Cst.ScreenshotDir + "tmpScreenshot.png", 
-                        Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(dtTime.Value.AtSec(Cst.SecondeOffset), etatBadger  + ""));
+                    File.Move(Cst.ScreenshotDir + "tmpScreenshot.png",
+                        Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(dtTime.Value.AtSec(Cst.SecondeOffset), etatBadger + ""));
                 }
                 if (Pwin.EtatBadger != -1)
                 {
                     _logger.Info("Sauvegarde de la session (EtatBadger: {0})", Pwin.EtatBadger);
-                    Pwin.PointageXml.SaveCurrentDayTimes();
+                    Pwin.PointageSaverObj.SaveCurrentDayTimes();
                 }
             };
         }
@@ -83,7 +83,7 @@ namespace Badger2018.business
                 try
                 {
 
-                    BadgeAction(url, idElt, idVerif, afterWork, Pwin.EtatBadger );
+                    BadgeAction(url, idElt, idVerif, afterWork, Pwin.EtatBadger);
                     return AppDateUtils.DtNow().AtSec(Cst.SecondeOffset);
                 }
                 catch (Exception ex)
@@ -152,7 +152,7 @@ namespace Badger2018.business
 
         internal bool BadgeAction(String url, String idElt, String idVerif, Action<DateTime?> afterWork, int etatBadger)
         {
-            BadgeageProgressView progress = new BadgeageProgressView();
+            BadgeageProgressView progress = new BadgeageProgressView(Pwin.PrgOptions);
             progress.Show();
 
 
@@ -290,7 +290,7 @@ namespace Badger2018.business
                             progress.Hide();
                         }
 
-                        progress = new BadgeageProgressView();
+                        progress = new BadgeageProgressView(Pwin.PrgOptions);
                         progress.Show();
                         _badgeageBackgrounder.RunWorkerAsync();
                     }
@@ -316,7 +316,7 @@ namespace Badger2018.business
             {
                 progress.Hide();
             }
-            _actionAfterBadgeage(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset), etatBadger );
+            _actionAfterBadgeage(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset), etatBadger);
         }
 
         private void BadgeageEtapeP2(bool forceWhenMsg)

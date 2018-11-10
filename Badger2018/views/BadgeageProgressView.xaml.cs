@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Badger2018.constants;
+using Badger2018.dto;
 
 namespace Badger2018.views
 {
@@ -22,9 +24,11 @@ namespace Badger2018.views
     {
         private readonly List<Image> _lstImage;
         private readonly List<Label> _lstLabel;
+        private AppOptions prgOptionRef;
+
         public BackgroundWorker BackgrounderRef { get; internal set; }
 
-        public BadgeageProgressView()
+        public BadgeageProgressView(dto.AppOptions prgOptions)
         {
             InitializeComponent();
 
@@ -32,6 +36,8 @@ namespace Badger2018.views
             _lstImage = new List<Image>(6) { tickEt1, tickEt2, tickEt3, tickEt4, tickEt5, tickEt6 };
 
             RaZProgress();
+
+            prgOptionRef = prgOptions;
 
         }
 
@@ -95,6 +101,22 @@ namespace Badger2018.views
             if (BackgrounderRef != null && !BackgrounderRef.CancellationPending)
             {
                 BackgrounderRef.CancelAsync();
+
+                btnCancelBadgeage.Content = "Annulation prise en compte";
+
+                String browserProcessDriver = null;
+                if (prgOptionRef.BrowserIndex == EnumBrowser.FF )
+                {
+                    browserProcessDriver = "geckodriver";
+                } else if(prgOptionRef.BrowserIndex == EnumBrowser.IE)
+                {
+                    browserProcessDriver = "IEDriverServer";
+                }
+
+                foreach (var process in Process.GetProcessesByName(browserProcessDriver))
+                {
+                    process.Kill();
+                }
             }
         }
     }

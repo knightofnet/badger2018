@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using AryxDevLibrary.utils;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.dto.bdd;
+using Badger2018.services;
 using Badger2018.utils;
 using Badger2018.views.usercontrols;
 using BadgerCommonLibrary.utils;
@@ -27,38 +29,45 @@ namespace Badger2018.views
     /// </summary>
     public partial class MoreDetailsView : Window
     {
-        public EnumTypesJournees TyJourneeRef { get; private set; }
+        //public EnumTypesJournees TyJourneeRef { get; private set; }
 
-        public int EtatBadgeageRef { get; private set; }
+        //public int EtatBadgeageRef { get; private set; }
 
-        public TimesBadgerDto TimesRef { get; private set; }
+        //public TimesBadgerDto TimesRef { get; private set; }
 
-        private List<LabelledDateTime> ListIvlDay { get; set; }
+        //private List<LabelledDateTime> ListIvlDay { get; set; }
         private AppOptions PrgOptions { get; set; }
         public bool IsMustLoadsModTimeView { get; set; }
+
+        public DateTime currentShowDay;
+
+        private Dictionary<String, List<LabelledDateTime>> _memoryDay;
 
         public MoreDetailsView(TimesBadgerDto times, int etatBadgeage, EnumTypesJournees typesJournees, AppOptions prgOptions)
         {
             InitializeComponent();
+            btnNextDay.Visibility = Visibility.Collapsed;
 
-            TimesRef = times;
-            EtatBadgeageRef = etatBadgeage;
-            TyJourneeRef = typesJournees;
+            currentShowDay = AppDateUtils.DtNow();
+
+            _memoryDay = new Dictionary<string, List<LabelledDateTime>>(1);
+
+
             PrgOptions = prgOptions;
 
-
-            ListIvlDay = new List<LabelledDateTime>(4);
-
-            SetListValue(times, etatBadgeage);
-
-            InitStackPanel();
+            // On initiliase la fenetre avec le jours courant
+            List<LabelledDateTime> listIvlDayForDay = SetListValueForCurrentDay(times, etatBadgeage, typesJournees);
+            _memoryDay.Add(times.TimeRef.ToString("d"), listIvlDayForDay);
 
 
-            lblTyJournee.Content = TyJourneeRef.Libelle;
-            lblCurrentDay.Content = TimesRef.TimeRef.ToString("D");
+            InitStackPanel(listIvlDayForDay, times);
+
+
+            lblTyJournee.Content = typesJournees.Libelle;
+            lblCurrentDay.Content = times.TimeRef.ToString("D");
 
             bool isMaxDepass = false;
-            var a = TimesUtils.GetTempsTravaille(AppDateUtils.DtNow(), EtatBadgeageRef, TimesRef, prgOptions, TyJourneeRef, true,
+            var a = TimesUtils.GetTempsTravaille(AppDateUtils.DtNow(), etatBadgeage, times, prgOptions, typesJournees, true,
                 ref isMaxDepass);
             lblTempsTrav.Content = a.ToString(Cst.TimeSpanFormatWithH);
 
@@ -66,10 +75,10 @@ namespace Badger2018.views
 
 
 
-        private void InitStackPanel()
+        private void InitStackPanel(List<LabelledDateTime> listIvlForDay, TimesBadgerDto times)
         {
             stackBadgeage.Children.Clear();
-            foreach (LabelledDateTime lblDtime in ListIvlDay)
+            foreach (LabelledDateTime lblDtime in listIvlForDay)
             {
                 FriseDayControl fr = new FriseDayControl(lblDtime.Time, lblDtime.BadgeageName, lblDtime.BadgeageInfo);
                 fr.LTag = lblDtime.LTag;
@@ -81,7 +90,7 @@ namespace Badger2018.views
                 fr.RefreshUi();
                 fr.OnClickBtnSeeScreenshot += time =>
                 {
-                    string fileScreenshot = MiscAppUtils.GetFileNameScreenshot(time, fr.EtatBadgeageAssociated  + "");
+                    string fileScreenshot = MiscAppUtils.GetFileNameScreenshot(time, fr.EtatBadgeageAssociated + "");
 
                     ProcessStartInfo processStartInfo = new ProcessStartInfo("explorer.exe", Path.GetFullPath(Path.Combine(Cst.ScreenshotDir, fileScreenshot)));
                     Process.Start(processStartInfo);
@@ -98,14 +107,14 @@ namespace Badger2018.views
                 if (!StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("FinMatin"))
                 {
                     Label lbl = new Label();
-                    lbl.Content = String.Format("Temps travaillé le matin : {0}", TimesRef.PlageTravMatin.GetDuration().ToString(Cst.TimeSpanFormatWithH));
+                    lbl.Content = String.Format("Temps travaillé le matin : {0}", times.GetTpsTravMatin().ToString(Cst.TimeSpanFormatWithH));
                     stackBadgeage.Children.Add(lbl);
                 }
 
                 if (!StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("FinAprem"))
                 {
                     Label lbl = new Label();
-                    lbl.Content = String.Format("Temps travaillé l'après-midi : {0}", TimesRef.PlageTravAprem.GetDuration().ToString(Cst.TimeSpanFormatWithH));
+                    lbl.Content = String.Format("Temps travaillé l'après-midi : {0}", times.GetTpsTravAprem().ToString(Cst.TimeSpanFormatWithH));
                     stackBadgeage.Children.Add(lbl);
                 }
 
@@ -116,48 +125,93 @@ namespace Badger2018.views
             }
         }
 
-        private void SetListValue(TimesBadgerDto times, int etatBadgeage)
+        public LabelledDateTime NewLabelledDt(string title, string subtitle, string tag, int etatBadgeage, bool isEndBloc,
+            DateTime time, Color color)
         {
+            LabelledDateTime labelledDateTime = new LabelledDateTime(title, subtitle,
+                        time);
+            labelledDateTime.Color = color;
+            labelledDateTime.LTag = tag;
+            labelledDateTime.EtatBadgeage = etatBadgeage;
+            labelledDateTime.IsEndBloc = isEndBloc;
+            return labelledDateTime;
+            ;
+        }
+
+        private List<LabelledDateTime> SetListValueForCurrentDay(TimesBadgerDto times, int etatBadgeage, EnumTypesJournees typesJournees)
+        {
+
+            List<LabelledDateTime> listIvlDayForDay = new List<LabelledDateTime>(4);
+
             LabelledDateTime labelledDateTime = null;
-            if (etatBadgeage >= 0 && times.IsStartMatinBadged())
+
+            if (EnumTypesJournees.Complete == typesJournees || EnumTypesJournees.Matin == typesJournees)
             {
-                labelledDateTime = new LabelledDateTime("Premier badgeage de la journée", "Début de la matinée", times.PlageTravMatin.Start);
-                labelledDateTime.Color = Colors.DodgerBlue;
-                labelledDateTime.EtatBadgeage = -1;
-                ListIvlDay.Add(labelledDateTime);
+
+                if (etatBadgeage >= 0 && times.IsStartMatinBadged())
+                {
+                    labelledDateTime = NewLabelledDt("Premier badgeage de la journée", "Début de la matinée", null, -1,
+                        false, times.PlageTravMatin.Start, Colors.DodgerBlue);
+                    listIvlDayForDay.Add(labelledDateTime);
+                }
+
+                DateTime dt = new DateTime();
+                int nextEtatBadgeage = 0;
+                bool addNotif = false;
+
+                if (EnumTypesJournees.Complete == typesJournees && etatBadgeage >= 1 && times.IsEndMatinBadged())
+                {
+                    dt = times.PlageTravMatin.EndOrDft;
+                    addNotif = true;
+                }
+                if (EnumTypesJournees.Matin == typesJournees && etatBadgeage >= 3 && times.IsEndApremBadged())
+                {
+                    dt = times.PlageTravAprem.EndOrDft;
+                    nextEtatBadgeage = 2;
+                    addNotif = true;
+                }
+
+                if (addNotif)
+                {
+                    labelledDateTime = NewLabelledDt("Badgeage de fin de matinée", "Fin de la matinée", "FinMatin",
+                        nextEtatBadgeage, true, dt, Colors.DodgerBlue);
+                    listIvlDayForDay.Add(labelledDateTime);
+                }
+
             }
 
 
-            if (etatBadgeage >= 1 && times.IsEndMatinBadged())
+            if (EnumTypesJournees.Complete == typesJournees || EnumTypesJournees.ApresMidi == typesJournees)
             {
-                labelledDateTime = new LabelledDateTime("Badgeage de fin de matinée", "Fin de la matinée",
-                   times.PlageTravMatin.EndOrDft);
-                labelledDateTime.Color = Colors.DodgerBlue;
-                labelledDateTime.LTag = "FinMatin";
-                labelledDateTime.EtatBadgeage = 0;
-                labelledDateTime.IsEndBloc = true;
-                ListIvlDay.Add(labelledDateTime);
+                DateTime dt = new DateTime();
+                int nextEtatBadgeage = 0;
+                bool addNotif = false;
 
+                if (EnumTypesJournees.Complete == typesJournees && etatBadgeage >= 2 && times.IsStartApremBadged())
+                {
+                    dt = times.PlageTravAprem.Start;
+                    nextEtatBadgeage = 1;
+                    addNotif = true;
+                }
+                if (EnumTypesJournees.ApresMidi == typesJournees && etatBadgeage >= 0 && times.IsStartMatinBadged())
+                {
+                    dt = times.PlageTravMatin.Start;
+                    nextEtatBadgeage = -1;
+                    addNotif = true;
+                }
+                if (addNotif)
+                {
+                    labelledDateTime = NewLabelledDt("Badgeage du début de l'après-midi", "Début de l'après-midi", null,
+                        nextEtatBadgeage, false, dt, Colors.Goldenrod);
+                    listIvlDayForDay.Add(labelledDateTime);
+                }
 
-            }
-
-            if (etatBadgeage >= 2 && times.IsStartApremBadged())
-            {
-                labelledDateTime = new LabelledDateTime("Badgeage du début de l'après-midi", "Début de l'après-midi",
-                   times.PlageTravAprem.Start);
-                labelledDateTime.Color = Colors.Goldenrod;
-                labelledDateTime.EtatBadgeage = 1;
-                ListIvlDay.Add(labelledDateTime);
-            }
-            if (etatBadgeage >= 3 && times.IsEndApremBadged())
-            {
-                labelledDateTime = new LabelledDateTime("Badgeage de fin de la journée", "Fin de l'après-midi",
-                   times.PlageTravAprem.EndOrDft);
-                labelledDateTime.Color = Colors.Goldenrod;
-                labelledDateTime.LTag = "FinAprem";
-                labelledDateTime.EtatBadgeage = 2;
-                labelledDateTime.IsEndBloc = true;
-                ListIvlDay.Add(labelledDateTime);
+                if (etatBadgeage >= 3 && times.IsEndApremBadged())
+                {
+                    labelledDateTime = NewLabelledDt("Badgeage de fin de la journée", "Fin de l'après-midi", "FinAprem",
+                        2, true, times.PlageTravAprem.EndOrDft, Colors.Goldenrod);
+                    listIvlDayForDay.Add(labelledDateTime);
+                }
             }
 
             foreach (IntervalTemps pause in times.PausesHorsDelai)
@@ -172,7 +226,7 @@ namespace Badger2018.views
                 lStart.LTag = "Pause";
                 lStart.EtatBadgeage = -2;
 
-                ListIvlDay.Add(lStart);
+                listIvlDayForDay.Add(lStart);
 
                 if (pause.IsIntervalComplet())
                 {
@@ -184,11 +238,11 @@ namespace Badger2018.views
                     lEnd.LTag = "Pause";
                     lEnd.EtatBadgeage = -2;
                     lEnd.IsEndBloc = true;
-                    ListIvlDay.Add(lEnd);
+                    listIvlDayForDay.Add(lEnd);
                 }
             }
 
-            ListIvlDay = ListIvlDay.OrderBy(r => r.Time).ToList();
+            return listIvlDayForDay.OrderBy(r => r.Time).ToList();
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
@@ -202,8 +256,106 @@ namespace Badger2018.views
             Close();
         }
 
+        private void btnPrevDay_Click(object sender, RoutedEventArgs e)
+        {
+            BadgeagesServices bServices = new BadgeagesServices();
+            JoursServices jServices = new JoursServices();
 
-        private class LabelledDateTime
+            
+
+            DateTime? dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
+            if (!dtLastDay.HasValue)
+            {
+                return;
+            }
+
+            if (dtLastDay.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
+            {
+                btnNextDay.Visibility = Visibility.Collapsed;
+            } else
+            {
+                btnNextDay.Visibility = Visibility.Visible;
+            }
+
+            currentShowDay = dtLastDay.Value;
+
+            AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
+
+        }
+
+        private void btnNextDay_Click(object sender, RoutedEventArgs e)
+        {
+            BadgeagesServices bServices = new BadgeagesServices();
+            JoursServices jServices = new JoursServices();
+
+
+
+            DateTime? dtLastDay = jServices.GetNextDayOf(currentShowDay);
+            if (!dtLastDay.HasValue)
+            {
+                return;
+            }
+
+            if (dtLastDay.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
+            {
+                btnNextDay.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                btnNextDay.Visibility = Visibility.Visible;
+            }
+
+            currentShowDay = dtLastDay.Value;
+
+            AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
+
+        }
+
+        private void AdaptUiToAnotherDay(DateTime dtLastDay, BadgeagesServices bServices, JoursServices jServices)
+        {
+  
+
+            string dtLastDayStr = dtLastDay.ToString("d");
+
+            TimesBadgerDto times = new TimesBadgerDto();
+            times.TimeRef = dtLastDay;
+
+
+
+            if (jServices.IsJourExistFor(dtLastDay))
+            {
+                JourEntryDto j = jServices.GetJourData(dtLastDay);
+                if (!j.IsHydrated) { return; }
+
+                int etatBadgeage = j.EtatBadger;
+                EnumTypesJournees typesJournees = j.TypeJour;
+
+                times.PlageTravMatin.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, dtLastDay));
+                times.PlageTravMatin.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END, dtLastDay));
+                times.PlageTravAprem.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_START, dtLastDay));
+                times.PlageTravAprem.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_END, dtLastDay));
+
+                times.PausesHorsDelai = bServices.GetPauses(dtLastDay);
+
+                List<LabelledDateTime> listIvlDayForDay = SetListValueForCurrentDay(times, etatBadgeage, typesJournees);
+                //_memoryDay.Add(dtLastDayStr, listIvlDayForDay);
+
+
+
+                InitStackPanel(listIvlDayForDay, times);
+
+
+                lblTyJournee.Content = typesJournees.Libelle;
+                lblCurrentDay.Content = times.TimeRef.ToString("D");
+
+                bool isMaxDepass = false;
+                var a = TimesUtils.GetTempsTravaille(dtLastDay, etatBadgeage, times, PrgOptions, typesJournees, true,
+                    ref isMaxDepass);
+                lblTempsTrav.Content = a.ToString(Cst.TimeSpanFormatWithH);
+            }
+        }
+
+        public class LabelledDateTime
         {
             public string BadgeageName { get; set; }
             public string BadgeageInfo { get; set; }
@@ -221,6 +373,8 @@ namespace Badger2018.views
                 Color = Colors.DeepSkyBlue;
             }
         }
+
+
 
 
 

@@ -9,7 +9,11 @@ namespace Badger2018.constants
     {
         public const String SELECT_ALL = "SELECT * FROM {0}";
 
+        public const String SELECT_COUNT_ALL = "SELECT count(*) FROM {0}";
+
         public const String SELECT_ALL_WHERE = "SELECT * FROM {0} WHERE {1}";
+
+        public const String SELECT_COUNT_ALL_WHERE = "SELECT count(*) FROM {0} WHERE {1}";
 
         public const String SELECT_COL_WHERE = "SELECT {0} FROM {1} WHERE {2}";
 

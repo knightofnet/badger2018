@@ -16,7 +16,7 @@ namespace Badger2018.business
     {
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
-        private bool isEnabled = false;
+        private bool isEnabled = true;
 
         private static DbbAccessManager _instance;
         public static DbbAccessManager Instance
@@ -57,24 +57,7 @@ namespace Badger2018.business
             }
         }
 
-        public void AddBadgeageForToday(int typeBadgeage, TimeSpan heureBadgeage)
-        {
-            if (!isEnabled) return;
 
-            DateTime dateTime = AppDateUtils.DtNow().ChangeTime(heureBadgeage);
-
-            BadgeageServices.InsertNewBadgeage(this, typeBadgeage, dateTime);
-
-        }
-
-        public void RemoveBadgeagesOfToday()
-        {
-            if (!isEnabled) return;
-
-            DateTime dateTime = AppDateUtils.DtNow();
-
-            BadgeageServices.RemoveBadgeagesOfAday(this, dateTime);
-        }
 
         public void StartTransaction()
         {

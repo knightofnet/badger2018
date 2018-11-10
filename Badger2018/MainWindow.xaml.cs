@@ -22,6 +22,7 @@ using AryxDevViewLibrary.utils;
 using AudioSwitcher.AudioApi;
 using AudioSwitcher.AudioApi.CoreAudio;
 using Badger2018.business;
+using Badger2018.business.saver;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.Properties;
@@ -73,7 +74,7 @@ namespace Badger2018
         public CoreAudioCtrlerFactory CoreAudioFactory = new CoreAudioCtrlerFactory();
         private DidYouKnowView DidYouKnowWindow { get; set; }
 
-        internal XmlPointageWriterReader PointageXml { get; set; }
+        internal ISaverTimes PointageSaverObj { get; set; }
 
         private EnumTypesJournees _typeJournee;
         public EnumTypesJournees TypeJournee
@@ -155,7 +156,9 @@ namespace Badger2018
             UpdaterMgr = updaterManager;
             PluginMgr = pluginManager;
 
-            PointageXml = new XmlPointageWriterReader(this);
+            //PointageSaverObj = new XmlPointageWriterReader(this);
+            PointageSaverObj = new BddPointageWriterReader(this);
+            PrgSwitch.UseBddSupport = true;
 
 
             BadgerWorker = new BadgerWorker(this);
@@ -260,7 +263,7 @@ namespace Badger2018
 #if DEBUG
 args.Key == Key.F12 ||
 #endif
-KonamiCodeListener.IsCompletedBy(args.Key))
+ KonamiCodeListener.IsCompletedBy(args.Key))
                 {
                     DebugCommandView d = new DebugCommandView();
                     d.Show();
@@ -274,7 +277,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
             EtatBadger = -1;
             TypeJournee = EnumTypesJournees.Complete;
 
-            if (PointageXml.MustReloadIncomplete())
+            if (PointageSaverObj.MustReloadIncomplete())
             {
                 _logger.Info("Rechargement des informations");
                 ReloadUiFromInterface();
@@ -704,6 +707,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                     );
 
                     isSpecBadgeage = true;
+                    return true;
                 }
 
                 Times.PlageTravMatin.Start = dtStart.Value;
@@ -723,7 +727,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                 isSpecBadgeage = true;
 
                 _logger.Info("Sauvegarde de la session (EtatBadger: {0}", EtatBadger);
-                PointageXml.SaveCurrentDayTimes();
+                PointageSaverObj.SaveCurrentDayTimes();
             }
             else
             {
@@ -824,7 +828,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
 
         private void ReloadUiFromInterface()
         {
-            PointageElt p = PointageXml.LoadIncomplete();
+            PointageElt p = PointageSaverObj.LoadIncomplete();
             _logger.Debug(p.ToString());
 
             try
@@ -950,7 +954,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
             if (RealTimeDtNow.DayOfYear != Times.TimeRef.DayOfYear)
             {
                 // Le jour a changé. Il faut redémarrer.
-                PointageXml.SaveCurrentDayTimes();
+                PointageSaverObj.SaveCurrentDayTimes();
                 RestartApp();
             }
 
@@ -1090,7 +1094,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
             {
                 lblTpsTravReelSuppl.Visibility = Visibility.Visible;
 
-                string tplTpsReelSuppl = "(-{0})";
+                string tplTpsReelSuppl = "({0})";
                 if (RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0)
                 {
                     tplTpsReelSuppl = "(+{0})";
@@ -1271,11 +1275,13 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                 OptionManager.SaveOptions(PrgOptions);
                 AdaptUiFromOptions(PrgOptions);
                 UpdaterMgr.XmlUpdFilePath = PrgOptions.UpdateXmlUri;
-                if (EtatBadger < 3) {
+                if (EtatBadger < 3)
+                {
                     if (isOrigOptAdd5min && !PrgOptions.IsAdd5minCpt)
                     {
                         Times.EndTheoDateTime += new TimeSpan(0, 5, 0);
-                    } else if (!isOrigOptAdd5min && PrgOptions.IsAdd5minCpt)
+                    }
+                    else if (!isOrigOptAdd5min && PrgOptions.IsAdd5minCpt)
                     {
                         Times.EndTheoDateTime -= new TimeSpan(0, 5, 0);
                     }
@@ -1311,7 +1317,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                 if (EtatBadger != -1)
                 {
                     _logger.Info("Sauvegarde de la session (EtatBadger: {0})", EtatBadger);
-                    PointageXml.SaveCurrentDayTimes();
+                    PointageSaverObj.SaveCurrentDayTimes();
                 }
 
                 _logger.Debug("Sauvegarde des options");
@@ -1450,7 +1456,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
             {
                 AdaptUiForState3();
             }
-            btnBadger.IsEnabled = !Times.PausesHorsDelai.Any(r => !r.IsIntervalComplet());
+            btnBadger.IsEnabled = Times.PausesHorsDelai.All(r => r.IsIntervalComplet());
 
             _logger.Debug("FIN - AdaptUiFromState(...)");
         }
@@ -1596,7 +1602,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                         PrgSwitch.PbarMainTimerActif = true;
                         pbarTime.ToolTip = null;
                         pbarTime.Foreground = Cst.SCBGreenPbar;
-                       
+
                     }
                     else
                     {
@@ -2177,9 +2183,14 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                 rectMatin.Width = Width;
                 OldEtatBadger = EtatBadger;
 
-                if (EtatBadger < 3)
+                if (EtatBadger == 0)
                 {
                     EtatBadger = 2;
+                }
+                else if (EtatBadger == 1)
+                {
+                    EtatBadger = 3;
+                    Times.PlageTravAprem.End = Times.PlageTravMatin.End;
                 }
 
                 if (!isMatin)
@@ -2201,6 +2212,11 @@ KonamiCodeListener.IsCompletedBy(args.Key))
                 if (EtatBadger < 3)
                 {
                     AdaptUiFromState(0, null, false);
+                }
+                else
+                {
+
+                    AdaptUiFromState(3, null, false);
                 }
             }
             else
@@ -2340,7 +2356,7 @@ KonamiCodeListener.IsCompletedBy(args.Key))
 
                 ClockUpdTimerOnOnTick(null, null);
 
-                PointageXml.SaveCurrentDayTimes();
+                PointageSaverObj.SaveCurrentDayTimes();
 
 
                 PrgSwitch.IsMoreThanTpsTheo = false;

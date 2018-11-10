@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
@@ -59,7 +60,19 @@ namespace Badger2018.business
             try
             {
 
-                driver = BadgingUtils.GetWebDriver(Pwin.PrgOptions);
+                try
+                {
+                    driver = BadgingUtils.GetWebDriver(Pwin.PrgOptions);
+                } catch (Exception ex)
+                {
+                    if (bkg.CancellationPending)
+                    {
+                        doWorkEventArgs.Cancel = true;
+                        throw new UserCancelBadgeageException();
+                    }
+
+                    throw ex;
+                }
                 if (driver == null)
                 {
                     HasSucceedTrt = false;

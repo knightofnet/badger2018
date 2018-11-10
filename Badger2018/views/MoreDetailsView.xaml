@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Badger2018.views.MoreDetailsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Résumé détaillé de la journée" Height="518.8" Width="418" MaxWidth="512" ResizeMode="CanResizeWithGrip" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
+        Title="Résumé détaillé de la journée" Height="518.8" Width="418" MaxWidth="418" ResizeMode="CanResizeWithGrip" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
     <Grid>
         <Label x:Name="lblCurrentDay" Content="Vendredi 7 septembre 2018" Margin="10,10,9.6,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18"/>
         <Label Content="Type de journée : " HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top"/>
@@ -13,5 +13,7 @@
         <Label Content="Temps travaillé : " HorizontalAlignment="Left" Margin="243,49,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblTempsTrav" Content="Label" HorizontalAlignment="Left" Margin="346,49,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnModTimes" Content="Modifier mes temps" HorizontalAlignment="Left" Margin="10,0,0,9.6" VerticalAlignment="Bottom" Width="136" Click="btnModTimes_Click"/>
+        <Button x:Name="btnPrevDay" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="10,19,0,0" VerticalAlignment="Top" Width="55" Click="btnPrevDay_Click"/>
+        <Button x:Name="btnNextDay" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="345,19,0,0" VerticalAlignment="Top" Width="55" Click="btnNextDay_Click"/>
     </Grid>
 </Window>

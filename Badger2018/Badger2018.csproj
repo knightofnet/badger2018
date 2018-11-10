@@ -115,16 +115,19 @@
     <Compile Include="business\BadgingBckder.cs" />
     <Compile Include="business\DbbAccessManager.cs" />
     <Compile Include="business\MainTimerManager.cs" />
+    <Compile Include="business\saver\BddPointageWriterReader.cs" />
+    <Compile Include="business\saver\ISaverTimes.cs" />
+    <Compile Include="business\saver\XmlPointageWriterReader.cs" />
     <Compile Include="business\SoundWorkBckder.cs" />
     <Compile Include="business\KonamiCodeListener.cs" />
     <Compile Include="business\NoticationsManager.cs" />
     <Compile Include="business\OptionManager.cs" />
     <Compile Include="business\UpdateChecker.cs" />
-    <Compile Include="business\XmlPointageWriterReader.cs" />
     <Compile Include="business\ZipArchiveManager.cs" />
     <Compile Include="constants\Cst.cs" />
     <Compile Include="constants\EnumActionButtonClose.cs" />
     <Compile Include="constants\EnumAppOptions.cs" />
+    <Compile Include="constants\EnumBadgeageType.cs" />
     <Compile Include="constants\EnumStatePause.cs" />
     <Compile Include="constants\EnumBrowser.cs" />
     <Compile Include="constants\EnumErrorCodeRetour.cs" />
@@ -136,6 +139,8 @@
     <Compile Include="dto\AppOptions.cs" />
     <Compile Include="dto\AppSwitchs.cs" />
     <Compile Include="constants\EnumTypesTemps.cs" />
+    <Compile Include="dto\bdd\BadgeageEntryDto.cs" />
+    <Compile Include="dto\bdd\JourEntryDto.cs" />
     <Compile Include="dto\IntervalTemps.cs" />
     <Compile Include="dto\NotificationDto.cs" />
     <Compile Include="dto\PointageElt.cs" />
@@ -146,13 +151,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="services\BadgeageServices.cs" />
+    <Compile Include="services\BadgeagesServices.cs" />
+    <Compile Include="services\bddLastLayer\BadgeageBddLayer.cs" />
+    <Compile Include="services\bddLastLayer\JoursBddLayer.cs" />
+    <Compile Include="services\JoursServices.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="utils\BadgingUtils.cs" />
     <Compile Include="utils\CoreAudioCtrlerFactory.cs" />
     <Compile Include="utils\FlashWindowUtils.cs" />
     <Compile Include="utils\MiscAppExtensionUtils.cs" />
     <Compile Include="utils\MiscApputils.cs" />
+    <Compile Include="utils\sqlite\ListSqlLiteKVPair.cs" />
+    <Compile Include="utils\sqlite\SqlLiteKVPair.cs" />
     <Compile Include="utils\SqlLiteUtils.cs" />
     <Compile Include="utils\TestUtils.cs" />
     <Compile Include="utils\TimesUtils.cs" />

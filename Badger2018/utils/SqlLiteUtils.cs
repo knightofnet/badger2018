@@ -20,6 +20,10 @@ namespace Badger2018.utils
             return reader.GetInt32(reader.GetOrdinal(colName));
         }
 
+        public static bool GetBooleanByColName(this SQLiteDataReader reader, String colName)
+        {
+            return GetInt32ByColName(reader, colName) == 0;
+        }
 
 
         public static String GetStringByColName(this SQLiteDataReader reader, String colName)
@@ -27,6 +31,20 @@ namespace Badger2018.utils
             int colIndex = reader.GetOrdinal(colName);
 
             return reader.IsDBNull(colIndex) ? null : reader.GetString(colIndex);
+        }
+
+        public static DateTime? GetDatetimeByColName(this SQLiteDataReader reader, String colName)
+        {
+            int colIndex = reader.GetOrdinal(colName);
+
+            return reader.IsDBNull(colIndex) ? (DateTime?)null : reader.GetDateTime(colIndex);
+        }
+
+        public static TimeSpan? GetTimeSpanByColName(this SQLiteDataReader reader, String colName)
+        {
+            int colIndex = reader.GetOrdinal(colName);
+
+            return reader.IsDBNull(colIndex) ? (TimeSpan?)null : reader.GetDateTime(colIndex).TimeOfDay;
         }
 
 
