@@ -1,0 +1,15 @@
+﻿<Window x:Class="Badger2018.views.CustomNotificationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:usercontrols="clr-namespace:Badger2018.views.usercontrols"
+        Title="CustomNotificationView" Height="332" Width="458.4">
+    <Grid>
+
+        <usercontrols:CustNotifControl x:Name="custNotifA" Margin="10,10,10,165.4"></usercontrols:CustNotifControl>
+        <usercontrols:CustNotifControl x:Name="custNotifB" Margin="10,137,10,34.4"></usercontrols:CustNotifControl>
+        
+        <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10.4" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOk_Click"/>
+        <Button x:Name="btnCancel" Content="Annuler" HorizontalAlignment="Right" Margin="0,0,90,10.4" VerticalAlignment="Bottom" Width="75"/>
+
+    </Grid>
+</Window>

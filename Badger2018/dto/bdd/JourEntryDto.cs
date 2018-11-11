@@ -6,7 +6,7 @@ using Badger2018.constants;
 
 namespace Badger2018.dto.bdd
 {
-    class JourEntryDto
+    public class JourEntryDto
     {
         public bool IsHydrated { get; set; }
 

@@ -25,7 +25,7 @@ using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
 using BadgerPluginExtender;
 using BadgerPluginExtender.dto;
-using IWshRuntimeLibrary ;
+using IWshRuntimeLibrary;
 
 namespace Badger2018
 {
@@ -52,10 +52,17 @@ namespace Badger2018
             }
 
             if (StringUtils.CsvStringContains(Environment.UserName.ToUpper(),
-                ((string)Settings.Default["licencedUser"]).ToUpper()) && !System.IO.File.Exists(Environment.UserName.ToUpper()+".auth"))
+                ((string)Settings.Default["licencedUser"]).ToUpper()) && !System.IO.File.Exists(Environment.UserName.ToUpper() + ".auth"))
             {
                 _logger.Error("Utilisation non autorisée");
                 Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
+            }
+
+            if (Settings.Default.UpgradeRequired)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+                Settings.Default.Save();
             }
 
             AppOptions prgOptions = null;
@@ -107,7 +114,7 @@ namespace Badger2018
 
                 RemoveLegacyBadgeage(prgOptions);
 
-
+                ConvertsXmlPointageToDEbb();
             }
             catch (Exception ex)
             {
@@ -144,6 +151,13 @@ namespace Badger2018
 
         }
 
+        private void ConvertsXmlPointageToDEbb()
+        {
+
+            XmlToBddPointageConverter converter = new XmlToBddPointageConverter(Cst.PointagesDir);
+            converter.Convert();
+        }
+
         private void RemoveLegacyBadgeage(AppOptions prgOptions)
         {
             if (!prgOptions.IsRemoveLegacyShorcutFirefox)
@@ -170,7 +184,8 @@ namespace Badger2018
 
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 ExceptionHandlingUtils.LogAndHideException(ex, "Erreur lors de la suppression du raccourci au démarrage", true);
             }

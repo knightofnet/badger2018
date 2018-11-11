@@ -93,14 +93,11 @@ namespace Badger2018.dto
         public bool ShowNotifEndPause { get; set; }
         public bool ShowNotifEndTheo { get; set; }
         public bool ShowNotifWhenSessUnlockAfterMidi { get; set; }
+        public bool ShowNotifEndMoyMatin { get; set; }
+        public bool ShowNotifEndMoyAprem { get; set; }
 
 
-        public bool IsNotif1Enabled { get; set; }
-        public bool IsNotif2Enabled { get; set; }
-        public TimeSpan Notif1Time { get; set; }
-        public TimeSpan Notif2Time { get; set; }
-        public String Notif1Text { get; set; }
-        public String Notif2Text { get; set; }
+
 
         public bool IsUseAlternateNotification { get; set; }
 
@@ -150,11 +147,13 @@ namespace Badger2018.dto
         public EnumActionBtnBadgeM TypeBadgeageBtnM { get; set; }
 
         public bool IsRemoveLegacyShorcutFirefox { get; set; }
-       
+        public CustomNotificationDto Notif1Obj { get; set; }
+        public CustomNotificationDto Notif2Obj { get; set; }
+
 
         public void ResetSpecOption()
         {
-            IsAutoBadgeMeridienne = false;         
+            IsAutoBadgeMeridienne = false;
             IsDailyDisableAutoBadgeMerid = true;
             LastBadgeDelay = 0;
             DeltaAutoBadgeageMinute = 0;

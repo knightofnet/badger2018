@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="Badger2018.views.usercontrols.CustNotifControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="135" Width="396">
+    <Grid Height="135" Margin="0,0,0,-38.2" VerticalAlignment="Top" Background="white">
+        <CheckBox x:Name="chkActiveNotifA" Content="Activer la notification personnalisée." HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cboxListHeureTypeNotifA" HorizontalAlignment="Left" Margin="222,23,0,0" VerticalAlignment="Top" Width="151"/>
+        <Label Content="Afficher une notification personnalisée à" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top"/>
+        <Label Content="La notification s'affichera" HorizontalAlignment="Left" Margin="0,51,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tboxHeureDeltaNotifA" Text="XXhXX" HorizontalAlignment="Left" Margin="143,55,0,0" VerticalAlignment="Top" Width="50" Height="22"/>
+        <ComboBox x:Name="cboxEltCompNotifA" HorizontalAlignment="Left" Margin="198,55,0,0" VerticalAlignment="Top" Width="85" Height="22"/>
+        <TextBox x:Name="tboxHeureRefNotifA" Text="XXhXX" HorizontalAlignment="Left" Margin="288,56,0,0" VerticalAlignment="Top" Width="45" Height="21"/>
+        <Label Content="." HorizontalAlignment="Left" Margin="333,51,0,0" VerticalAlignment="Top"/>
+        <Label Content="." HorizontalAlignment="Left" Margin="378,20,0,0" VerticalAlignment="Top" Width="12" />
+        <Label Content="Message à afficher :" HorizontalAlignment="Left" Margin="0,82,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tboxMsg" Height="23" Margin="120,86,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+    </Grid>
+</UserControl>

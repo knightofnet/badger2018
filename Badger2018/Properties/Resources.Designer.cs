@@ -19,7 +19,7 @@ namespace Badger2018.Properties {
     // à l'aide d'un outil, tel que ResGen ou Visual Studio.
     // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
     // avec l'option /str ou régénérez votre projet VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -102,15 +102,18 @@ namespace Badger2018.Properties {
         
         /// <summary>
         ///   Recherche une chaîne localisée semblable à BEGIN TRANSACTION;
-        ///DROP TABLE IF EXISTS `BADGEAGES`;
-        ///CREATE TABLE IF NOT EXISTS `BADGEAGES` (
-        ///	`DATEBADGE`	TEXT,
-        ///	`TYPEBADGE`	INTEGER,
-        ///	`TIMEBADGE`	TEXT,
-        ///	PRIMARY KEY(`DATEBADGE`,`TYPEBADGE`)
+        ///DROP TABLE IF EXISTS `TYBADGEAGES`;
+        ///CREATE TABLE IF NOT EXISTS `TYBADGEAGES` (
+        ///	`TYPE_BADGE`	INTEGER,
+        ///	`BADGE_NAME`	TEXT,
+        ///	PRIMARY KEY(`TYPE_BADGE`)
         ///);
-        ///COMMIT;
-        ///.
+        ///INSERT INTO `TYBADGEAGES` VALUES (1,&apos;PLAGE_TRAV_MATIN_START&apos;);
+        ///INSERT INTO `TYBADGEAGES` VALUES (2,&apos;PLAGE_TRAV_MATIN_END&apos;);
+        ///INSERT INTO `TYBADGEAGES` VALUES (3,&apos;PLAGE_TRAV_APREM_START&apos;);
+        ///INSERT INTO `TYBADGEAGES` VALUES (4,&apos;PLAGE_TRAV_APREM_END&apos;);
+        ///INSERT INTO `TYBADGEAGES` VALUES (10,&apos;PAUSE_START&apos;);
+        ///INSERT INTO `TYBADGEAGES` VALUES (11,&apos;PA [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string dbbCreate {
             get {
@@ -368,7 +371,7 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Delta Diamant.
+        ///   Recherche une chaîne localisée semblable à Echo Epervier.
         /// </summary>
         internal static string versionName {
             get {

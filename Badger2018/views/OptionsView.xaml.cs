@@ -27,12 +27,14 @@ using AudioSwitcher.AudioApi.CoreAudio;
 using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.services;
 using Badger2018.utils;
 using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
 using IWshRuntimeLibrary;
 using CheckBox = System.Windows.Controls.CheckBox;
 using ComboBox = System.Windows.Controls.ComboBox;
+using Control = System.Windows.Controls.Control;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 
@@ -53,7 +55,7 @@ namespace Badger2018.views
         private bool IsSpecUse { get; set; }
 
         private NotifyIcon NotifyIcon { get; set; }
-   
+
 
         private OptionsCtxtHelpView c = null;
 
@@ -234,33 +236,12 @@ namespace Badger2018.views
             chkShowNotifEndPause.IsChecked = opt.ShowNotifEndPause;
             chkShowNotifEndTheo.IsChecked = opt.ShowNotifEndTheo;
             chkShowNotifAfterUnlockMidi.IsChecked = opt.ShowNotifWhenSessUnlockAfterMidi;
+            chkShowNotifEndMoyMatin.IsChecked = opt.ShowNotifEndMoyMatin;
+            chkShowNotifEndMoyAprem.IsChecked = opt.ShowNotifEndMoyAprem;
 
             chkboxAlternateNotifs.IsChecked = opt.IsUseAlternateNotification;
 
-            chkShowNotifAtN1.IsChecked = opt.IsNotif1Enabled;
-            chkShowNotifAtN1.Click += delegate(object sender, RoutedEventArgs args)
-            {
-                bool b = chkShowNotifAtN1.IsChecked ?? false;
-                txtN1.IsEnabled = b;
-                tboxTsN1.IsEnabled = b;
-            };
 
-            tboxTsN1.Text = opt.Notif1Time.ToString(Cst.TimeSpanFormat);
-            txtN1.Text = opt.Notif1Text;
-            tboxTsN1.IsEnabled = opt.IsNotif1Enabled;
-            txtN1.IsEnabled = opt.IsNotif1Enabled;
-
-            chkShowNotifAtN2.IsChecked = opt.IsNotif2Enabled;
-            chkShowNotifAtN2.Click += delegate(object sender, RoutedEventArgs args)
-            {
-                bool b = chkShowNotifAtN2.IsChecked ?? false;
-                txtN2.IsEnabled = b;
-                tboxTsN2.IsEnabled = b;
-            };
-            tboxTsN2.Text = opt.Notif2Time.ToString(Cst.TimeSpanFormat);
-            txtN2.Text = opt.Notif2Text;
-            tboxTsN2.IsEnabled = opt.IsNotif2Enabled;
-            txtN2.IsEnabled = opt.IsNotif2Enabled;
 
             chkStopAfterMaxTravTime.IsChecked = opt.IsStopCptAtMax;
             chkStopAfterMaxTravTimeJournee.IsChecked = opt.IsStopCptAtMaxDemieJournee;
@@ -285,7 +266,7 @@ namespace Badger2018.views
             if (IsSpecUse)
             {
                 chkAutoBadgeMerid.IsChecked = opt.IsAutoBadgeMeridienne;
-                             
+
                 chkDailyDisableAutoBadgeMerid.IsChecked = opt.IsDailyDisableAutoBadgeMerid;
 
                 cboxLastBadgeDelay.SelectedItem = opt.LastBadgeDelay / 60;
@@ -294,6 +275,41 @@ namespace Badger2018.views
 
             }
             chkStopAfterMaxTravTime.Visibility = IsSpecUse ? Visibility.Visible : Visibility.Hidden;
+
+
+            LoadLblNotif();
+        }
+
+        private void LoadLblNotif()
+        {
+
+            lblDescNotifFEndPfMatin.Content = String.Format(ConvertTxtTplLbl(lblDescNotifFEndPfMatin), NewOptions.PlageFixeMatinFin.ToString(Cst.TimeSpanFormatWithH));
+            lblDescNotifFEndMoyMatin.Text = String.Format(ConvertTxtTplLbl(lblDescNotifFEndMoyMatin), Pwin.Times.EndMoyPfMatin.ToString(Cst.TimeSpanFormatWithH));
+            lblDescNotifEndPause.Text = String.Format(ConvertTxtTplLbl(lblDescNotifEndPause), MiscAppUtils.TimeSpanShortStrFormat(NewOptions.TempsMinPause));
+            lblDescNotifEndPfAprem.Content = String.Format(ConvertTxtTplLbl(lblDescNotifEndPfAprem),
+                NewOptions.PlageFixeApremFin.ToString(Cst.TimeSpanFormatWithH));
+            lblDescNotifEndMoyAprem.Text = String.Format(ConvertTxtTplLbl(lblDescNotifEndMoyAprem), Pwin.Times.EndMoyPfAprem.ToString(Cst.TimeSpanFormatWithH));
+            lblDescNotifEndTheo.Text = String.Format(ConvertTxtTplLbl(lblDescNotifEndTheo), (NewOptions.TempsDemieJournee + NewOptions.TempsDemieJournee).ToString(Cst.TimeSpanFormatWithH));
+        }
+
+        private string ConvertTxtTplLbl(object lblOrAccessText)
+        {
+            String text = "";
+            if (lblOrAccessText == null) return text;
+
+            if (lblOrAccessText is System.Windows.Controls.Label)
+            {
+                text = (string)((System.Windows.Controls.Label)lblOrAccessText).Content;
+            }
+            else if (lblOrAccessText is AccessText)
+            {
+                text = ((AccessText)lblOrAccessText).Text;
+            }
+
+            String ret = text.Replace("XXhXX", "{0}");
+            ret = ret.Replace("XXX", "{0}");
+
+            return ret;
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
@@ -481,103 +497,22 @@ namespace Badger2018.views
                 NewOptions.ShowNotifEndTheo = chkBox.IsChecked.Value;
             }
 
-            // Option notif 1
-            chkBox = chkShowNotifAtN1;
+            // Option ShowNotifEndMoyMatin
+            chkBox = chkShowNotifEndMoyMatin;
             if (chkBox.IsChecked != null &&
-                chkBox.IsChecked.Value != OrigOptions.IsNotif1Enabled)
+                chkBox.IsChecked.Value != OrigOptions.ShowNotifEndMoyMatin)
             {
                 HasChangeOption = true;
-                NewOptions.IsNotif1Enabled = chkBox.IsChecked.Value;
-
-
+                NewOptions.ShowNotifEndMoyMatin = chkBox.IsChecked.Value;
             }
 
-            // Option notif 2
-            chkBox = chkShowNotifAtN2;
+            // Option ShowNotifEndMoyAprem
+            chkBox = chkShowNotifEndMoyAprem;
             if (chkBox.IsChecked != null &&
-                chkBox.IsChecked.Value != OrigOptions.IsNotif2Enabled)
+                chkBox.IsChecked.Value != OrigOptions.ShowNotifEndMoyAprem)
             {
                 HasChangeOption = true;
-                NewOptions.IsNotif2Enabled = chkBox.IsChecked.Value;
-
-            }
-
-            String tboxTsStr = null;
-            TimeSpan tboxTs = new TimeSpan();
-            // Ts notif1 
-            if (NewOptions.IsNotif1Enabled)
-            {
-                tboxTsStr = tboxTsN1.Text;
-                tboxTs = new TimeSpan();
-                if (TryParseAlt(tboxTsStr, out tboxTs))
-                {
-                    if (!tboxTs.Equals(OrigOptions.Notif1Time))
-                    {
-                        HasChangeOption = true;
-                        NewOptions.Notif1Time = tboxTs;
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("L'heure de la première notification doit être au format HH:mm.");
-                    tboxTsN1.Focus();
-                    return true;
-                }
-            }
-
-            // Ts notif2 
-            if (NewOptions.IsNotif2Enabled)
-            {
-                tboxTsStr = tboxTsN2.Text;
-                tboxTs = new TimeSpan();
-                if (TryParseAlt(tboxTsStr, out tboxTs))
-                {
-                    if (!tboxTs.Equals(OrigOptions.Notif2Time))
-                    {
-                        HasChangeOption = true;
-                        NewOptions.Notif2Time = tboxTs;
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("L'heure de la seconde notification doit être au format HH:mm.");
-                    tboxTsN2.Focus();
-                    return true;
-                }
-            }
-
-            String tboxTxtStr = null;
-            // Text notif1 
-            if (NewOptions.IsNotif1Enabled)
-            {
-                tboxTxtStr = txtN1.Text;
-                if (!tboxTxtStr.Equals(OrigOptions.Notif1Text))
-                {
-                    HasChangeOption = true;
-                    NewOptions.Notif1Text = tboxTxtStr;
-                    if (tboxTxtStr.IsEmpty())
-                    {
-                        NewOptions.Notif1Text = "C'est l'heure !";
-                    }
-                }
-
-            }
-
-            tboxTxtStr = null;
-            // Text notif12
-            if (NewOptions.IsNotif2Enabled)
-            {
-                tboxTxtStr = txtN2.Text;
-                if (!tboxTxtStr.Equals(OrigOptions.Notif2Text))
-                {
-                    HasChangeOption = true;
-                    NewOptions.Notif2Text = tboxTxtStr;
-                    if (tboxTxtStr.IsEmpty())
-                    {
-                        NewOptions.Notif2Text = "C'est toujours l'heure !";
-                    }
-                }
-
+                NewOptions.ShowNotifEndMoyAprem = chkBox.IsChecked.Value;
             }
 
 
@@ -764,7 +699,7 @@ namespace Badger2018.views
 
             // Plage fixe matin start
             TimeSpan newTboxPfMS = new TimeSpan();
-            if (TryParseAlt(tboxPfMS.Text, out newTboxPfMS))
+            if (MiscAppUtils.TryParseAlt(tboxPfMS.Text, out newTboxPfMS))
             {
                 if (!newTboxPfMS.Equals(OrigOptions.PlageFixeMatinStart))
                 {
@@ -781,7 +716,7 @@ namespace Badger2018.views
 
             // Plage fixe matin fin
             TimeSpan newTboxPfME = new TimeSpan();
-            if (TryParseAlt(tboxPfME.Text, out newTboxPfME))
+            if (MiscAppUtils.TryParseAlt(tboxPfME.Text, out newTboxPfME))
             {
                 if (!newTboxPfME.Equals(OrigOptions.PlageFixeMatinFin))
                 {
@@ -798,7 +733,7 @@ namespace Badger2018.views
 
             // Plage fixe aprem start
             TimeSpan newTboxPfAS = new TimeSpan();
-            if (TryParseAlt(tboxPfAS.Text, out newTboxPfAS))
+            if (MiscAppUtils.TryParseAlt(tboxPfAS.Text, out newTboxPfAS))
             {
                 if (!newTboxPfAS.Equals(OrigOptions.PlageFixeApremStart))
                 {
@@ -815,7 +750,7 @@ namespace Badger2018.views
 
             // Plage fixe aprem fin
             TimeSpan newTboxPfAE = new TimeSpan();
-            if (TryParseAlt(tboxPfAE.Text, out newTboxPfAE))
+            if (MiscAppUtils.TryParseAlt(tboxPfAE.Text, out newTboxPfAE))
             {
                 if (!newTboxPfAE.Equals(OrigOptions.PlageFixeApremFin))
                 {
@@ -832,7 +767,7 @@ namespace Badger2018.views
 
             // tps pause
             TimeSpan newTboxTpause = new TimeSpan();
-            if (TryParseAlt(tboxPtmpsPause.Text, out newTboxTpause))
+            if (MiscAppUtils.TryParseAlt(tboxPtmpsPause.Text, out newTboxTpause))
             {
                 if (!newTboxTpause.Equals(OrigOptions.TempsMinPause))
                 {
@@ -849,7 +784,7 @@ namespace Badger2018.views
 
             // tps max trav
             TimeSpan newTboxTmax = new TimeSpan();
-            if (TryParseAlt(tboxMaxTravTime.Text, out newTboxTmax))
+            if (MiscAppUtils.TryParseAlt(tboxMaxTravTime.Text, out newTboxTmax))
             {
                 if (!newTboxTmax.Equals(OrigOptions.TempsMaxJournee))
                 {
@@ -866,7 +801,7 @@ namespace Badger2018.views
 
             // tps max trav
             TimeSpan newTboxTmaxD = new TimeSpan();
-            if (TryParseAlt(tboxMaxTravTimeDemi.Text, out newTboxTmaxD))
+            if (MiscAppUtils.TryParseAlt(tboxMaxTravTimeDemi.Text, out newTboxTmaxD))
             {
                 if (!newTboxTmaxD.Equals(OrigOptions.TempsMaxDemieJournee))
                 {
@@ -883,7 +818,7 @@ namespace Badger2018.views
 
             // tps min trav
             TimeSpan newTboxTmin = new TimeSpan();
-            if (TryParseAlt(tboxMinTravTime.Text, out newTboxTmin))
+            if (MiscAppUtils.TryParseAlt(tboxMinTravTime.Text, out newTboxTmin))
             {
                 if (newTboxTmin.CompareTo(NewOptions.PlageFixeMatinStart) >= 0)
                 {
@@ -906,7 +841,7 @@ namespace Badger2018.views
 
             // tboxTpsReglementaireDemieJournee
             TimeSpan newTboxTpsRegl = new TimeSpan();
-            if (TryParseAlt(tboxTpsReglementaireDemieJournee.Text, out newTboxTpsRegl))
+            if (MiscAppUtils.TryParseAlt(tboxTpsReglementaireDemieJournee.Text, out newTboxTpsRegl))
             {
                 if (newTboxTpsRegl.CompareTo(NewOptions.TempsMaxDemieJournee) >= 0)
                 {
@@ -946,20 +881,6 @@ namespace Badger2018.views
                 return true;
             }
             return false;
-        }
-
-        public static bool TryParseAlt(string text, out TimeSpan newTboxPfAS)
-        {
-            if (TimeSpan.TryParse(text, out newTboxPfAS))
-            {
-                return true;
-            }
-
-            return TimeSpan.TryParseExact(text, new string[] { Cst.TimeSpanFormat, Cst.TimeSpanFormatWithH }, CultureInfo.InvariantCulture,
-                       TimeSpanStyles.None,
-                       out newTboxPfAS);
-
-
         }
 
         private void PostActions()
@@ -1207,6 +1128,16 @@ namespace Badger2018.views
 
 
 
+        }
+
+        private void btnEditCustomNotifs_Click(object sender, RoutedEventArgs e)
+        {
+            CustomNotificationView v = new CustomNotificationView(NewOptions.Notif1Obj, NewOptions.Notif2Obj, NewOptions, Pwin.Times.EndTheoDateTime);
+            v.ShowDialog();
+            if (v.IsOkClose)
+            {
+                HasChangeOption = true;
+            }
         }
 
 

@@ -26,6 +26,16 @@ namespace Badger2018.services
 
         }
 
+        public void AddBadgeage(int typeBadgeage, DateTime date, String relationKey = null)
+        {
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+
+
+
+            BadgeageBddLayer.InsertNewBadgeage(dbb, typeBadgeage, date, relationKey);
+
+        }
+
         public void RemoveBadgeagesOfToday()
         {
             DbbAccessManager dbb = DbbAccessManager.Instance;
@@ -95,6 +105,51 @@ namespace Badger2018.services
             }
 
             return retList;
+
+
+        }
+
+        public TimeSpan GetBadgeMedianneTime(EnumBadgeageType tyBadgeage, int nbJours)
+        {
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+            List<BadgeageEntryDto> listBadgeage = BadgeageBddLayer.GetBadgeMedianneTime(dbb, tyBadgeage.Index,
+                nbJours);
+
+            List<double> lstDec = new List<double>(listBadgeage.Count);
+            lstDec.AddRange(listBadgeage.Select(badgeageEntryDto => badgeageEntryDto.DateTime.TimeOfDay.TotalSeconds));
+
+            lstDec = lstDec.OrderBy(x => x).ToList();
+            double mid = (lstDec.Count - 1) / 2.0;
+
+            double median = (lstDec[(int)mid] + lstDec[(int)(mid + 0.5)]) / 2;
+
+
+
+            return TimeSpan.FromSeconds(median);
+        }
+
+        public TimeSpan? GetBadgeMoyenneTime(EnumBadgeageType tyBadgeage, int nbJours)
+        {
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+            List<BadgeageEntryDto> listBadgeage = BadgeageBddLayer.GetBadgeMedianneTime(dbb, tyBadgeage.Index,
+                nbJours);
+
+            if (!listBadgeage.Any())
+            {
+                return null;
+            }
+
+            List<double> lstDec = new List<double>(listBadgeage.Count);
+            lstDec.AddRange(listBadgeage.Select(badgeageEntryDto => badgeageEntryDto.DateTime.TimeOfDay.TotalSeconds));
+
+
+
+
+            double sumlstDec = lstDec.Sum(x => x);
+            double moy = sumlstDec / lstDec.Count;
+
+
+            return TimeSpan.FromSeconds(moy);
 
 
         }

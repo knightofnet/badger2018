@@ -63,6 +63,8 @@ namespace Badger2018.business
                 {
                     eOptCurrent = eOpt.Name;
 
+
+
                     PropertyInfo propertyInfo = opt.GetType().GetProperty(eOpt.Name);
                     if (propertyInfo == null)
                     {
@@ -92,6 +94,10 @@ namespace Badger2018.business
                         var value = EnumAppOptions.GetEnumFromIndex(GetIntSettingsOpt(eOpt.Name),
                             propertyInfo.PropertyType);
                         propertyInfo.SetValue(opt, value, null);
+                    }
+                    else
+                    {
+                        propertyInfo.SetValue(opt, Settings.Default[eOptCurrent], null);
                     }
 
                 }

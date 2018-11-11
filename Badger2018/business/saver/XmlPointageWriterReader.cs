@@ -240,7 +240,7 @@ namespace Badger2018.business.saver
 
         }
 
-        private PointageElt ReadXml(string sFile)
+        public PointageElt ReadXml(string sFile)
         {
             PointageElt retPointageElt = new PointageElt();
 

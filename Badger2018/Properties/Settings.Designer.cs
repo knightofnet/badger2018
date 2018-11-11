@@ -12,7 +12,7 @@ namespace Badger2018.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -248,78 +248,6 @@ namespace Badger2018.Properties {
             }
             set {
                 this["ShowNotifEndTheo"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IsNotif1Enabled {
-            get {
-                return ((bool)(this["IsNotif1Enabled"]));
-            }
-            set {
-                this["IsNotif1Enabled"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IsNotif2Enabled {
-            get {
-                return ((bool)(this["IsNotif2Enabled"]));
-            }
-            set {
-                this["IsNotif2Enabled"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00")]
-        public global::System.TimeSpan Notif1Time {
-            get {
-                return ((global::System.TimeSpan)(this["Notif1Time"]));
-            }
-            set {
-                this["Notif1Time"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00")]
-        public global::System.TimeSpan Notif2Time {
-            get {
-                return ((global::System.TimeSpan)(this["Notif2Time"]));
-            }
-            set {
-                this["Notif2Time"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Notif1Text {
-            get {
-                return ((string)(this["Notif1Text"]));
-            }
-            set {
-                this["Notif1Text"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Notif2Text {
-            get {
-                return ((string)(this["Notif2Text"]));
-            }
-            set {
-                this["Notif2Text"] = value;
             }
         }
         
@@ -706,6 +634,67 @@ namespace Badger2018.Properties {
             }
             set {
                 this["licencedUser"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UpgradeRequired {
+            get {
+                return ((bool)(this["UpgradeRequired"]));
+            }
+            set {
+                this["UpgradeRequired"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False#HEURE_PERSO#00:00:00#00:00:00#0#Un message à faire passer ?")]
+        public global::Badger2018.dto.CustomNotificationDto Notif1Obj {
+            get {
+                return ((global::Badger2018.dto.CustomNotificationDto)(this["Notif1Obj"]));
+            }
+            set {
+                this["Notif1Obj"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu\'il n\'est pas l\'heure de rentrer ?" +
+            "")]
+        public global::Badger2018.dto.CustomNotificationDto Notif2Obj {
+            get {
+                return ((global::Badger2018.dto.CustomNotificationDto)(this["Notif2Obj"]));
+            }
+            set {
+                this["Notif2Obj"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowNotifEndMoyMatin {
+            get {
+                return ((bool)(this["ShowNotifEndMoyMatin"]));
+            }
+            set {
+                this["ShowNotifEndMoyMatin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowNotifEndMoyAprem {
+            get {
+                return ((bool)(this["ShowNotifEndMoyAprem"]));
+            }
+            set {
+                this["ShowNotifEndMoyAprem"] = value;
             }
         }
     }

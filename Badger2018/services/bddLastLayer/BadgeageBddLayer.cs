@@ -6,6 +6,7 @@ using AryxDevLibrary.utils.logger;
 using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto.bdd;
+using Badger2018.utils;
 using Badger2018.utils.sqlite;
 using BadgerCommonLibrary.utils;
 
@@ -149,28 +150,7 @@ namespace Badger2018.services.bddLastLayer
             {
                 while (reader.Read())
                 {
-                    BadgeageEntryDto b = new BadgeageEntryDto();
-                    string dateStr = (string)reader["DATE_BADGE"];
-                    string timeStr = (string)reader["TIME_BADGE"];
-                    if (timeStr != null)
-                    {
-                        b.DateTime = DateTime.Parse(dateStr + " " + timeStr);
-                    }
-                    else
-                    {
-                        b.DateTime = DateTime.Parse(dateStr);
-                    }
-
-                    int typeBadgeInt = (int)(Int64)reader["TYPE_BADGE"];
-                    b.TypeBadge = EnumBadgeageType.GetFromIndex(typeBadgeInt);
-
-                    b.RelationKey = (string)reader["RELATION_KEY"];
-
-                    string dateAddedStr = (string)reader["DT_ADDED"];
-                    if (!StringUtils.IsNullOrWhiteSpace(dateAddedStr))
-                    {
-                        b.DateAdded = DateTime.Parse(dateAddedStr);
-                    }
+                    BadgeageEntryDto b = HydrateBadgeageDto(reader);
 
                     lstRet.Add(b);
 
@@ -181,5 +161,61 @@ namespace Badger2018.services.bddLastLayer
         }
 
 
+
+        internal static List<BadgeageEntryDto> GetBadgeMedianneTime(DbbAccessManager dbbManager, int typeBadgeage, int nbJours)
+        {
+            List<BadgeageEntryDto> lstRet = new List<BadgeageEntryDto>();
+
+            SQLiteCommand command = null;
+
+            string sql = String.Format(SqlConstants.SELECT_ALL_WHERE, TableBadgeages, "TYPE_BADGE = @TYPE_BADGE order by date_badge desc limit @LIMIT");
+
+            command = new SQLiteCommand(sql, dbbManager.Connection);
+
+            command.Parameters.Add(new SQLiteParameter("@TYPE_BADGE", typeBadgeage));
+            command.Parameters.Add(new SQLiteParameter("@LIMIT", nbJours));
+
+
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    BadgeageEntryDto b = HydrateBadgeageDto(reader);
+
+                    lstRet.Add(b);
+                }
+            }
+
+            return lstRet;
+        }
+
+
+
+        private static BadgeageEntryDto HydrateBadgeageDto(SQLiteDataReader reader)
+        {
+            BadgeageEntryDto b = new BadgeageEntryDto();
+            string dateStr = reader.GetStringByColName("DATE_BADGE");
+            string timeStr = reader.GetStringByColName("TIME_BADGE");
+            if (timeStr != null)
+            {
+                b.DateTime = DateTime.Parse(dateStr + " " + timeStr);
+            }
+            else
+            {
+                b.DateTime = DateTime.Parse(dateStr);
+            }
+
+            int typeBadgeInt = reader.GetInt32ByColName("TYPE_BADGE");
+            b.TypeBadge = EnumBadgeageType.GetFromIndex(typeBadgeInt);
+
+            b.RelationKey = reader.GetStringByColName("RELATION_KEY");
+
+            string dateAddedStr = reader.GetStringByColName("DT_ADDED");
+            if (!StringUtils.IsNullOrWhiteSpace(dateAddedStr))
+            {
+                b.DateAdded = DateTime.Parse(dateAddedStr);
+            }
+            return b;
+        }
     }
 }

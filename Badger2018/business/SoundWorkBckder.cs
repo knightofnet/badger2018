@@ -36,6 +36,7 @@ namespace Badger2018.business
                 compiler.StartInfo.RedirectStandardOutput = true;
                 compiler.StartInfo.CreateNoWindow = true;
                 compiler.Start();
+                compiler.PriorityClass = ProcessPriorityClass.High;
 
                 string output = compiler.StandardOutput.ReadToEnd();
                 bool hasMoreLineThanNormal = false;
@@ -112,6 +113,7 @@ namespace Badger2018.business
                 compiler.StartInfo.RedirectStandardOutput = true;
                 compiler.StartInfo.CreateNoWindow = true;
                 compiler.Start();
+                compiler.PriorityClass = ProcessPriorityClass.High;
 
                 compiler.WaitForExit();
 

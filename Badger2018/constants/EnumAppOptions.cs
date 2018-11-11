@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Badger2018.dto;
 using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
 
@@ -39,17 +40,13 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions ShowNotifEndPause = new EnumAppOptions("ShowNotifEndPause", typeof(bool), "True", false);
         public static readonly EnumAppOptions ShowNotifEndTheo = new EnumAppOptions("ShowNotifEndTheo", typeof(bool), "True", false);
         public static readonly EnumAppOptions ShowNotifWhenSessUnlockAfterMidi = new EnumAppOptions("ShowNotifWhenSessUnlockAfterMidi", typeof(bool), "True", false);
-        public static readonly EnumAppOptions IsNotif1Enabled = new EnumAppOptions("IsNotif1Enabled", typeof(bool), "False", false);
-        public static readonly EnumAppOptions Notif1Time = new EnumAppOptions("Notif1Time", typeof(TimeSpan), "00:00:00", false);
-        public static readonly EnumAppOptions Notif1Text = new EnumAppOptions("Notif1Text", typeof(string), "C'est l'heure !", false);
-        public static readonly EnumAppOptions IsNotif2Enabled = new EnumAppOptions("IsNotif2Enabled", typeof(bool), "False", false);
-        public static readonly EnumAppOptions Notif2Time = new EnumAppOptions("Notif2Time", typeof(TimeSpan), "00:00:00", false);
-        public static readonly EnumAppOptions Notif2Text = new EnumAppOptions("Notif2Text", typeof(string), "C'est toujours l'heure !", false);
+        public static readonly EnumAppOptions ShowNotifEndMoyMatin = new EnumAppOptions("ShowNotifEndMoyMatin", typeof(bool), "False", false);
+        public static readonly EnumAppOptions ShowNotifEndMoyAprem = new EnumAppOptions("ShowNotifEndMoyAprem", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsUseAlternateNotification = new EnumAppOptions("IsUseAlternateNotification", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsFirstRun = new EnumAppOptions("IsFirstRun", typeof(bool), "True", false);
         public static readonly EnumAppOptions IsConsentUse = new EnumAppOptions("IsConsentUse", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsAutoBadgeMeridienne = new EnumAppOptions("IsAutoBadgeMeridienne", typeof(bool), "False", true);
-        
+
         public static readonly EnumAppOptions LastBadgeDelay = new EnumAppOptions("LastBadgeDelay", typeof(int), "0", true);
         public static readonly EnumAppOptions DeltaAutoBadgeageMinute = new EnumAppOptions("DeltaAutoBadgeageMinute", typeof(int), "0", true);
         public static readonly EnumAppOptions IsDailyDisableAutoBadgeMerid = new EnumAppOptions("IsDailyDisableAutoBadgeMerid", typeof(bool), "True", true);
@@ -63,7 +60,7 @@ namespace Badger2018.constants
 
 
         public static readonly EnumAppOptions IsPlaySoundAtLockMidi = new EnumAppOptions("IsPlaySoundAtLockMidi", typeof(bool), "False", false);
-        
+
         public static readonly EnumAppOptions SoundPlayedAtLockMidi = new EnumAppOptions("SoundPlayedAtLockMidi", typeof(IEnumSerializableWithIndex<EnumSonWindows>), "" + EnumSonWindows.Chord.GetIndex(), false);
         public static readonly EnumAppOptions SoundDeviceFullName = new EnumAppOptions("SoundDeviceFullName", typeof(string), "", false);
         public static readonly EnumAppOptions SoundPlayedAtLockMidiVolume = new EnumAppOptions("SoundPlayedAtLockMidiVolume", typeof(int), "75", false);
@@ -76,6 +73,9 @@ namespace Badger2018.constants
 
         public static readonly EnumAppOptions IsRemoveLegacyShorcutFirefox = new EnumAppOptions("IsRemoveLegacyShorcutFirefox", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsLastBadgeIsAutoShutdown = new EnumAppOptions("IsLastBadgeIsAutoShutdown", typeof(bool), "False", false);
+
+        public static readonly EnumAppOptions Notif1Obj = new EnumAppOptions("Notif1Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Un message à faire passer ?", false);
+        public static readonly EnumAppOptions Notif2Obj = new EnumAppOptions("Notif2Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu'il n'est pas l'heure de rentrer ?", false);
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -107,12 +107,8 @@ namespace Badger2018.constants
                 yield return ShowNotifEndPause;
                 yield return ShowNotifEndTheo;
                 yield return ShowNotifWhenSessUnlockAfterMidi;
-                yield return IsNotif1Enabled;
-                yield return Notif1Time;
-                yield return Notif1Text;
-                yield return IsNotif2Enabled;
-                yield return Notif2Time;
-                yield return Notif2Text;
+                yield return ShowNotifEndMoyMatin;
+                yield return ShowNotifEndMoyAprem;
                 yield return IsUseAlternateNotification;
                 yield return IsFirstRun;
                 yield return IsConsentUse;
@@ -136,6 +132,9 @@ namespace Badger2018.constants
                 yield return ShowTipsAtStart;
                 yield return TypeBadgeageBtnM;
                 yield return IsRemoveLegacyShorcutFirefox;
+
+                yield return Notif1Obj;
+                yield return Notif2Obj;
 
 
 

@@ -26,6 +26,7 @@ using Badger2018.business.saver;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.Properties;
+using Badger2018.services;
 using Badger2018.utils;
 using Badger2018.views;
 using BadgerCommonLibrary.business;
@@ -155,6 +156,9 @@ namespace Badger2018
             PrgOptions = prgOptions;
             UpdaterMgr = updaterManager;
             PluginMgr = pluginManager;
+            Times.EndMoyPfMatin = ServicesMgr.Instance.BadgeagesServices.GetBadgeMoyenneTime(EnumBadgeageType.PLAGE_TRAV_MATIN_END, 30) ?? PrgOptions.PlageFixeMatinFin;
+            Times.EndMoyPfAprem = ServicesMgr.Instance.BadgeagesServices.GetBadgeMoyenneTime(EnumBadgeageType.PLAGE_TRAV_APREM_END, 30) ?? PrgOptions.PlageFixeApremFin;
+
 
             //PointageSaverObj = new XmlPointageWriterReader(this);
             PointageSaverObj = new BddPointageWriterReader(this);
@@ -1969,6 +1973,8 @@ args.Key == Key.F12 ||
 
         private void RegisterNotifications()
         {
+
+            // Notification : plage fixe du matin terminée
             String notifName = Cst.NotifEndPfMatinName;
             if (PrgOptions.ShowNotifEndPfMatin)
             {
@@ -1996,7 +2002,35 @@ args.Key == Key.F12 ||
                 NotifManager.RemoveNotificationsSeries(notifName);
             }
 
+            // Notification : heure habituelle de la fin plage fixe du matin
+            notifName = Cst.NotifEndMoyMatin;
+            if (PrgOptions.ShowNotifEndMoyMatin)
+            {
+                NotifManager.RegisterNotificationOnRealTimeNow(
+                    notifName + ":02",
+                    "Heure habituelle de badgeage",
+                    "D'habitude vous badgez la fin de la plage fixe du matin à cette heure-ci.",
+                    EnumTypesJournees.Complete,
+                    0,
+                    Times.EndMoyPfMatin
+                    );
 
+
+                NotifManager.RegisterNotificationOnRealTimeNow(
+                    notifName + ":12",
+                    "Heure habituelle de badgeage",
+                    "D'habitude vous badgez la fin de la plage fixe du matin à cette heure-ci.",
+                    EnumTypesJournees.Matin,
+                    0, Times.EndMoyPfMatin
+                    );
+
+            }
+            else
+            {
+                NotifManager.RemoveNotificationsSeries(notifName);
+            }
+
+            // Notification : plage fixe de l'après-midi terminée
             notifName = Cst.NotifEndPfApremName;
             if (PrgOptions.ShowNotifEndPfAprem)
             {
@@ -2008,7 +2042,6 @@ args.Key == Key.F12 ||
                     2,
                     PrgOptions.PlageFixeApremFin
                     );
-
 
                 NotifManager.RegisterNotificationOnRealTimeNow(
                     notifName + ":22",
@@ -2024,7 +2057,34 @@ args.Key == Key.F12 ||
                 NotifManager.RemoveNotificationsSeries(notifName);
             }
 
+            // Notification : heure habituelle de la fin plage fixe de l'après-midi 
+            notifName = Cst.NotifEndMoyAprem;
+            if (PrgOptions.ShowNotifEndMoyAprem)
+            {
+                NotifManager.RegisterNotificationOnRealTimeNow(
+                    notifName + ":02",
+                    "Heure habituelle de badgeage",
+                    "D'habitude vous badgez la fin de la plage fixe de l'après-midi à cette heure-ci.",
+                    EnumTypesJournees.Complete,
+                    2,
+                    Times.EndMoyPfAprem
+                    );
 
+                NotifManager.RegisterNotificationOnRealTimeNow(
+                    notifName + ":22",
+                    "Heure habituelle de badgeage",
+                    "D'habitude vous badgez la fin de la plage fixe de l'après-midi à cette heure-ci.",
+                    EnumTypesJournees.ApresMidi,
+                    2,
+                    Times.EndMoyPfAprem
+                    );
+            }
+            else
+            {
+                NotifManager.RemoveNotificationsSeries(notifName);
+            }
+
+            // Notification : pause méridienne minimum terminée
             notifName = Cst.NotifEndPauseName;
             if (PrgOptions.ShowNotifEndPause)
             {
@@ -2085,17 +2145,19 @@ args.Key == Key.F12 ||
             }
 
 
+
             notifName = Cst.NotifCust1Name;
-            if (PrgOptions.IsNotif1Enabled)
+            if (PrgOptions.Notif1Obj.IsActive)
             {
-                NotifManager.RegisterNotificationOnRealTimeNow(
-                    notifName,
-                    null,
-                    PrgOptions.Notif1Text,
-                    null,
-                    null,
-                    PrgOptions.Notif1Time
-                    );
+                NotifManager.RegisterNotification(
+                   notifName,
+                   null,
+                   PrgOptions.Notif1Obj.Message,
+                   null,
+                   null,
+                   () => PrgOptions.Notif1Obj.GetRealTimeSpan(PrgOptions, Times),
+                   EnumTypesTemps.RealTime
+               );
             }
             else
             {
@@ -2103,16 +2165,17 @@ args.Key == Key.F12 ||
             }
 
             notifName = Cst.NotifCust2Name;
-            if (PrgOptions.IsNotif2Enabled)
+            if (PrgOptions.Notif2Obj.IsActive)
             {
-                NotifManager.RegisterNotificationOnRealTimeNow(
-                    notifName,
-                    null,
-                    PrgOptions.Notif2Text,
-                    null,
-                    null,
-                    PrgOptions.Notif2Time
-                    );
+                NotifManager.RegisterNotification(
+                   notifName,
+                   null,
+                   PrgOptions.Notif2Obj.Message,
+                   null,
+                   null,
+                   () => PrgOptions.Notif2Obj.GetRealTimeSpan(PrgOptions, Times),
+                   EnumTypesTemps.RealTime
+               );
             }
             else
             {

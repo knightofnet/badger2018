@@ -57,7 +57,7 @@ namespace Badger2018.services.bddLastLayer
             SQLiteCommand command = null;
 
             ListSqlLiteKVPair lstUpd = new ListSqlLiteKVPair();
-            lstUpd.Add("DATE_JOUR", AppDateUtils.DtNow());
+            lstUpd.Add("DATE_JOUR", date);
             lstUpd.Add("TYPE_JOUR", pointageElt.TypeJournee);
             lstUpd.Add("ETAT_BADGER", pointageElt.EtatBadger);
             lstUpd.Add("IS_COMPLETE", pointageElt.IsComplete);
@@ -89,9 +89,9 @@ namespace Badger2018.services.bddLastLayer
             lstUpd.Add("DATE_JOUR", date);
 
 
-            string sql = String.Format(SqlConstants.SELECT_ALL_WHERE, TableBadgeages, 
-                String.Format("DATE_JOUR{0}@DATE_JOUR order by date_jour {1} limit 1", 
-                isLtOrGt ? "<": ">", 
+            string sql = String.Format(SqlConstants.SELECT_ALL_WHERE, TableBadgeages,
+                String.Format("DATE_JOUR{0}@DATE_JOUR order by date_jour {1} limit 1",
+                isLtOrGt ? "<" : ">",
                 isLtOrGt ? "desc" : "asc"));
 
             command = new SQLiteCommand(sql, dbbManager.Connection);

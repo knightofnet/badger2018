@@ -22,8 +22,8 @@ namespace Badger2018.business.saver
         public BddPointageWriterReader(MainWindow pwin)
         {
 
-            _badgeageService = new BadgeagesServices();
-            _joursServices = new JoursServices();
+            _badgeageService = ServicesMgr.Instance.BadgeagesServices;
+            _joursServices = ServicesMgr.Instance.JoursServices;
             _pWinRef = pwin;
         }
 
@@ -45,7 +45,7 @@ namespace Badger2018.business.saver
 
                 SaveClassicDayBadgeages();
                 SavePauseBadgeages();
-                SaveDatasJours(pElt);
+                SaveDatasJours(pElt, AppDateUtils.DtNow());
 
                 if (_pWinRef.EtatBadger == EnumBadgeageType.PLAGE_TRAV_APREM_END.Index)
                 {
@@ -77,15 +77,15 @@ namespace Badger2018.business.saver
 
         }
 
-        private void SaveDatasJours(PointageElt pElt)
+        public void SaveDatasJours(PointageElt pElt, DateTime dateRef)
         {
-            if (_joursServices.IsJourExistFor(AppDateUtils.DtNow()))
+            if (_joursServices.IsJourExistFor(dateRef))
             {
-                _joursServices.UpdateJourWithPointageElt(AppDateUtils.DtNow(), pElt);
+                _joursServices.UpdateJourWithPointageElt(dateRef, pElt);
             }
             else
             {
-                _joursServices.InsertNewJour(AppDateUtils.DtNow(), pElt);
+                _joursServices.InsertNewJour(dateRef, pElt);
             }
         }
 
@@ -139,7 +139,7 @@ namespace Badger2018.business.saver
 
         public bool MustReloadIncomplete()
         {
-            return _badgeageService.IsBadgeageExistFor(AppDateUtils.DtNow());
+            return _joursServices.IsJourExistFor(AppDateUtils.DtNow());
         }
 
         public PointageElt LoadIncomplete()

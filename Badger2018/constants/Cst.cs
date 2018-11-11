@@ -57,6 +57,9 @@ namespace Badger2018.constants
         public const string NotifCust2Name = "Notif2Time";
         public const string NotifTpsMaxJournee = "TempsMaxJournee";
         public const string NotifTpsMaxDemieJournee = "TempsMaxDemieJournee";
+        public const string NotifEndMoyMatin = "NotifEndMoyMatin";
+        public const string NotifEndMoyAprem = "NotifEndMoyAprem";
+
 
         public const string XmlRootName = "ConfigFile";
         public static string ApplicationDirectory { get; set; }

@@ -258,10 +258,9 @@ namespace Badger2018.views
 
         private void btnPrevDay_Click(object sender, RoutedEventArgs e)
         {
-            BadgeagesServices bServices = new BadgeagesServices();
-            JoursServices jServices = new JoursServices();
+            BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
+            JoursServices jServices = ServicesMgr.Instance.JoursServices;
 
-            
 
             DateTime? dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
             if (!dtLastDay.HasValue)
@@ -272,7 +271,8 @@ namespace Badger2018.views
             if (dtLastDay.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
             {
                 btnNextDay.Visibility = Visibility.Collapsed;
-            } else
+            }
+            else
             {
                 btnNextDay.Visibility = Visibility.Visible;
             }
@@ -281,12 +281,15 @@ namespace Badger2018.views
 
             AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
 
+            dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
+            btnPrevDay.IsEnabled = dtLastDay.HasValue;
+
         }
 
         private void btnNextDay_Click(object sender, RoutedEventArgs e)
         {
-            BadgeagesServices bServices = new BadgeagesServices();
-            JoursServices jServices = new JoursServices();
+            BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
+            JoursServices jServices = ServicesMgr.Instance.JoursServices;
 
 
 
@@ -309,11 +312,14 @@ namespace Badger2018.views
 
             AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
 
+            dtLastDay = jServices.GetNextDayOf(currentShowDay);
+            btnNextDay.IsEnabled = dtLastDay.HasValue;
+
         }
 
         private void AdaptUiToAnotherDay(DateTime dtLastDay, BadgeagesServices bServices, JoursServices jServices)
         {
-  
+
 
             string dtLastDayStr = dtLastDay.ToString("d");
 

@@ -59,24 +59,6 @@
     <Setting Name="ShowNotifEndTheo" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="IsNotif1Enabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="IsNotif2Enabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="Notif1Time" Type="System.TimeSpan" Scope="User">
-      <Value Profile="(Default)">00:00:00</Value>
-    </Setting>
-    <Setting Name="Notif2Time" Type="System.TimeSpan" Scope="User">
-      <Value Profile="(Default)">00:00:00</Value>
-    </Setting>
-    <Setting Name="Notif1Text" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="Notif2Text" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="IsConsentUse" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -172,6 +154,21 @@
     </Setting>
     <Setting Name="licencedUser" Type="System.String" Scope="User">
       <Value Profile="(Default)">Z017695</Value>
+    </Setting>
+    <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Notif1Obj" Type="Badger2018.dto.CustomNotificationDto" Scope="User">
+      <Value Profile="(Default)">False#HEURE_PERSO#00:00:00#00:00:00#0#Un message à faire passer ?</Value>
+    </Setting>
+    <Setting Name="Notif2Obj" Type="Badger2018.dto.CustomNotificationDto" Scope="User">
+      <Value Profile="(Default)">False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu'il n'est pas l'heure de rentrer ?</Value>
+    </Setting>
+    <Setting Name="ShowNotifEndMoyMatin" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowNotifEndMoyAprem" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

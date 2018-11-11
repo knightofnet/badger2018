@@ -39,8 +39,9 @@
     <ApplicationIcon>Resources\Paomedia-Small-N-Flat-Clock.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AryxDevLibrary">
-      <HintPath>..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
+    <Reference Include="AryxDevLibrary, Version=1.0.3.133, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
     </Reference>
     <Reference Include="AryxDevViewLibrary">
       <HintPath>..\..\AryxDevLibrary\AryxDevViewLibrary\bin\Release\AryxDevViewLibrary.dll</HintPath>
@@ -123,11 +124,13 @@
     <Compile Include="business\NoticationsManager.cs" />
     <Compile Include="business\OptionManager.cs" />
     <Compile Include="business\UpdateChecker.cs" />
+    <Compile Include="business\XmlToBddPointageConverter.cs" />
     <Compile Include="business\ZipArchiveManager.cs" />
     <Compile Include="constants\Cst.cs" />
     <Compile Include="constants\EnumActionButtonClose.cs" />
     <Compile Include="constants\EnumAppOptions.cs" />
     <Compile Include="constants\EnumBadgeageType.cs" />
+    <Compile Include="constants\EnumHeurePersoNotif.cs" />
     <Compile Include="constants\EnumStatePause.cs" />
     <Compile Include="constants\EnumBrowser.cs" />
     <Compile Include="constants\EnumErrorCodeRetour.cs" />
@@ -141,6 +144,8 @@
     <Compile Include="constants\EnumTypesTemps.cs" />
     <Compile Include="dto\bdd\BadgeageEntryDto.cs" />
     <Compile Include="dto\bdd\JourEntryDto.cs" />
+    <Compile Include="dto\converter\CustomNotificationConverter.cs" />
+    <Compile Include="dto\CustomNotificationDto.cs" />
     <Compile Include="dto\IntervalTemps.cs" />
     <Compile Include="dto\NotificationDto.cs" />
     <Compile Include="dto\PointageElt.cs" />
@@ -155,6 +160,7 @@
     <Compile Include="services\bddLastLayer\BadgeageBddLayer.cs" />
     <Compile Include="services\bddLastLayer\JoursBddLayer.cs" />
     <Compile Include="services\JoursServices.cs" />
+    <Compile Include="services\ServicesMgr.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="utils\BadgingUtils.cs" />
     <Compile Include="utils\CoreAudioCtrlerFactory.cs" />
@@ -171,6 +177,9 @@
     </Compile>
     <Compile Include="views\BadgeageProgressView.xaml.cs">
       <DependentUpon>BadgeageProgressView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\CustomNotificationView.xaml.cs">
+      <DependentUpon>CustomNotificationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\DebugCommandView.xaml.cs">
       <DependentUpon>DebugCommandView.xaml</DependentUpon>
@@ -211,6 +220,9 @@
     <Compile Include="views\UpdatesReviewerView.xaml.cs">
       <DependentUpon>UpdatesReviewerView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\usercontrols\CustNotifControl.xaml.cs">
+      <DependentUpon>CustNotifControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\usercontrols\FriseDayControl.xaml.cs">
       <DependentUpon>FriseDayControl.xaml</DependentUpon>
     </Compile>
@@ -240,6 +252,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\BadgeageProgressView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\CustomNotificationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -292,6 +308,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\UpdatesReviewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\usercontrols\CustNotifControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -24,6 +24,8 @@ namespace Badger2018.dto
         public List<IntervalTemps> PausesHorsDelai { get; set; }
 
         public TimeSpan TpsTravMatin { get; set; }
+        public TimeSpan EndMoyPfMatin { get; set; }
+        public TimeSpan EndMoyPfAprem { get; set; }
 
         public TimesBadgerDto()
         {
@@ -112,7 +114,7 @@ namespace Badger2018.dto
             return
                 PausesHorsDelai.Any(
                     (r =>
-                        r.Start.CompareTo(PlageTravAprem.Start) >= 0 ));
+                        r.Start.CompareTo(PlageTravAprem.Start) >= 0));
         }
 
         public bool IsStartMatinBadged()

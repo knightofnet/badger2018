@@ -10,7 +10,7 @@ using Badger2018.services.bddLastLayer;
 
 namespace Badger2018.services
 {
-    class JoursServices
+    public class JoursServices
     {
 
         public bool IsJourExistFor(DateTime dtNow)
