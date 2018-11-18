@@ -9,6 +9,8 @@ namespace BadgerCommonLibrary.constants
 
         public static readonly EnumWaveCompModeTraitement ShowDevicesMode = new EnumWaveCompModeTraitement("SHOWDEVICES", "Récupère la liste des périphériques");
         public static readonly EnumWaveCompModeTraitement PlayEnumWaveCompSoundMode = new EnumWaveCompModeTraitement("PLAYSOUND", "Joue un son parmis :");
+        public static readonly EnumWaveCompModeTraitement FullDumpMode = new EnumWaveCompModeTraitement("FULLDUMP", "Affiche plus d'information sur les périphériques de lecture");
+        public static readonly EnumWaveCompModeTraitement TestAllDeviceMode = new EnumWaveCompModeTraitement("TEST", "Joue un son sur tous les périphériques de lecture");
 
 
         public static IEnumerable<EnumWaveCompModeTraitement> Values
@@ -17,6 +19,8 @@ namespace BadgerCommonLibrary.constants
             {
                 yield return ShowDevicesMode;
                 yield return PlayEnumWaveCompSoundMode;
+                yield return FullDumpMode;
+                yield return TestAllDeviceMode;
 
             }
         }

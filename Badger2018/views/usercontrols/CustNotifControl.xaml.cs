@@ -27,6 +27,8 @@ namespace Badger2018.views.usercontrols
         public AppOptions OptionsRef { get; private set; }
 
         public DateTime EndTheoDateTime { get; private set; }
+        public TimeSpan EndMoyPfMatin { get; private set; }
+        public TimeSpan EndMoyPfAprem { get; private set; }
 
         public CustNotifControl()
         {
@@ -77,13 +79,26 @@ namespace Badger2018.views.usercontrols
                 tboxHeureRefNotifA.IsEnabled = false;
                 tboxHeureRefNotifA.Text = EndTheoDateTime.TimeOfDay.ToString(Cst.TimeSpanFormatWithH);
             }
+
+            else if (typeHeure == EnumHeurePersoNotif.HEURE_END_MOY_MATIN)
+            {
+                tboxHeureRefNotifA.IsEnabled = false;
+                tboxHeureRefNotifA.Text = EndMoyPfMatin.ToString(Cst.TimeSpanFormatWithH);
+            }
+            else if (typeHeure == EnumHeurePersoNotif.HEURE_END_MOY_APREM)
+            {
+                tboxHeureRefNotifA.IsEnabled = false;
+                tboxHeureRefNotifA.Text = EndMoyPfAprem.ToString(Cst.TimeSpanFormatWithH);
+            }
         }
 
-        public void LoadsUi(CustomNotificationDto customNotificationDto, AppOptions options, DateTime endTheoDateTime)
+        public void LoadsUi(CustomNotificationDto customNotificationDto, AppOptions options, DateTime endTheoDateTime, TimeSpan endMoyPfMatin, TimeSpan endMoyPfAprem)
         {
             CnotifObj = customNotificationDto;
             OptionsRef = options;
             EndTheoDateTime = endTheoDateTime;
+            EndMoyPfMatin = endMoyPfMatin;
+            EndMoyPfAprem = endMoyPfAprem;
 
             tboxHeureDeltaNotifA.Text = CnotifObj.Delta.ToString(Cst.TimeSpanFormatWithH);
             tboxHeureRefNotifA.Text = CnotifObj.HeureRef.ToString(Cst.TimeSpanFormatWithH);

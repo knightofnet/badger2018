@@ -15,5 +15,6 @@ namespace WaveCompagnonPlayer.dto
         public int SoundVolume { get; set; }
 
         public string GetDeviceTpl { get; set; }
+        public bool IsDebugMode { get; internal set; }
     }
 }

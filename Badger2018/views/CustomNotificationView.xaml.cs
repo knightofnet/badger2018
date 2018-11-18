@@ -28,7 +28,7 @@ namespace Badger2018.views
 
         public bool IsOkClose { get; private set; }
 
-        public CustomNotificationView(CustomNotificationDto notifA, CustomNotificationDto notifB, AppOptions options, DateTime endTheoDateTime)
+        public CustomNotificationView(CustomNotificationDto notifA, CustomNotificationDto notifB, AppOptions options, TimesBadgerDto times)
         {
             InitializeComponent();
 
@@ -36,8 +36,8 @@ namespace Badger2018.views
             NotifB = notifB;
 
 
-            custNotifA.LoadsUi(NotifA, options, endTheoDateTime);
-            custNotifB.LoadsUi(NotifB, options, endTheoDateTime);
+            custNotifA.LoadsUi(NotifA, options, times.EndTheoDateTime, times.EndMoyPfMatin, times.EndMoyPfAprem);
+            custNotifB.LoadsUi(NotifB, options, times.EndTheoDateTime, times.EndMoyPfMatin, times.EndMoyPfAprem);
 
 
         }
@@ -49,7 +49,10 @@ namespace Badger2018.views
 
             IsOkClose = true;
 
-            if (custNotifA.IsControlOk())
+            bool cAisControlOK = custNotifA.IsControlOk();
+            bool cBisControlOK = custNotifB.IsControlOk();
+
+            if (cAisControlOK && cBisControlOK)
             {
                 Close();
 
@@ -57,5 +60,10 @@ namespace Badger2018.views
 
         }
 
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

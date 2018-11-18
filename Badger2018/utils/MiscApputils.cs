@@ -171,5 +171,25 @@ namespace Badger2018.utils
 
 
         }
+
+        public static double EcartType(List<double> t)
+        {
+            double moyenne = Moyenne(t);
+            double somme = 0.0;
+            for (int i = 0; i < t.Count; i++)
+            {
+                double delta = t[i] - moyenne;
+                somme += delta * delta;
+            }
+            return Math.Sqrt(somme / (t.Count - 1));
+        }
+
+        public static double Moyenne(List<double> lstDec)
+        {
+            double sumlstDec = lstDec.Sum(x => x);
+            double moy = sumlstDec / lstDec.Count;
+
+            return moy;
+        }
     }
 }

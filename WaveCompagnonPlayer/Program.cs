@@ -30,6 +30,10 @@ namespace WaveCompagnonPlayer
 
                 argsParser = new AppArgsParser();
                 prgArgs = argsParser.ParseDirect(args);
+                if (prgArgs.IsDebugMode)
+                {
+                    _logger = new Logger(CommonCst.WavePlayerLogFile, Logger.LogLvl.DEBUG,   Logger.LogLvl.DEBUG, "1 Mo");
+                }
 
 
             }
@@ -74,6 +78,14 @@ namespace WaveCompagnonPlayer
                 else if (EnumWaveCompModeTraitement.PlayEnumWaveCompSoundMode.Equals(prgArgs.WaveCompModeTraitements))
                 {
                     jobInstance = new PlaySoundJob();
+                }
+                else if (EnumWaveCompModeTraitement.FullDumpMode.Equals(prgArgs.WaveCompModeTraitements))
+                {
+                    jobInstance = new FullDumpJob();
+                }
+                else if (EnumWaveCompModeTraitement.TestAllDeviceMode.Equals(prgArgs.WaveCompModeTraitements))
+                {
+                    jobInstance = new TestAllPlayerDeviceJob();
                 }
 
                 jobInstance.DoJob(prgArgs);

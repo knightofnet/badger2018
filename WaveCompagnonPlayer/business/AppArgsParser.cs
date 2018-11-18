@@ -65,6 +65,16 @@ namespace WaveCompagnonPlayer.business
             Name = "showDevicesTplOption"
         };
 
+        private static readonly Option _debugModeOption = new Option()
+        {
+            ShortOpt = "dg",
+            LongOpt = "debug-mode",
+            Description = "Passe le niveau de journalisation en debug",
+            HasArgs = false,
+            IsMandatory = false,
+            Name = "debugModeOption"
+        };
+
         public AppArgsParser()
         {
             AddOption(_modeTrtOption);
@@ -72,6 +82,7 @@ namespace WaveCompagnonPlayer.business
             AddOption(_soundToPlayOption);
             AddOption(_soundDeviceOption);
             AddOption(_soundVolumeOption);
+            AddOption(_debugModeOption);
 
 
 
@@ -145,6 +156,8 @@ namespace WaveCompagnonPlayer.business
                     appArgsDto.SoundVolume = 75;
                 }
 
+                // _debugModeOption
+                appArgsDto.IsDebugMode = HasOption(_debugModeOption, dictionary);
 
 
 

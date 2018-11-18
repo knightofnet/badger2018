@@ -39,9 +39,8 @@
     <ApplicationIcon>Resources\Paomedia-Small-N-Flat-Clock.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AryxDevLibrary, Version=1.0.3.133, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
+    <Reference Include="AryxDevLibrary">
+      <HintPath>..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
     </Reference>
     <Reference Include="AryxDevViewLibrary">
       <HintPath>..\..\AryxDevLibrary\AryxDevViewLibrary\bin\Release\AryxDevViewLibrary.dll</HintPath>

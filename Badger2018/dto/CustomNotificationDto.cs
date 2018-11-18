@@ -45,6 +45,14 @@ namespace Badger2018.dto
             {
                 realHeureRef = times.EndTheoDateTime.TimeOfDay;
             }
+            else if (HeurePersoNotif.Equals(EnumHeurePersoNotif.HEURE_END_MOY_MATIN))
+            {
+                realHeureRef = times.EndMoyPfMatin;
+            }
+            else if (HeurePersoNotif.Equals(EnumHeurePersoNotif.HEURE_END_MOY_APREM))
+            {
+                realHeureRef = times.EndMoyPfAprem;
+            }
 
             if (CompSign <= 0)
             {

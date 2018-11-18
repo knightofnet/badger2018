@@ -30,7 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AryxDevLibrary">
+    <Reference Include="AryxDevLibrary, Version=1.0.3.204, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework" />

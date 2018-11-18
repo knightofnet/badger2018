@@ -16,7 +16,7 @@ namespace WaveCompagnonPlayer.business.job
 
             using (CoreAudioController coreAudioController = new CoreAudioController())
             {
-                foreach (string devices in coreAudioController.GetPlaybackDevices().Where(r => r.State == DeviceState.Active).Select(r => r.Name))
+                foreach (string devices in coreAudioController.GetPlaybackDevices().Where(r => r.State == DeviceState.Active).Select(r => r.FullName))
                 {
 
                     Console.WriteLine(tpl, devices);

@@ -29,6 +29,8 @@ namespace Badger2018.business.saver
 
         public void SaveCurrentDayTimes()
         {
+            _logger.Debug("DEBUT : SaveCurrentDayTimes()");
+
             DbbAccessManager.Instance.StartTransaction();
             try
             {
@@ -63,14 +65,26 @@ namespace Badger2018.business.saver
                 }
 
 
-
+                _logger.Debug("Commit !");
                 DbbAccessManager.Instance.StopAndCommitTransaction();
             }
             catch (Exception ex)
             {
+                _logger.Debug("EXCEPTION CATCHEE : SaveCurrentDayTimes() => {0}", ex.GetType().FullName);
                 ExceptionHandlingUtils.LogAndHideException(ex);
 
+                _logger.Debug("Rollback !");
                 DbbAccessManager.Instance.StopAndRollbackTransaction();
+                
+            } finally
+            {
+                if (DbbAccessManager.Instance.CurrentTransaction != null)
+                {
+                    _logger.Debug("Commit in finally !");
+                    DbbAccessManager.Instance.StopAndCommitTransaction();
+                }
+
+                _logger.Debug("FIN : SaveCurrentDayTimes()");
             }
 
 
@@ -81,10 +95,12 @@ namespace Badger2018.business.saver
         {
             if (_joursServices.IsJourExistFor(dateRef))
             {
+                _logger.Debug("Sauvegarde en BDD du jour. Le jour existe déjà, on le mets à jour");
                 _joursServices.UpdateJourWithPointageElt(dateRef, pElt);
             }
             else
             {
+                _logger.Debug("Sauvegarde en BDD du jour. Nouvelle journée");
                 _joursServices.InsertNewJour(dateRef, pElt);
             }
         }
@@ -92,26 +108,26 @@ namespace Badger2018.business.saver
 
         private void SaveClassicDayBadgeages()
         {
-            _badgeageService.RemoveBadgeagesOfToday();
+            _badgeageService.RemoveBadgeagesOfADay(AppDateUtils.DtNow());
 
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_MATIN_START.Index)
             {
-                //TODO LOG
+                _logger.Debug("Sauvegarde en BDD du badgage du matin ({0})", _pWinRef.Times.PlageTravMatin.Start);
                 _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_MATIN_START.Index, _pWinRef.Times.PlageTravMatin.Start);
             }
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_MATIN_END.Index)
             {
-                //TODO LOG
+                _logger.Debug("Sauvegarde en BDD du badgage de fin de matinée ({0})", _pWinRef.Times.PlageTravMatin.EndOrDft);
                 _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_MATIN_END.Index, _pWinRef.Times.PlageTravMatin.EndOrDft);
             }
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_APREM_START.Index)
             {
-                //TODO LOG
+                _logger.Debug("Sauvegarde en BDD du badgage du début d'après-midi ({0})", _pWinRef.Times.PlageTravAprem.Start);
                 _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_APREM_START.Index, _pWinRef.Times.PlageTravAprem.Start);
             }
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_APREM_END.Index)
             {
-                //TODO LOG
+                _logger.Debug("Sauvegarde en BDD du badgage de fin d'après-midi ({0})", _pWinRef.Times.PlageTravAprem.EndOrDft);
                 _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_APREM_END.Index, _pWinRef.Times.PlageTravAprem.EndOrDft);
             }
 
@@ -127,7 +143,7 @@ namespace Badger2018.business.saver
             foreach (IntervalTemps pause in _pWinRef.Times.PausesHorsDelai)
             {
                 string rndStr = StringUtils.RandomString(16);
-                //TODO LOG
+                _logger.Debug("Sauvegarde en BDD d'un pause (complete? {2}). Début : {0}, Fin : {1} ", pause.Start, pause.EndOrDft, pause.IsIntervalComplet());
                 _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_START.Index, pause.Start, rndStr);
                 if (pause.IsIntervalComplet())
                 {

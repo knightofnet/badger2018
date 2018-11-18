@@ -51,7 +51,7 @@ namespace Badger2018.business
         private void SaveClassicDayBadgeages(PointageElt pElt)
         {
             int etatBadgeage = pElt.EtatBadger;
-            _badgeageService.RemoveBadgeagesOfToday();
+            _badgeageService.RemoveBadgeagesOfADay(DateTime.Parse(pElt.DateDay));
 
             if (etatBadgeage >= EnumBadgeageType.PLAGE_TRAV_MATIN_START.Index)
             {

@@ -13,6 +13,8 @@ namespace Badger2018.constants
         public static readonly EnumHeurePersoNotif START_PF_APREM = new EnumHeurePersoNotif("START_PF_APREM", "l'heure du début de la plage fixe de l'après-midi");
         public static readonly EnumHeurePersoNotif END_PF_APREM = new EnumHeurePersoNotif("APREM", "l'heure de fin de la plage fixe de l'après-midi");
         public static readonly EnumHeurePersoNotif TPS_TRAV_THEO = new EnumHeurePersoNotif("TPS_TRAV_THEO", "l'heure de fin de travail théorique");
+        public static readonly EnumHeurePersoNotif HEURE_END_MOY_MATIN = new EnumHeurePersoNotif("HEURE_END_MOY_MATIN", "l'heure de fin habituelle du matin");
+        public static readonly EnumHeurePersoNotif HEURE_END_MOY_APREM = new EnumHeurePersoNotif("HEURE_END_MOY_APREM", "l'heure de fin habituelle de l'après-midi");
 
 
 
@@ -25,6 +27,8 @@ namespace Badger2018.constants
                 yield return START_PF_APREM;
                 yield return END_PF_APREM;
                 yield return TPS_TRAV_THEO;
+                yield return HEURE_END_MOY_MATIN;
+                yield return HEURE_END_MOY_APREM;
 
 
             }

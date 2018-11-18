@@ -1132,7 +1132,7 @@ namespace Badger2018.views
 
         private void btnEditCustomNotifs_Click(object sender, RoutedEventArgs e)
         {
-            CustomNotificationView v = new CustomNotificationView(NewOptions.Notif1Obj, NewOptions.Notif2Obj, NewOptions, Pwin.Times.EndTheoDateTime);
+            CustomNotificationView v = new CustomNotificationView(NewOptions.Notif1Obj, NewOptions.Notif2Obj, NewOptions, Pwin.Times);
             v.ShowDialog();
             if (v.IsOkClose)
             {

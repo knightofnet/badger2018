@@ -7,7 +7,7 @@
              d:DesignHeight="135" Width="396">
     <Grid Height="135" Margin="0,0,0,-38.2" VerticalAlignment="Top" Background="white">
         <CheckBox x:Name="chkActiveNotifA" Content="Activer la notification personnalisée." HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cboxListHeureTypeNotifA" HorizontalAlignment="Left" Margin="222,23,0,0" VerticalAlignment="Top" Width="151"/>
+        <ComboBox x:Name="cboxListHeureTypeNotifA" Margin="222,23,23,0" VerticalAlignment="Top"/>
         <Label Content="Afficher une notification personnalisée à" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top"/>
         <Label Content="La notification s'affichera" HorizontalAlignment="Left" Margin="0,51,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tboxHeureDeltaNotifA" Text="XXhXX" HorizontalAlignment="Left" Margin="143,55,0,0" VerticalAlignment="Top" Width="50" Height="22"/>

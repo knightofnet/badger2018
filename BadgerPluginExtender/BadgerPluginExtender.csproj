@@ -30,7 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AryxDevLibrary">
+    <Reference Include="AryxDevLibrary, Version=1.0.3.204, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -44,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="constants\HooksCst.cs" />
     <Compile Include="CoreAppBridge.cs" />
     <Compile Include="dto\HookReturn.cs" />
     <Compile Include="dto\HookReturns.cs" />

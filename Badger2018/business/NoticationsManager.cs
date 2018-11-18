@@ -1,6 +1,7 @@
 ﻿using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
+using BadgerPluginExtender;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,6 +15,9 @@ namespace Badger2018.business
 {
     public class NoticationsManager
     {
+
+        public PluginManager PluginMgrRef { get; internal set; }
+
         private readonly NotifyIcon _notifyIcon;
 
         private ConcurrentBag<NotificationDto> listNotifRealTime = new ConcurrentBag<NotificationDto>();
@@ -59,6 +63,8 @@ namespace Badger2018.business
             return n;
         }
 
+
+
         internal NotificationDto RegisterNotification(string notifName, String notifTitle, string notifMessage, EnumTypesJournees typeJournee, int? etatBadger, Func<TimeSpan> timePivot, EnumTypesTemps typeTemps)
         {
             NotificationDto n = new NotificationDto
@@ -103,12 +109,14 @@ namespace Badger2018.business
                     {
                         nTitle = String.Format("Il est {0}", nowTs.ToString(Cst.TimeSpanFormat));
                     }
-
+                    
                     if (isShowNotif)
                     {
                         MiscAppUtils.ShowNotificationBaloon(_notifyIcon, nTitle,
                             notif.Message,
                             actionHandler, 3000, useAlternate: UseAlternateNotification);
+                        PluginMgrRef.PlayHook("OnNotifSend", new object[] { notif.TimePivot() , nTitle, notif.Message});
+                      //  (bool)PluginMgr.PlayHookAndReturn("IsBetaUser", null, typeof(bool)).ReturnFirstOrDefaultResultObject();
                     }
                     notif.TimeShowed = nowTs;
 

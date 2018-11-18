@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AryxDevLibrary">
-      <HintPath>..\..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
+      <HintPath>..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
     </Reference>
     <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
       <HintPath>..\packages\AudioSwitcher.AudioApi.3.0.0\lib\net40\AudioSwitcher.AudioApi.dll</HintPath>
@@ -59,10 +59,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembly.cs">
+      <DependentUpon>Assembly.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="business\AppArgsParser.cs" />
     <Compile Include="business\IJobInterface.cs" />
+    <Compile Include="business\job\FullDumpJob.cs" />
     <Compile Include="business\job\PlaySoundJob.cs" />
     <Compile Include="business\job\ShowSoundDevicesJob.cs" />
+    <Compile Include="business\job\TestAllPlayerDeviceJob.cs" />
     <Compile Include="dto\AppArgsDto.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -81,7 +88,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assembly.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Assembly.cs</LastGenOutput>
+    </Content>
     <Content Include="ionicons_2-0-1_radio-waves_64_0_8e44ad_none.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

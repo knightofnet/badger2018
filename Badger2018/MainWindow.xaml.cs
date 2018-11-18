@@ -170,6 +170,7 @@ namespace Badger2018
 
 
             NotifManager = new NoticationsManager(_notifyIcon);
+            NotifManager.PluginMgrRef = PluginMgr;
             NotifManager.AfterShowNotif += delegate(NotificationDto n)
             {
                 PushNewInfo(n.Message);
@@ -752,6 +753,10 @@ args.Key == Key.F12 ||
                     RestartApp();
                     return;
                 }
+            } else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+            {
+                PointageSaverObj.SaveCurrentDayTimes();
+                MessageBox.Show("Temps du jour enregistrés.", "Information");
             }
 
             Close();
@@ -1277,6 +1282,9 @@ args.Key == Key.F12 ||
 
                 PrgOptions = opt.NewOptions;
                 OptionManager.SaveOptions(PrgOptions);
+
+                RegisterNotifications();
+
                 AdaptUiFromOptions(PrgOptions);
                 UpdaterMgr.XmlUpdFilePath = PrgOptions.UpdateXmlUri;
                 if (EtatBadger < 3)
