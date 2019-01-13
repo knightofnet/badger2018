@@ -8,6 +8,7 @@ using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.dto.bdd;
 using Badger2018.services.bddLastLayer;
+using BadgerCommonLibrary.utils;
 
 namespace Badger2018.services
 {
@@ -15,11 +16,27 @@ namespace Badger2018.services
     {
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
+        public DateTime GetFirstDayOfHistory()
+        {
+            _logger.Debug("GetFirstDayOfHistory()");
+
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+            DateTime? result = JoursBddLayer.GetFirstDayOfHistory(dbb);
+            if (!result.HasValue)
+            {
+                result = AppDateUtils.DtNow();
+            }
+
+            _logger.Debug("FIN - GetFirstDayOfHistory() => {0}", result);
+            return result.GetValueOrDefault();
+
+        }
+
         public bool IsJourExistFor(DateTime dtNow)
         {
-            _logger.Debug("IsJourExistFor(dtNow : {0})", dtNow); 
+            _logger.Debug("IsJourExistFor(dtNow : {0})", dtNow);
 
-            
+
             DbbAccessManager dbb = DbbAccessManager.Instance;
             bool result = JoursBddLayer.IsJourExistFor(dbb, dtNow);
 

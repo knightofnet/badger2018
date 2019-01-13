@@ -189,5 +189,33 @@ namespace Badger2018.services.bddLastLayer
 
             return jourEntryDto;
         }
+
+        public static DateTime? GetFirstDayOfHistory(DbbAccessManager dbbManager)
+        {
+            // select DATE_JOUR from JOURS order by DATE_JOUR asc limit 1
+
+            SQLiteCommand command = null;
+
+            DateTime? retDateTime = null;
+
+            string sql = String.Format(SqlConstants.SELECT_COL_ORDERBY, "DATE_JOUR", TableBadgeages, "DATE_JOUR asc LIMIT 1");
+
+            command = new SQLiteCommand(sql, dbbManager.Connection);
+
+
+            JourEntryDto jourEntryDto = new JourEntryDto();
+            jourEntryDto.IsHydrated = false;
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    retDateTime = reader.GetDatetimeByColName("DATE_JOUR");
+                    break;
+                }
+
+            }
+
+            return retDateTime;
+        }
     }
 }

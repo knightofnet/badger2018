@@ -36,7 +36,7 @@ namespace Badger2018.business.saver
             {
                 PointageElt pElt = new PointageElt
                 {
-                    DateDay = _pWinRef.RealTimeDtNow.ToString(),
+                    DateDay = _pWinRef.RealTimes.RealTimeDtNow.ToString(),
                     EtatBadger = _pWinRef.EtatBadger,
                     OldEtatBadger = _pWinRef.OldEtatBadger,
                     TypeJournee = _pWinRef.TypeJournee.Index,
@@ -61,7 +61,7 @@ namespace Badger2018.business.saver
                         t += _pWinRef.Times.GetTpsTravAprem();
                     }
 
-                    _joursServices.UpdateTpsTravaille(_pWinRef.RealTimeDtNow, t);
+                    _joursServices.UpdateTpsTravaille(_pWinRef.RealTimes.RealTimeDtNow, t);
                 }
 
 
@@ -75,8 +75,9 @@ namespace Badger2018.business.saver
 
                 _logger.Debug("Rollback !");
                 DbbAccessManager.Instance.StopAndRollbackTransaction();
-                
-            } finally
+
+            }
+            finally
             {
                 if (DbbAccessManager.Instance.CurrentTransaction != null)
                 {
@@ -113,22 +114,22 @@ namespace Badger2018.business.saver
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_MATIN_START.Index)
             {
                 _logger.Debug("Sauvegarde en BDD du badgage du matin ({0})", _pWinRef.Times.PlageTravMatin.Start);
-                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_MATIN_START.Index, _pWinRef.Times.PlageTravMatin.Start);
+                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_MATIN_START.Index, _pWinRef.Times.PlageTravMatin.Start, cdToSave: _pWinRef.PrgOptions.LastCdSeen);
             }
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_MATIN_END.Index)
             {
                 _logger.Debug("Sauvegarde en BDD du badgage de fin de matinée ({0})", _pWinRef.Times.PlageTravMatin.EndOrDft);
-                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_MATIN_END.Index, _pWinRef.Times.PlageTravMatin.EndOrDft);
+                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_MATIN_END.Index, _pWinRef.Times.PlageTravMatin.EndOrDft, cdToSave: _pWinRef.PrgOptions.LastCdSeen);
             }
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_APREM_START.Index)
             {
                 _logger.Debug("Sauvegarde en BDD du badgage du début d'après-midi ({0})", _pWinRef.Times.PlageTravAprem.Start);
-                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_APREM_START.Index, _pWinRef.Times.PlageTravAprem.Start);
+                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_APREM_START.Index, _pWinRef.Times.PlageTravAprem.Start, cdToSave: _pWinRef.PrgOptions.LastCdSeen);
             }
             if (_pWinRef.EtatBadger >= EnumBadgeageType.PLAGE_TRAV_APREM_END.Index)
             {
                 _logger.Debug("Sauvegarde en BDD du badgage de fin d'après-midi ({0})", _pWinRef.Times.PlageTravAprem.EndOrDft);
-                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_APREM_END.Index, _pWinRef.Times.PlageTravAprem.EndOrDft);
+                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_TRAV_APREM_END.Index, _pWinRef.Times.PlageTravAprem.EndOrDft, cdToSave: _pWinRef.PrgOptions.LastCdSeen);
             }
 
         }
@@ -144,10 +145,10 @@ namespace Badger2018.business.saver
             {
                 string rndStr = StringUtils.RandomString(16);
                 _logger.Debug("Sauvegarde en BDD d'un pause (complete? {2}). Début : {0}, Fin : {1} ", pause.Start, pause.EndOrDft, pause.IsIntervalComplet());
-                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_START.Index, pause.Start, rndStr);
+                _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_START.Index, pause.Start, rndStr, cdToSave: _pWinRef.PrgOptions.LastCdSeen);
                 if (pause.IsIntervalComplet())
                 {
-                    _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_END.Index, pause.EndOrDft, rndStr);
+                    _badgeageService.AddBadgeageForToday(EnumBadgeageType.PLAGE_END.Index, pause.EndOrDft, rndStr, cdToSave: _pWinRef.PrgOptions.LastCdSeen);
                 }
 
             }

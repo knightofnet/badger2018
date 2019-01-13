@@ -3,7 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Résumé détaillé de la journée" Height="518.8" Width="418" MinHeight="518.8" MinWidth="418" MaxWidth="418" ResizeMode="CanResizeWithGrip" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
     <Grid>
-        <Label x:Name="lblCurrentDay" Content="Vendredi 7 septembre 2018" Margin="10,10,9.6,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="18"/>
+
+        <DatePicker x:Name="dtPickCurrentDay" HorizontalAlignment="Left" Margin="70,17,0,0" VerticalAlignment="Top" Width="270"/>
+
+       
         <Label Content="Type de journée : " HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblTyJournee" Content="Label" HorizontalAlignment="Left" Margin="114,49,0,0" VerticalAlignment="Top" Width="124"/>
         <ScrollViewer Margin="10,80,10.2,33.6" VerticalScrollBarVisibility="Auto">
@@ -15,5 +18,7 @@
         <Button x:Name="btnModTimes" Content="Modifier mes temps" HorizontalAlignment="Left" Margin="10,0,0,9.6" VerticalAlignment="Bottom" Width="136" Click="btnModTimes_Click"/>
         <Button x:Name="btnPrevDay" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="10,19,0,0" VerticalAlignment="Top" Width="55" Click="btnPrevDay_Click"/>
         <Button x:Name="btnNextDay" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="345,19,0,0" VerticalAlignment="Top" Width="55" Click="btnNextDay_Click"/>
+
+
     </Grid>
 </Window>

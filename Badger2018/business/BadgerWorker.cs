@@ -197,6 +197,7 @@ namespace Badger2018.business
                     {
                         progress.Hide();
                     }
+                    Pwin.PrgOptions.LastCdSeen = b.TsCd.Value;
                 }
                 else
                 {
@@ -376,7 +377,7 @@ namespace Badger2018.business
             else
             {
 
-                if (Pwin.RealTimeTsNow.CompareTo(Pwin.PrgOptions.PlageFixeMatinFin) < 0)
+                if (Pwin.RealTimes.RealTimeTsNow.CompareTo(Pwin.PrgOptions.PlageFixeMatinFin) < 0)
                 {
                     MessageBoxResult doValid = MessageBox.Show(
                         String.Format(
@@ -410,6 +411,7 @@ namespace Badger2018.business
                     MessageBoxImage.Question);
                 if (doValid == MessageBoxResult.No)
                 {
+                    Pwin.SetBtnBadgerEnabled(true);
                     return;
                 }
 
@@ -453,6 +455,7 @@ namespace Badger2018.business
                     MessageBoxImage.Question);
                 if (doValid == MessageBoxResult.No)
                 {
+                    Pwin.SetBtnBadgerEnabled(true);
                     return;
                 }
             }
@@ -535,6 +538,7 @@ namespace Badger2018.business
                     psi.UseShellExecute = false;
                     Process.Start(psi);
 
+                    Pwin.PrgSwitch.IsRealClose = true;
                     Pwin.Close();
                     //Environment.Exit(0);
                 }

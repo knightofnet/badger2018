@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -20,6 +21,7 @@ using Badger2018.utils;
 using Badger2018.views.usercontrols;
 using BadgerCommonLibrary.utils;
 using IWshRuntimeLibrary;
+using Label = System.Windows.Controls.Label;
 using Path = System.IO.Path;
 
 namespace Badger2018.views
@@ -64,14 +66,22 @@ namespace Badger2018.views
 
 
             lblTyJournee.Content = typesJournees.Libelle;
-            lblCurrentDay.Content = times.TimeRef.ToString("D");
+
+            dtPickCurrentDay.SelectedDateFormat = DatePickerFormat.Long;
+            dtPickCurrentDay.SelectedDate = times.TimeRef;
+            dtPickCurrentDay.DisplayDateStart = ServicesMgr.Instance.JoursServices.GetFirstDayOfHistory();
+            dtPickCurrentDay.DisplayDateEnd = times.TimeRef;
+            dtPickCurrentDay.DisplayDate = times.TimeRef;
+            dtPickCurrentDay.SelectedDateChanged += DtPickCurrentDayOnSelectedDateChanged;
 
             bool isMaxDepass = false;
             var a = TimesUtils.GetTempsTravaille(AppDateUtils.DtNow(), etatBadgeage, times, prgOptions, typesJournees, true,
                 ref isMaxDepass);
             lblTempsTrav.Content = a.ToString(Cst.TimeSpanFormatWithH);
+            Add5MinTooltip();
 
         }
+
 
 
 
@@ -261,29 +271,35 @@ namespace Badger2018.views
             BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
             JoursServices jServices = ServicesMgr.Instance.JoursServices;
 
-
-            DateTime? dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
-            if (!dtLastDay.HasValue)
+            DateTime? dtLastDay = null;
+            try
             {
-                return;
-            }
+                dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
+                if (!dtLastDay.HasValue)
+                {
+                    return;
+                }
 
-            if (dtLastDay.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
+                if (dtLastDay.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
+                {
+                    btnNextDay.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    btnNextDay.Visibility = Visibility.Visible;
+                }
+
+                currentShowDay = dtLastDay.Value;
+
+                AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
+
+                dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
+                btnPrevDay.IsEnabled = dtLastDay.HasValue;
+            }
+            catch (Exception ex)
             {
-                btnNextDay.Visibility = Visibility.Collapsed;
+                ErrorChangeDayHandling(dtLastDay, ex);
             }
-            else
-            {
-                btnNextDay.Visibility = Visibility.Visible;
-            }
-
-            currentShowDay = dtLastDay.Value;
-
-            AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
-
-            dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
-            btnPrevDay.IsEnabled = dtLastDay.HasValue;
-
         }
 
         private void btnNextDay_Click(object sender, RoutedEventArgs e)
@@ -291,29 +307,77 @@ namespace Badger2018.views
             BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
             JoursServices jServices = ServicesMgr.Instance.JoursServices;
 
-
-
-            DateTime? dtLastDay = jServices.GetNextDayOf(currentShowDay);
-            if (!dtLastDay.HasValue)
+            DateTime? dtLastDay = null;
+            try
             {
-                return;
+
+                dtLastDay = jServices.GetNextDayOf(currentShowDay);
+                if (!dtLastDay.HasValue)
+                {
+                    return;
+                }
+
+                if (dtLastDay.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
+                {
+                    btnNextDay.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    btnNextDay.Visibility = Visibility.Visible;
+                }
+
+                currentShowDay = dtLastDay.Value;
+
+                AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
+
+                dtLastDay = jServices.GetNextDayOf(currentShowDay);
+                btnNextDay.IsEnabled = dtLastDay.HasValue;
+            }
+            catch (Exception ex)
+            {
+                ErrorChangeDayHandling(dtLastDay, ex);
             }
 
-            if (dtLastDay.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
+        }
+
+        private void DtPickCurrentDayOnSelectedDateChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        {
+            DateTime? dateSelected = null;
+            try
             {
-                btnNextDay.Visibility = Visibility.Collapsed;
+                BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
+                JoursServices jServices = ServicesMgr.Instance.JoursServices;
+
+
+                dateSelected = dtPickCurrentDay.SelectedDate;
+                if (!dateSelected.HasValue)
+                {
+
+                    return;
+                }
+
+                if (dateSelected.Value.ToShortDateString().Equals(AppDateUtils.DtNow().ToShortDateString()))
+                {
+                    btnNextDay.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    btnNextDay.Visibility = Visibility.Visible;
+                }
+
+                currentShowDay = dateSelected.Value;
+
+                AdaptUiToAnotherDay(dateSelected.Value, bServices, jServices);
+
+                //   dateSelected = jServices.GetNextDayOf(currentShowDay);
+                ///   btnNextDay.IsEnabled = dateSelected.HasValue;
+                ///
+                /// 
             }
-            else
+            catch (Exception ex)
             {
-                btnNextDay.Visibility = Visibility.Visible;
+                ErrorChangeDayHandling(dateSelected, ex);
             }
-
-            currentShowDay = dtLastDay.Value;
-
-            AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
-
-            dtLastDay = jServices.GetNextDayOf(currentShowDay);
-            btnNextDay.IsEnabled = dtLastDay.HasValue;
 
         }
 
@@ -331,15 +395,22 @@ namespace Badger2018.views
             if (jServices.IsJourExistFor(dtLastDay))
             {
                 JourEntryDto j = jServices.GetJourData(dtLastDay);
-                if (!j.IsHydrated) { return; }
+                if (!j.IsHydrated)
+                {
+                    return;
+                }
 
                 int etatBadgeage = j.EtatBadger;
                 EnumTypesJournees typesJournees = j.TypeJour;
 
-                times.PlageTravMatin.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, dtLastDay));
-                times.PlageTravMatin.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END, dtLastDay));
-                times.PlageTravAprem.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_START, dtLastDay));
-                times.PlageTravAprem.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_END, dtLastDay));
+                times.PlageTravMatin.Start =
+                    DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, dtLastDay));
+                times.PlageTravMatin.End =
+                    DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END, dtLastDay));
+                times.PlageTravAprem.Start =
+                    DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_START, dtLastDay));
+                times.PlageTravAprem.End =
+                    DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_END, dtLastDay));
 
                 times.PausesHorsDelai = bServices.GetPauses(dtLastDay);
 
@@ -352,13 +423,58 @@ namespace Badger2018.views
 
 
                 lblTyJournee.Content = typesJournees.Libelle;
-                lblCurrentDay.Content = times.TimeRef.ToString("D");
+                dtPickCurrentDay.SelectedDate = times.TimeRef;
 
                 bool isMaxDepass = false;
                 var a = TimesUtils.GetTempsTravaille(dtLastDay, etatBadgeage, times, PrgOptions, typesJournees, true,
                     ref isMaxDepass);
                 lblTempsTrav.Content = a.ToString(Cst.TimeSpanFormatWithH);
+                Add5MinTooltip();
             }
+            else
+            {
+                if (!dtLastDay.ToString("d").Equals(AppDateUtils.DtNow().ToString("d")))
+                {
+                    System.Windows.MessageBox.Show(
+                        String.Format("Aucun enregistrement a été trouvé pour le {0}", dtLastDay.ToString("D")),
+                        "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    dtPickCurrentDay.SelectedDate = AppDateUtils.DtNow();
+                }
+            }
+        }
+
+        private void Add5MinTooltip()
+        {
+            if (PrgOptions.IsAdd5minCpt)
+            {
+                lblTempsTrav.Content += "*";
+                lblTempsTrav.ToolTip = "Ce temps prend en compte les 5 minutes supplémentaires";
+            }
+            else
+            {
+                lblTempsTrav.ToolTip = "Ce temps ne prend pas en compte les 5 minutes supplémentaires";
+            }
+        }
+
+        private void ErrorChangeDayHandling(DateTime? dateSelected, Exception ex)
+        {
+            String cplText = "";
+            if (dateSelected == null)
+            {
+                cplText =
+                    "Une erreur non prévue s'est produite avec la fenêtre affichant les détails d'une journée. " +
+                    "La fenêtre va maintenant se fermer, mais le programme peut continuer à fonctionner.";
+            }
+            else
+            {
+                cplText = String.Format("Une erreur non prévue s'est produite lors de la lecture de la date du {0}. " +
+                                        "La fenêtre va maintenant se fermer, mais le programme peut continuer à fonctionner.",
+                    dateSelected.Value.ToString("s"));
+            }
+
+            ExceptionHandlingUtils.LogAndHideException(ex);
+            ExceptionMsgBoxView.ShowException(ex, null, cplText);
+            Close();
         }
 
         public class LabelledDateTime
@@ -386,4 +502,6 @@ namespace Badger2018.views
 
 
     }
+
+
 }

@@ -25,10 +25,12 @@ using Badger2018.business;
 using Badger2018.business.saver;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.dto.bdd;
 using Badger2018.Properties;
 using Badger2018.services;
 using Badger2018.utils;
 using Badger2018.views;
+using Badger2018.views.usercontrols;
 using BadgerCommonLibrary.business;
 using BadgerCommonLibrary.dto;
 using BadgerCommonLibrary.utils;
@@ -132,11 +134,13 @@ namespace Badger2018
 
         public AppSwitchs PrgSwitch { get; set; }
 
-
+        public RealTimesObj RealTimes { get; private set; }
+        /*
         public TimeSpan RealTimeTempsTravaille { get; private set; }
         public TimeSpan RealTimeTempsTravailleMatin { get; private set; }
         public DateTime RealTimeDtNow { get; private set; }
         public TimeSpan RealTimeTsNow { get; private set; }
+         * */
         public bool IsFullyLoaded { get; private set; }
 
         public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager)
@@ -152,6 +156,8 @@ namespace Badger2018
             //imgOptions.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "iconSetting.png");
             lblVersion.Content = String.Format(lblVersion.Content.ToString(), Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
             pbarTime.IsIndeterminate = true;
+
+            RealTimes = new RealTimesObj();
 
             PrgOptions = prgOptions;
             UpdaterMgr = updaterManager;
@@ -185,9 +191,9 @@ namespace Badger2018
                 NotifManager.TypeJournee = a;
             };
 
-            RealTimeDtNow = AppDateUtils.DtNow();
-            RealTimeTsNow = RealTimeDtNow.TimeOfDay;
-            RealTimeTempsTravaille = TimeSpan.Zero;
+            RealTimes.RealTimeDtNow = AppDateUtils.DtNow();
+            RealTimes.RealTimeTsNow = RealTimes.RealTimeDtNow.TimeOfDay;
+            RealTimes.RealTimeTempsTravaille = TimeSpan.Zero;
 
 
 
@@ -259,6 +265,30 @@ namespace Badger2018
                 {
                     btnModTimes_Click(null, null);
                 }
+                else if (args.SystemKey == Key.F9 || args.Key == Key.F9)
+                {
+                    String title = "";
+                    String message = "";
+
+                    title = "Dernier C/D relevé";
+                    message = "C/D : " + PrgOptions.LastCdSeen.ToString(Cst.TimeSpanFormatWithH);
+                    MiscAppUtils.ShowNotificationBaloon(
+                        _notifyIcon,
+                        title, message,
+                        null, 5000, null, PrgOptions.IsUseAlternateNotification);
+                    PluginMgr.PlayHook("OnNotifSend", new object[] { AppDateUtils.DtNow().TimeOfDay, title, message });
+                }
+                else if (args.SystemKey == Key.F10)
+                {
+                    String title = "Test notification";
+                    String message = "Notification envoyée à " + AppDateUtils.DtNow().ToString("s");
+                    MiscAppUtils.ShowNotificationBaloon(
+                        _notifyIcon,
+                        title, message,
+                        null, 15000, null, PrgOptions.IsUseAlternateNotification);
+                    PluginMgr.PlayHook("OnNotifSend", new object[] { AppDateUtils.DtNow().TimeOfDay, title, message });
+
+                }
                 else if (args.Key == Key.F11)
                 {
                     PlayAdvertise();
@@ -297,7 +327,7 @@ args.Key == Key.F12 ||
 
                 lblStartTime.Foreground = Cst.SCBGrey;
 
-                lblTpsTravReel.Visibility = Visibility.Hidden;
+                ctrlCompteur.SetVisibility(CompteurControl.CompteurVisibility.Hidden);
 
                 lblStartTime.ContentShortTime(Times.PlageTravMatin.Start);
                 lblEndTime.ContentShortTime(Times.EndTheoDateTime);
@@ -409,8 +439,6 @@ args.Key == Key.F12 ||
             lblInfos.Visibility = Visibility.Collapsed;
             lblInfoLbl.Visibility = Visibility.Collapsed;
 
-            lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
-
             lblTpsTravMatin.Visibility = Visibility.Collapsed;
             lblTpsTravAprem.Visibility = Visibility.Collapsed;
             lblPauseTime.Visibility = Visibility.Collapsed;
@@ -469,6 +497,17 @@ args.Key == Key.F12 ||
             {
                 ChangeTypeJournee();
             };
+
+            ctrlCompteur.TimesRef = Times;
+            ctrlCompteur.OptionsRef = PrgOptions;
+            ctrlCompteur.PrgSwitchRef = PrgSwitch;
+            ctrlCompteur.RealTimesRef = RealTimes;
+            ctrlCompteur.TyJourneeRef = TypeJournee;
+
+            ctrlCompteur.IsEnabledCtrl = true;
+            ctrlCompteur.UpdateInfos();
+
+
         }
 
 
@@ -521,7 +560,8 @@ args.Key == Key.F12 ||
             // PrgSwitch.PbarMainTimerActif = mainTimerManager.IsPaused;
             if (!mainTimerManager.IsPaused)
             {
-                lblTpsTravReel.Foreground = Cst.SCBBlack;
+                ctrlCompteur.SetFontColor(Cst.SCBBlack);
+                ctrlCompteur.CurrentState = CompteurControl.CompteurState.TempsRestantJour;
 
                 pauseHorsPeriodeTimer.Start();
                 pauseHorsPeriodeTimer.Stop();
@@ -575,22 +615,28 @@ args.Key == Key.F12 ||
                 {
                     IntervalTemps ivlTemps = Times.PausesHorsDelai.First(r => !r.IsIntervalComplet());
                     TimeSpan tpsPause = AppDateUtils.DtNow().TimeOfDay - ivlTemps.Start.TimeOfDay;
-                    lblTpsTravReel.Content = tpsPause.ToString("h':'mm':'ss");
-                    lblTpsTravReelLbl.Content = "Temps de la pause en cours :";
+
+                    ctrlCompteur.SetText(tpsPause.ToString("h':'mm':'ss"));
+                    ctrlCompteur.SetTitle("Temps de la pause en cours :");
+                    ctrlCompteur.SetVisibility(CompteurControl.CompteurVisibility.OnlyMain);
+                    //lblTpsTravReel.Content = tpsPause.ToString("h':'mm':'ss");
+                    //lblTpsTravReelLbl.Content = "Temps de la pause en cours :";
 
                     DateTime newEndTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
                                 PrgOptions, EnumTypesJournees.Complete)
                                                     + Times.GetTpsPause() + tpsPause;
                     lblEndTime.ContentShortTime(newEndTime);
-                    lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
+                    //lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
 
 
                 };
                 pauseHorsPeriodeTimer.Interval = new TimeSpan(0, 0, 1);
 
+                ctrlCompteur.CurrentState = CompteurControl.CompteurState.CustumExt;
+
                 pauseHorsPeriodeTimer.Start();
 
-                lblTpsTravReel.ToolTip = null;
+                ctrlCompteur.SetToolTip(null);
 
                 PrgSwitch.PbarMainTimerActif = false;
 
@@ -648,7 +694,7 @@ args.Key == Key.F12 ||
 
         private void OnAfterSessionLock(object sender, SessionSwitchEventArgs e)
         {
-            if (EtatBadger == 0 && e.Reason == SessionSwitchReason.SessionLock && RealTimeTsNow >= PrgOptions.PlageFixeMatinFin)
+            if (EtatBadger == 0 && e.Reason == SessionSwitchReason.SessionLock && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeMatinFin)
             {
                 PlayAdvertise();
             }
@@ -753,7 +799,8 @@ args.Key == Key.F12 ||
                     RestartApp();
                     return;
                 }
-            } else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
             {
                 PointageSaverObj.SaveCurrentDayTimes();
                 MessageBox.Show("Temps du jour enregistrés.", "Information");
@@ -952,7 +999,7 @@ args.Key == Key.F12 ||
             bool isMaxDepass = UpdRealTimes();
 
             TimeSpan diffTotal = Times.EndTheoDateTime - Times.PlageTravMatin.Start;
-            TimeSpan diff = RealTimeDtNow - Times.PlageTravMatin.Start;
+            TimeSpan diff = RealTimes.RealTimeDtNow - Times.PlageTravMatin.Start;
 
             if (PrgSwitch.PbarMainTimerActif)
             {
@@ -960,7 +1007,7 @@ args.Key == Key.F12 ||
                 pbarTime.Value = 100 * diff.TotalSeconds / diffTotal.TotalSeconds;
             }
 
-            if (RealTimeDtNow.DayOfYear != Times.TimeRef.DayOfYear)
+            if (RealTimes.RealTimeDtNow.DayOfYear != Times.TimeRef.DayOfYear)
             {
                 // Le jour a changé. Il faut redémarrer.
                 PointageSaverObj.SaveCurrentDayTimes();
@@ -968,10 +1015,10 @@ args.Key == Key.F12 ||
             }
 
             //DoNotification();
-            NotifManager.DoNotification(RealTimeTsNow, EnumTypesTemps.RealTime, PrgOptions.IsGlobalShowNotifications);
-            NotifManager.DoNotification(RealTimeTempsTravaille, EnumTypesTemps.TpsTrav, PrgOptions.IsGlobalShowNotifications);
-            NotifManager.DoNotification(RealTimeTempsTravailleMatin, EnumTypesTemps.TpsTravMatin, PrgOptions.IsGlobalShowNotifications);
-            NotifManager.DoNotification((RealTimeTempsTravaille - RealTimeTempsTravailleMatin), EnumTypesTemps.TpsTravAprem, PrgOptions.IsGlobalShowNotifications);
+            NotifManager.DoNotification(RealTimes.RealTimeTsNow, EnumTypesTemps.RealTime, PrgOptions.IsGlobalShowNotifications);
+            NotifManager.DoNotification(RealTimes.RealTimeTempsTravaille, EnumTypesTemps.TpsTrav, PrgOptions.IsGlobalShowNotifications);
+            NotifManager.DoNotification(RealTimes.RealTimeTempsTravailleMatin, EnumTypesTemps.TpsTravMatin, PrgOptions.IsGlobalShowNotifications);
+            NotifManager.DoNotification((RealTimes.RealTimeTempsTravaille - RealTimes.RealTimeTempsTravailleMatin), EnumTypesTemps.TpsTravAprem, PrgOptions.IsGlobalShowNotifications);
 
             if (PrgOptions.IsStopCptAtMax
                && isMaxDepass
@@ -989,7 +1036,7 @@ args.Key == Key.F12 ||
 
             PluginMgr.PlayHook("BadgeBetaTest", new object[]
             {
-                 Times, PrgOptions, PrgSwitch, EtatBadger, RealTimeTsNow
+                 Times, PrgOptions, PrgSwitch, EtatBadger, RealTimes.RealTimeTsNow
             });
 
             /*
@@ -1015,7 +1062,8 @@ args.Key == Key.F12 ||
             }
              * */
 
-            UpdateInfos();
+            //UpdateInfos();
+            ctrlCompteur.UpdateInfos();
 
             if (PrgSwitch.CanCheckUpdate)
             {
@@ -1028,6 +1076,63 @@ args.Key == Key.F12 ||
                 LoadsDidYouKnow();
 
             }
+            if (EtatBadger >= 0 && !PrgSwitch.IsShowResumeLastDayNotif && IsLoaded)
+            {
+
+                DateTime? lastDayDt = ServicesMgr.Instance.JoursServices.GetPreviousDayOf(AppDateUtils.DtNow());
+                if (lastDayDt == null)
+                {
+                    PrgSwitch.IsShowResumeLastDayNotif = true;
+                    return;
+                }
+
+                JourEntryDto lastDay = ServicesMgr.Instance.JoursServices.GetJourData(lastDayDt.Value);
+                if (!lastDay.IsHydrated)
+                {
+                    PrgSwitch.IsShowResumeLastDayNotif = true;
+                    return;
+                }
+
+
+                if (lastDay.EtatBadger < 3)
+                {
+
+                }
+
+                String title = "Résumé de votre dernière journée travaillée";
+                String precTpsTrav = "non renseigné";
+                if (lastDay.TpsTravaille.HasValue)
+                {
+
+                    if (lastDay.TpsTravaille.Value.CompareTo(PrgOptions.TempsMaxJournee) >= 0)
+                    {
+                        precTpsTrav = String.Format("{0} (réellement travaillé : {1})",
+                            PrgOptions.TempsMaxJournee.ToString(Cst.TimeSpanFormatWithH),
+                            lastDay.TpsTravaille.Value.ToString(Cst.TimeSpanFormatWithH)
+                            );
+                    }
+                    else
+                    {
+                        precTpsTrav = lastDay.TpsTravaille.Value.ToString(Cst.TimeSpanFormatWithH);
+                    }
+                }
+
+                String message = String.Format("Le {1}{0}Type de journée : {2}{0}Temps travaillé{3} : {4}",
+                        Environment.NewLine,
+                        lastDayDt.Value.ToString("D"),
+                        lastDay.TypeJour.Libelle,
+                        PrgOptions.IsAdd5minCpt ? " (avec 5min)" : "",
+                        precTpsTrav
+                     );
+                MiscAppUtils.ShowNotificationBaloon(
+                    _notifyIcon,
+                    title, message,
+                    null, 15000, null, PrgOptions.IsUseAlternateNotification);
+                PluginMgr.PlayHook("OnNotifSend", new object[] { AppDateUtils.DtNow().TimeOfDay, title, message });
+
+
+                PrgSwitch.IsShowResumeLastDayNotif = true;
+            }
 
 
 
@@ -1036,31 +1141,33 @@ args.Key == Key.F12 ||
 
         private bool UpdRealTimes()
         {
-            RealTimeDtNow = AppDateUtils.DtNow();
-            RealTimeTsNow = RealTimeDtNow.TimeOfDay;
+            RealTimes.RealTimeDtNow = AppDateUtils.DtNow();
+            RealTimes.RealTimeTsNow = RealTimes.RealTimeDtNow.TimeOfDay;
             bool isMaxDepass = false;
-            RealTimeTempsTravaille = TimesUtils.GetTempsTravaille(RealTimeDtNow, EtatBadger, Times, PrgOptions, TypeJournee, true, ref isMaxDepass);
+            RealTimes.RealTimeTempsTravaille = TimesUtils.GetTempsTravaille(RealTimes.RealTimeDtNow, EtatBadger, Times, PrgOptions, TypeJournee, true, ref isMaxDepass);
             if (TypeJournee == EnumTypesJournees.Complete)
             {
                 if (EtatBadger <= 1)
                 {
-                    RealTimeTempsTravailleMatin = RealTimeTempsTravaille;
+                    RealTimes.RealTimeTempsTravailleMatin = RealTimes.RealTimeTempsTravaille;
                 }
                 else
                 {
-                    RealTimeTempsTravailleMatin = RealTimeTempsTravaille - (Times.PlageTravAprem.Start - Times.PlageTravMatin.EndOrDft);
+                    RealTimes.RealTimeTempsTravailleMatin = RealTimes.RealTimeTempsTravaille - (Times.PlageTravAprem.Start - Times.PlageTravMatin.EndOrDft);
                 }
             }
             else
             {
-                RealTimeTempsTravailleMatin = RealTimeTempsTravaille;
+                RealTimes.RealTimeTempsTravailleMatin = RealTimes.RealTimeTempsTravaille;
             }
             return isMaxDepass;
         }
 
         private void UpdateInfos()
         {
-            TimeSpan tpsRestant = Times.EndTheoDateTime - RealTimeDtNow;
+            /*
+            
+            TimeSpan tpsRestant = Times.EndTheoDateTime - RealTimes.RealTimeDtNow;
 
 
             // Tps trav pour une journée ou une demie-journée.
@@ -1073,13 +1180,13 @@ args.Key == Key.F12 ||
                 PrgOptions.IsAdd5minCpt ? "Le temps travaillé prend en compte les 5 min supplémentaires." + Environment.NewLine : "");
 
 
-            String strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(RealTimeTempsTravaille);
+            String strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(RealTimes.RealTimeTempsTravaille);
 
             if (PrgSwitch.IsTimeRemainingNotTimeWork)
             {
 
                 msgTooltip = "Double-cliquer pour afficher le compteur temps travaillé du jour";
-                lblTpsTrav = RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0
+                lblTpsTrav = RealTimes.RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0
                     ? "Temps supplémentaire pour la journée :"
                     : "Temps restant pour la journée :";
                 strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(tpsRestant);
@@ -1099,28 +1206,30 @@ args.Key == Key.F12 ||
 
             //      }
 
-            if (RealTimeTsNow.CompareTo(PrgOptions.PlageFixeApremFin) >= 0)
+            if (RealTimes.RealTimeTsNow.CompareTo(PrgOptions.PlageFixeApremFin) >= 0)
             {
                 lblTpsTravReelSuppl.Visibility = Visibility.Visible;
 
+
+
                 string tplTpsReelSuppl = "({0})";
-                if (RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0)
+                if (RealTimes.RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0)
                 {
                     tplTpsReelSuppl = "(+{0})";
 
-                    if (!PrgSwitch.IsMoreThanTpsTheo && RealTimeTempsTravaille.CompareTo(PrgOptions.TempsMaxJournee) < 0)
+                    if (!PrgSwitch.IsMoreThanTpsTheo && RealTimes.RealTimeTempsTravaille.CompareTo(PrgOptions.TempsMaxJournee) < 0)
                     {
                         PrgSwitch.IsMoreThanTpsTheo = true;
                         lblTpsTravReel.Foreground = Cst.SCBDarkGreen;
 
                     }
-                    else if (RealTimeTempsTravaille.CompareTo(PrgOptions.TempsMaxJournee) >= 0)
+                    else if (RealTimes.RealTimeTempsTravaille.CompareTo(PrgOptions.TempsMaxJournee) >= 0)
                     {
                         PrgSwitch.IsMoreThanTpsTheo = false;
                         lblTpsTravReel.Foreground = Cst.SCBDarkRed;
                     }
                 }
-                lblTpsTravReelSuppl.Content = String.Format(tplTpsReelSuppl, MiscAppUtils.TimeSpanShortStrFormat((RealTimeTempsTravaille - tTravTheo)));
+                lblTpsTravReelSuppl.Content = String.Format(tplTpsReelSuppl, MiscAppUtils.TimeSpanShortStrFormat((RealTimes.RealTimeTempsTravaille - tTravTheo)));
 
 
             }
@@ -1532,8 +1641,12 @@ args.Key == Key.F12 ||
 
             lblStartTime.Foreground = Cst.SCBBlack;
 
+            ctrlCompteur.SetVisibility(CompteurControl.CompteurVisibility.OnlyMain);
+
+            /*
             lblTpsTravReel.ContentShortTime(TimeSpan.Zero);
             lblTpsTravReel.Visibility = Visibility.Visible;
+            */
 
             ctrlTyJournee.IsEnabledChange = true;
 
@@ -1586,8 +1699,9 @@ args.Key == Key.F12 ||
 
             TimeSpan tsFinPause = Times.PlageTravMatin.EndOrDft.TimeOfDay + PrgOptions.TempsMinPause;
             PushNewInfo("Prochain badgeage à partir de " + tsFinPause.ToString(Cst.TimeSpanFormatWithH));
-            lblTpsTravReel.Foreground = Cst.SCBGrey;
-            lblTpsTravReel.ToolTip = "C'est la pause du midi ! Le temps de travail réel n'est pas compté.";
+            ctrlCompteur.SetFontColor(Cst.SCBGrey);
+            /*lblTpsTravReel.Foreground = Cst.SCBGrey;*/
+            ctrlCompteur.SetToolTip("C'est la pause du midi ! Le temps de travail réel n'est pas compté.");
 
             if (EtatBadger == 1)
             {
@@ -1607,7 +1721,7 @@ args.Key == Key.F12 ||
                 finPauseMidiTimer.Interval = new TimeSpan(0, 0, 5);
                 finPauseMidiTimer.Tick += (sender, args) =>
                 {
-                    TimeSpan remainingTimer = tsFinPause - RealTimeTsNow;
+                    TimeSpan remainingTimer = tsFinPause - RealTimes.RealTimeTsNow;
                     if (remainingTimer < TimeSpan.Zero && EtatBadger == 2)
                     {
                         finPauseMidiTimer.Stop();
@@ -1714,8 +1828,13 @@ args.Key == Key.F12 ||
 
             lblPauseTime.ContentShortTime(tmpsPause.Value);
             lblPauseTime.Visibility = Visibility.Visible;
-            lblTpsTravReel.Foreground = Cst.SCBBlack;
-            lblTpsTravReel.ToolTip = null;
+
+            /*
+             * lblTpsTravReel.Foreground = Cst.SCBBlack;
+             * lblTpsTravReel.ToolTip = null;
+             */
+            ctrlCompteur.SetFontColor(Cst.SCBBlack);
+            ctrlCompteur.SetToolTip(null, null);
 
             ctrlTyJournee.IsEnabledChange = false;
 
@@ -1772,9 +1891,9 @@ args.Key == Key.F12 ||
             lblEndTime.ContentShortTime(Times.PlageTravAprem.End.Value);
             lblFinStr.Content = "Fin à";
 
-            TimeSpan tempSuppl = RealTimeTempsTravaille - TimesUtils.GetTpsTravTheoriqueOneDay(PrgOptions, TypeJournee);
+            TimeSpan tempSuppl = RealTimes.RealTimeTempsTravaille - TimesUtils.GetTpsTravTheoriqueOneDay(PrgOptions, TypeJournee);
             PushNewInfo(String.Format("Temps travaillé aujourd'hui : {0} ({2}{1}) ",
-                RealTimeTempsTravaille.ToString(Cst.TimeSpanFormat),
+                RealTimes.RealTimeTempsTravaille.ToString(Cst.TimeSpanFormat),
                 tempSuppl.ToString(Cst.TimeSpanFormat),
                 tempSuppl.TotalSeconds < 0 ? "-" : "+"));
 
@@ -2155,7 +2274,7 @@ args.Key == Key.F12 ||
 
 
             notifName = Cst.NotifCust1Name;
-            if (PrgOptions.Notif1Obj.IsActive)
+            if (PrgOptions.Notif1Obj != null && PrgOptions.Notif1Obj.IsActive)
             {
                 NotifManager.RegisterNotification(
                    notifName,
@@ -2173,7 +2292,7 @@ args.Key == Key.F12 ||
             }
 
             notifName = Cst.NotifCust2Name;
-            if (PrgOptions.Notif2Obj.IsActive)
+            if (PrgOptions.Notif2Obj != null && PrgOptions.Notif2Obj.IsActive)
             {
                 NotifManager.RegisterNotification(
                    notifName,
@@ -2194,8 +2313,12 @@ args.Key == Key.F12 ||
             notifName = Cst.NotifTpsMaxJournee;
             Action<NotificationDto> afterShowAction = delegate(NotificationDto dto)
             {
+                ctrlCompteur.SetFontColor(Cst.SCBDarkRed);
+                ctrlCompteur.SetToolTip(dto.Message);
+                /*
                 lblTpsTravReel.Foreground = Cst.SCBDarkRed;
                 lblTpsTravReel.ToolTip = dto.Message;
+                 */
             };
 
             NotificationDto n = null;
@@ -2380,7 +2503,8 @@ args.Key == Key.F12 ||
             if (!_mainTimerManager.IsPaused)
             {
                 PrgSwitch.IsTimeRemainingNotTimeWork = !PrgSwitch.IsTimeRemainingNotTimeWork;
-                UpdateInfos();
+                //UpdateInfos();
+                ctrlCompteur.UpdateInfos();
             }
 
         }

@@ -116,12 +116,10 @@ namespace Badger2018.business
                             notif.Message,
                             actionHandler, 3000, useAlternate: UseAlternateNotification);
                         PluginMgrRef.PlayHook("OnNotifSend", new object[] { notif.TimePivot() , nTitle, notif.Message});
-                      //  (bool)PluginMgr.PlayHookAndReturn("IsBetaUser", null, typeof(bool)).ReturnFirstOrDefaultResultObject();
                     }
                     notif.TimeShowed = nowTs;
 
-                    if (AfterShowNotif != null)
-                    {
+                    if (AfterShowNotif != null) {
                         AfterShowNotif(notif);
                     }
 

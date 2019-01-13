@@ -172,6 +172,7 @@ namespace Badger2018.utils.sqlite
             }
         }
 
+
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();

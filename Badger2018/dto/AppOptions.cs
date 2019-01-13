@@ -150,6 +150,8 @@ namespace Badger2018.dto
         public CustomNotificationDto Notif1Obj { get; set; }
         public CustomNotificationDto Notif2Obj { get; set; }
 
+        public TimeSpan LastCdSeen { get; set; }
+
 
         public void ResetSpecOption()
         {

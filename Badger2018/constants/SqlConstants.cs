@@ -17,7 +17,10 @@ namespace Badger2018.constants
 
         public const String SELECT_COL_WHERE = "SELECT {0} FROM {1} WHERE {2}";
 
+        public const String SELECT_COL_ORDERBY = "SELECT {0} FROM {1} ORDER BY {2}";
+
         public const String SELECT_COL_WHERE_ORDERBY = "SELECT {0} FROM {1} WHERE {2} ORDER BY {3}";
+
 
         public const String UPDATE_WHERE = "UPDATE {0} SET {1} WHERE {2}";
 

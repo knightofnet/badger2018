@@ -16,5 +16,7 @@ namespace Badger2018.dto.bdd
         public string RelationKey { get; set; }
 
         public DateTime DateAdded { get; set; }
+
+        public TimeSpan CdAtTime { get; set; }
     }
 }

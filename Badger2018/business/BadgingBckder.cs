@@ -10,6 +10,7 @@ using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
 using Badger2018.exceptions;
 using Badger2018.utils;
+using BadgerCommonLibrary.utils;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 
@@ -44,6 +45,8 @@ namespace Badger2018.business
             }
         }
 
+        public TimeSpan? TsCd { get; private set; }
+
         public void BadgeageBackgrounderOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
         {
             BackgroundWorker bkg = sender as BackgroundWorker;
@@ -59,7 +62,7 @@ namespace Badger2018.business
 
             try
             {
-
+                TsCd = null;
                 try
                 {
                     driver = BadgingUtils.GetWebDriver(Pwin.PrgOptions);
@@ -129,6 +132,35 @@ namespace Badger2018.business
 
 
                 BadgingUtils.SaveScreenshot(Pwin.Times.TimeRef, Pwin.EtatBadger + "", driver);
+
+                try
+                {
+                    //_logger.Debug(driver.PageSource);
+                    string txt = driver.FindElementByCssSelector("#gv_cpt tr:last-child td:last-child").Text;
+                    if (!StringUtils.IsNullOrWhiteSpace(txt))
+                    {
+                        _logger.Debug("TXT : '{0}'", txt);
+
+                        if (txt.Contains("h"))
+                        {
+                           
+                            TsCd = TimeSpan.ParseExact(txt.Substring(txt.IndexOf("h") - 2, 5), "hh'h'mm", System.Globalization.CultureInfo.CurrentCulture);
+                            if (txt.Contains("-"))
+                            {
+                                TsCd = TsCd.Value.Negate();
+                            }
+
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    ExceptionHandlingUtils.LogAndHideException(e);
+                }
+                finally
+                {
+                    _logger.Warn("Enregistré");
+
+                }
 
                 if (!StringUtils.IsNullOrWhiteSpace(IdVerif))
                 {

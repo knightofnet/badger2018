@@ -18,6 +18,7 @@ using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.Properties;
+using Badger2018.services;
 using Badger2018.utils;
 using Badger2018.views;
 using BadgerCommonLibrary.business;
@@ -26,6 +27,7 @@ using BadgerCommonLibrary.utils;
 using BadgerPluginExtender;
 using BadgerPluginExtender.dto;
 using IWshRuntimeLibrary;
+using File = System.IO.File;
 
 namespace Badger2018
 {
@@ -72,6 +74,9 @@ namespace Badger2018
             // BetaSpec(prgOptions);
 
 
+
+
+
             /*
              * Bloc chargement de la configuration et divers traitement pré-interface
              */
@@ -113,7 +118,7 @@ namespace Badger2018
                 }
 
                 RemoveLegacyBadgeage(prgOptions);
-
+                UpdateBdd();
                 ConvertsXmlPointageToDEbb();
             }
             catch (Exception ex)
@@ -151,11 +156,40 @@ namespace Badger2018
 
         }
 
+        private void UpdateBdd()
+        {
+            try
+            {
+                String fileUpdBdd = String.Format("sqlUpd-{0}.sql", Assembly.GetExecutingAssembly().GetName().Version);
+                if (File.Exists(fileUpdBdd))
+                {
+                    _logger.Info("Fichier de mise à jour BDD detecté ({0}). Exécution", fileUpdBdd);
+
+                    SqlLiteUtils.ExecuteContentFile(DbbAccessManager.Instance.Connection, fileUpdBdd);
+                    System.IO.File.Delete(fileUpdBdd);
+                }
+                else
+                {
+                    _logger.Debug("Fichier de mise à jour BDD non detecté ({0}).", fileUpdBdd);
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionMsgBoxView.ShowException(ex);
+                ExceptionHandlingUtils.LogAndEndsProgram(
+                    ex,
+                   EnumExitCodes.M_ERROR_UPDATE_BDD.ExitCodeInt,
+                    "Erreur lors du programme");
+            }
+        }
+
         private void ConvertsXmlPointageToDEbb()
         {
 
             XmlToBddPointageConverter converter = new XmlToBddPointageConverter(Cst.PointagesDir);
             converter.Convert();
+
+            ServicesMgr.Instance.BadgeagesServices.RemoveDuplicatesBadgeages();
         }
 
         private void RemoveLegacyBadgeage(AppOptions prgOptions)

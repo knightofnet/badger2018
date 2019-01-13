@@ -27,6 +27,7 @@ namespace Badger2018.dto
         public TimeSpan EndMoyPfMatin { get; set; }
         public TimeSpan EndMoyPfAprem { get; set; }
 
+
         public TimesBadgerDto()
         {
             PlageTravMatin = new IntervalTemps();

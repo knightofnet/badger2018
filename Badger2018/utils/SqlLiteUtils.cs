@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text;
+using AryxDevLibrary.utils;
 
 namespace Badger2018.utils
 {
@@ -121,18 +122,22 @@ namespace Badger2018.utils
                 throw new SQLiteException("La connexion n'a pas été initalisée");
             }
 
+            String[] fileContent = File.ReadAllLines(file);
 
             try
             {
-
-                using (SQLiteCommand command = connection.CreateCommand())
+                foreach (string line in fileContent)
                 {
+                    using (SQLiteCommand command = connection.CreateCommand())
+                    {
 
 
-                    command.CommandText = file;
-                    command.ExecuteNonQuery();
+                        command.CommandText = line;
+                        command.ExecuteNonQuery();
 
+                    }
                 }
+
 
             }
             catch (Exception e)

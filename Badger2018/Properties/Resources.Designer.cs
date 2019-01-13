@@ -371,7 +371,7 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Echo Epervier.
+        ///   Recherche une chaîne localisée semblable à Golf Gorille.
         /// </summary>
         internal static string versionName {
             get {

@@ -51,6 +51,7 @@ namespace Badger2018.dto
         public event Action<EnumStatePause> OnPauseCurrentStateChange;
 
         public bool UseBddSupport { get; set; }
+        public bool IsShowResumeLastDayNotif { get; internal set; }
 
         public AppSwitchs()
         {

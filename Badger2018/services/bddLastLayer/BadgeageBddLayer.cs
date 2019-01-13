@@ -20,7 +20,7 @@ namespace Badger2018.services.bddLastLayer
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
 
-        public static void InsertNewBadgeage(DbbAccessManager dbbManager, int typeBadgeage, DateTime dateTime, String relationKey)
+        public static void InsertNewBadgeage(DbbAccessManager dbbManager, int typeBadgeage, DateTime dateTime, String relationKey, TimeSpan? cdToSave = null)
         {
             SQLiteCommand command = null;
 
@@ -30,6 +30,10 @@ namespace Badger2018.services.bddLastLayer
             lstUpd.Add("TIME_BADGE", dateTime.TimeOfDay);
             lstUpd.Add("RELATION_KEY", relationKey);
             lstUpd.Add("DT_ADDED", AppDateUtils.DtNow(), ListSqlLiteKVPair.AddOptions.DateTimeToStrDateAndTime);
+            if (cdToSave.HasValue)
+            {
+                lstUpd.Add("CD_AT_TIME", cdToSave.Value);
+            }
 
             _logger.Debug("InsertNewBadgeage : " + lstUpd.ToString());
 
@@ -189,6 +193,47 @@ namespace Badger2018.services.bddLastLayer
             return lstRet;
         }
 
+        public static void RemoveDuplicatesBadgeages(DbbAccessManager dbbManager)
+        {
+            SQLiteCommand command = null;
+            String sql =
+                "SELECT DATE_BADGE, TYPE_BADGE, count(*) AS C FROM BADGEAGES GROUP BY DATE_BADGE, TYPE_BADGE HAVING COUNT(*) > 1";
+            command = new SQLiteCommand(sql, dbbManager.Connection);
+
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    ListSqlLiteKVPair lstUpd = new ListSqlLiteKVPair();
+
+                    string date = reader.GetStringByColName("DATE_BADGE");
+                    int tyBadge = reader.GetInt32ByColName("TYPE_BADGE");
+                    int count = reader.GetInt32ByColName("C");
+
+
+                    _logger.Debug("Ligne dupliquée [DATE_BADGE:{0}][TYPE_BADGE:{1}][COUNT:{2}]", date, tyBadge, count);
+
+                    lstUpd.Add("DATE_BADGE", date);
+                    lstUpd.Add("TYPE_BADGE", tyBadge);
+                    //lstUpd.Add("LIMIT", count - 1);
+
+                    SQLiteCommand commandDelete = null;
+                    String sqlA = "delete from BADGEAGES where (DATE_BADGE, TYPE_BADGE) " +
+                                  "IN (SELECT DATE_BADGE, TYPE_BADGE WHERE DATE_BADGE = @DATE_BADGE and TYPE_BADGE = @TYPE_BADGE) " +
+                                  "and _rowid_ != (SELECT _rowid_ from BADGEAGES WHERE DATE_BADGE = @DATE_BADGE and TYPE_BADGE = @TYPE_BADGE LIMIT 1)";
+
+                    commandDelete = new SQLiteCommand(sqlA, dbbManager.Connection);
+                    lstUpd.AddSqlParams(commandDelete);
+
+                    if (commandDelete.ExecuteNonQuery() == 0)
+                    {
+                        throw new Exception("Erreur lors de l'ajout du badgeage");
+                    }
+
+                }
+            }
+        }
 
 
         private static BadgeageEntryDto HydrateBadgeageDto(SQLiteDataReader reader)
@@ -215,7 +260,16 @@ namespace Badger2018.services.bddLastLayer
             {
                 b.DateAdded = DateTime.Parse(dateAddedStr);
             }
+
+
+            string timeCdAtTime = reader.GetStringByColName("CD_AT_TIME");
+            if (!StringUtils.IsNullOrWhiteSpace(timeCdAtTime))
+            {
+                b.CdAtTime = TimeSpan.Parse(timeCdAtTime);
+            }
             return b;
         }
+
+
     }
 }

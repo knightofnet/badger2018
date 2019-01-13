@@ -148,6 +148,7 @@
     <Compile Include="dto\IntervalTemps.cs" />
     <Compile Include="dto\NotificationDto.cs" />
     <Compile Include="dto\PointageElt.cs" />
+    <Compile Include="dto\RealTimesObj.cs" />
     <Compile Include="dto\TimesBadgerDto.cs" />
     <Compile Include="exceptions\UserCancelBadgeageException.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -218,6 +219,9 @@
     </Compile>
     <Compile Include="views\UpdatesReviewerView.xaml.cs">
       <DependentUpon>UpdatesReviewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\usercontrols\CompteurControl.xaml.cs">
+      <DependentUpon>CompteurControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\usercontrols\CustNotifControl.xaml.cs">
       <DependentUpon>CustNotifControl.xaml</DependentUpon>
@@ -307,6 +311,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\UpdatesReviewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\usercontrols\CompteurControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

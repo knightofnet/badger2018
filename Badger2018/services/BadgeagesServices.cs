@@ -19,7 +19,7 @@ namespace Badger2018.services
     {
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
-        public void AddBadgeageForToday(int typeBadgeage, DateTime dtTimeHeureBadgeage, String relationKey = null)
+        public void AddBadgeageForToday(int typeBadgeage, DateTime dtTimeHeureBadgeage, String relationKey = null, TimeSpan? cdToSave = null)
         {
             _logger.Debug("AddBadgeageForToday (typeBadgeage: {0}, dtTimeHeureBadgeage: {1}, relationKey: {2})", typeBadgeage, dtTimeHeureBadgeage, relationKey);
 
@@ -27,7 +27,7 @@ namespace Badger2018.services
 
             DateTime dateTime = AppDateUtils.DtNow().ChangeTime(dtTimeHeureBadgeage.TimeOfDay);
 
-            BadgeageBddLayer.InsertNewBadgeage(dbb, typeBadgeage, dateTime, relationKey);
+            BadgeageBddLayer.InsertNewBadgeage(dbb, typeBadgeage, dateTime, relationKey, cdToSave);
             _logger.Debug("FIN - AddBadgeageForToday(...)");
         }
 
@@ -78,11 +78,13 @@ namespace Badger2018.services
             if (endEntries.Count > 1)
             {
                 throw new Exception("Trop d'instances retournées");
-            } else if (endEntries.Count == 0)
+            }
+            else if (endEntries.Count == 0)
             {
                 _logger.Info("Aucun retour. Badgeage en défaut");
                 retStr = day + " " + TimeSpan.Zero.ToString(Cst.TimeSpanFormat);
-            } else
+            }
+            else
             {
                 retStr = endEntries[0].DateTime.ToString("s");
             }
@@ -100,7 +102,7 @@ namespace Badger2018.services
 
             _logger.Debug("FIN - GetBadgeageTimeStrFor(...) => {0}", retStr);
             return retStr;
-            
+
         }
 
 
@@ -147,7 +149,7 @@ namespace Badger2018.services
 
         public TimeSpan GetBadgeMedianneTime(EnumBadgeageType tyBadgeage, int nbJours)
         {
-            _logger.Debug("");
+            _logger.Debug("GetBadgeMedianneTime(tyBadgeage: {0}, nbJour: {1})", tyBadgeage.Libelle, nbJours);
             DbbAccessManager dbb = DbbAccessManager.Instance;
             List<BadgeageEntryDto> listBadgeage = BadgeageBddLayer.GetBadgeMedianneTime(dbb, tyBadgeage.Index,
                 nbJours);
@@ -167,7 +169,7 @@ namespace Badger2018.services
 
         public TimeSpan? GetBadgeMoyenneTime(EnumBadgeageType tyBadgeage, int nbJours)
         {
-            _logger.Debug("GetBadgeMoyenneTime(tyBadgeage: {0}, nbJour: {1})", tyBadgeage.Libelle,nbJours);
+            _logger.Debug("GetBadgeMoyenneTime(tyBadgeage: {0}, nbJour: {1})", tyBadgeage.Libelle, nbJours);
             DbbAccessManager dbb = DbbAccessManager.Instance;
             List<BadgeageEntryDto> listBadgeage = BadgeageBddLayer.GetBadgeMedianneTime(dbb, tyBadgeage.Index,
                 nbJours);
@@ -178,12 +180,12 @@ namespace Badger2018.services
             }
 
             List<double> lstDec = new List<double>(listBadgeage.Count);
-            
+
             lstDec.AddRange(listBadgeage.Select(badgeageEntryDto => badgeageEntryDto.DateTime.TimeOfDay.TotalSeconds));
 
 
             double ec = MiscAppUtils.EcartType(lstDec);
-            
+
 
             double sumlstDec = lstDec.Sum(x => x);
             double moy = sumlstDec / lstDec.Count;
@@ -201,6 +203,28 @@ namespace Badger2018.services
 
             return tsRet;
 
+
+        }
+
+        public void RemoveDuplicatesBadgeages()
+        {
+            _logger.Debug("RemoveDuplicatesBadgeages()");
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+
+            dbb.StartTransaction();
+            try
+            {
+                BadgeageBddLayer.RemoveDuplicatesBadgeages(dbb);
+                dbb.StopAndCommitTransaction();
+                _logger.Debug("FIN - RemoveDuplicatesBadgeages(...) ");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Erreur dans la procédure de suppression des badgeages dupliqués");
+                ExceptionHandlingUtils.LogAndHideException(ex);
+                dbb.StopAndRollbackTransaction();
+                _logger.Error("FIN - RemoveDuplicatesBadgeages(...) ");
+            }
 
         }
     }

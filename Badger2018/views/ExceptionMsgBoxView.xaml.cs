@@ -48,9 +48,9 @@ namespace Badger2018.views
 
 
 
-        public static void ShowException(Exception ex, String partTrt = null, string inAccessText = null)
+        public static void ShowException(Exception ex, String lblComplementException = null, string textDescriptionException = null)
         {
-            ExceptionMsgBoxView exceptionView = new ExceptionMsgBoxView(ex, partTrt, inAccessText);
+            ExceptionMsgBoxView exceptionView = new ExceptionMsgBoxView(ex, lblComplementException, textDescriptionException);
 
             exceptionView.ShowDialog();
 

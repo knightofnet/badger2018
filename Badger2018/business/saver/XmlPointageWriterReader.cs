@@ -33,7 +33,7 @@ namespace Badger2018.business.saver
 
                 PointageElt pElt = new PointageElt
                 {
-                    DateDay = _pWinRef.RealTimeDtNow.ToString(),
+                    DateDay = _pWinRef.RealTimes.RealTimeDtNow.ToString(),
                     EtatBadger = _pWinRef.EtatBadger,
                     OldEtatBadger = _pWinRef.OldEtatBadger,
                     TypeJournee = _pWinRef.TypeJournee.Index,

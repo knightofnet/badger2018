@@ -11,7 +11,7 @@
                 A des fins techniques, l'erreur est visible ci-dessous et a également été journalisée.
             </AccessText>
         </Label>
-        <RichTextBox x:Name="rchTbox" Height="101" Margin="10,123,9.6,0" VerticalAlignment="Top" IsReadOnly="True">
+        <RichTextBox x:Name="rchTbox" Margin="10,123,10,35" IsReadOnly="True">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="RichTextBox"/>

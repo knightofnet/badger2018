@@ -87,15 +87,10 @@
             <AccessText x:Name="lblInfos" TextWrapping="Wrap" Text="" TextAlignment="Justify" />
         </Label>
 
-        <Grid Margin="0,86,10,7" HorizontalAlignment="Right" Width="226">
-            <Label x:Name="lblTpsTravReelLbl"  Content="Compteur temps travaillé du jour :" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="-1,0,1,0" HorizontalContentAlignment="Right"/>
-            <WrapPanel Height="25" Margin="4,0" VerticalAlignment="Bottom" FlowDirection="RightToLeft">
-                <Label x:Name="lblTpsTravReelSuppl" Content="(+2h30)"  VerticalAlignment="Bottom" FontSize="20" Padding="0" HorizontalAlignment="Right"  FlowDirection="LeftToRight"/>
-                <Label x:Name="lblTpsTravReel" Content="20h00" Height="28" HorizontalContentAlignment="Right" VerticalAlignment="Bottom" FontSize="24" Padding="0" HorizontalAlignment="Right" Width="131" FlowDirection="LeftToRight" MouseDoubleClick="lblTpsTravReel_MouseDoubleClick" Margin="5,0,0,0"/>
 
-            </WrapPanel>
 
-        </Grid>
+        <usercontrols:CompteurControl x:Name="ctrlCompteur" Margin="0,87,10.2,6" HorizontalAlignment="Right" Width="226"/>
+
         <controls:AlignableWrapPanel x:Name="wrapPanelTop" HorizontalAlignment="Left" Height="40" Margin="159,10,0,0" VerticalAlignment="Top" Width="213" HorizontalContentAlignment="Center">
             <Image x:Name="imgBtnStartAutoBadge" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/autoStartOn.png" Cursor="Hand" MouseUp="imgBtnStartAutoBadge_MouseUp" />
             <Image x:Name="imgBtnShowNotif" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/notifOn.png" Cursor="Hand" MouseUp="imgBtnShowNotif_MouseUp" />
