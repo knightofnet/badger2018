@@ -16,7 +16,7 @@ namespace Badger2018.services.bddLastLayer
     class JoursBddLayer
     {
 
-        private const String TableBadgeages = "JOURS";
+        private const String TableBadgeages = Cst.TableJours;
 
         public static bool IsJourExistFor(DbbAccessManager dbbManager, DateTime date)
         {

@@ -196,6 +196,9 @@
     <Compile Include="views\ImportExportOptionsView.xaml.cs">
       <DependentUpon>ImportExportOptionsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\InformationsView.xaml.cs">
+      <DependentUpon>InformationsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\MessageErrorBadgeageView.xaml.cs">
       <DependentUpon>MessageErrorBadgeageView.xaml</DependentUpon>
     </Compile>
@@ -228,6 +231,9 @@
     </Compile>
     <Compile Include="views\usercontrols\FriseDayControl.xaml.cs">
       <DependentUpon>FriseDayControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\usercontrols\InfoItemControl.xaml.cs">
+      <DependentUpon>InfoItemControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\usercontrols\TypeJourneeControl.xaml.cs">
       <DependentUpon>TypeJourneeControl.xaml</DependentUpon>
@@ -282,6 +288,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="views\InformationsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="views\MessageErrorBadgeageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -323,6 +333,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\usercontrols\FriseDayControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\usercontrols\InfoItemControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

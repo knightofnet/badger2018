@@ -23,6 +23,6 @@ namespace BadgerCommonLibrary.constants
 
         public const string OneShotUpdateConfFilename = "oneShotUpdateConf.xml";
 
-
+        public const string SqliteAppSalt = "Z0kp5dlDeIOC6frMv7KEweN4Jdkw2lxL";
     }
 }

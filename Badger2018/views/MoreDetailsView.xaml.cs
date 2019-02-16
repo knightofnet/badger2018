@@ -62,7 +62,7 @@ namespace Badger2018.views
             _memoryDay.Add(times.TimeRef.ToString("d"), listIvlDayForDay);
 
 
-            InitStackPanel(listIvlDayForDay, times);
+            InitStackPanel(listIvlDayForDay, times, typesJournees);
 
 
             lblTyJournee.Content = typesJournees.Libelle;
@@ -85,7 +85,7 @@ namespace Badger2018.views
 
 
 
-        private void InitStackPanel(List<LabelledDateTime> listIvlForDay, TimesBadgerDto times)
+        private void InitStackPanel(List<LabelledDateTime> listIvlForDay, TimesBadgerDto times, EnumTypesJournees typesJournees)
         {
             stackBadgeage.Children.Clear();
             foreach (LabelledDateTime lblDtime in listIvlForDay)
@@ -114,14 +114,16 @@ namespace Badger2018.views
 
                 stackBadgeage.Children.Add(fr);
 
-                if (!StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("FinMatin"))
-                {
+                if (EnumTypesJournees.Complete == typesJournees && !StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("FinMatin"))
+                {                    
+                    
+
                     Label lbl = new Label();
                     lbl.Content = String.Format("Temps travaillé le matin : {0}", times.GetTpsTravMatin().ToString(Cst.TimeSpanFormatWithH));
                     stackBadgeage.Children.Add(lbl);
                 }
 
-                if (!StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("FinAprem"))
+                if (EnumTypesJournees.Complete == typesJournees && !StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("FinAprem"))
                 {
                     Label lbl = new Label();
                     lbl.Content = String.Format("Temps travaillé l'après-midi : {0}", times.GetTpsTravAprem().ToString(Cst.TimeSpanFormatWithH));
@@ -419,7 +421,7 @@ namespace Badger2018.views
 
 
 
-                InitStackPanel(listIvlDayForDay, times);
+                InitStackPanel(listIvlDayForDay, times, typesJournees);
 
 
                 lblTyJournee.Content = typesJournees.Libelle;

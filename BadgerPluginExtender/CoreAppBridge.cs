@@ -94,7 +94,8 @@ namespace BadgerPluginExtender
                 return null;
             }
 
-
+            // TODO ALB gérer le "method is null"
+            // TODO ALB gérer le STA ou pas de dispatcher paramétré.
 
             if (returnType != null)
             {

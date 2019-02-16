@@ -11,7 +11,7 @@ using System.Reflection;
 [assembly: AssemblyFileVersion("1.<#= this.xVers #>.<#= this.dVers #>.<#= this.RevisionNumber #>")]
 
 <#+
-    int xVers = (int)((DateTime.UtcNow - new DateTime(2018,6,3)).TotalDays /365) ;
+    int xVers = (int)((DateTime.UtcNow - new DateTime(2018,1,1)).TotalDays /365) ;
 	string dVers = DateTime.UtcNow.ToString("MMdd");
 	string RevisionNumber = DateTime.UtcNow.ToString("HHmm");
 #>

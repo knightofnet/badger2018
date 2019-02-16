@@ -69,6 +69,8 @@ namespace BadgerPluginExtender
                 IGenericPluginInterface plugin = (IGenericPluginInterface)Activator.CreateInstance(type);
                 PluginsInstance.Add(plugin.GetPluginInfo().Name, plugin);
                 IsAnyPluginLoaded = true;
+
+                _logger.Debug("Extension {0}[{1}] chargée", plugin.GetPluginInfo().Name, plugin.GetPluginInfo().Version);
             }
 
            

@@ -14,7 +14,7 @@ namespace Badger2018.services.bddLastLayer
 {
     public class BadgeageBddLayer
     {
-        private const String TableBadgeages = "BADGEAGES";
+        private const String TableBadgeages = Cst.TableBadgeages;
         private const String ViewBadgeagesFull = "BADGEAGES_TYPE";
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
@@ -172,7 +172,31 @@ namespace Badger2018.services.bddLastLayer
 
             SQLiteCommand command = null;
 
-            string sql = String.Format(SqlConstants.SELECT_ALL_WHERE, TableBadgeages, "TYPE_BADGE = @TYPE_BADGE order by date_badge desc limit @LIMIT");
+            string from = TableBadgeages;
+            string where = "TYPE_BADGE = @TYPE_BADGE";
+            if (typeBadgeage == 1 || typeBadgeage == 3)
+            {
+                from = String.Format("{0} b, {1} j", TableBadgeages, Cst.TableJours);
+
+                int typeJour = 0;
+                int otherTypeBadgeage = 3;
+                int otherTypeJour = 1;
+                if (typeBadgeage == 3)
+                {
+                    otherTypeJour = 2;                    
+                }
+                where = String.Format( 
+                    "b.DATE_BADGE = j.DATE_JOUR and ((  b.TYPE_BADGE = {0} and j.TYPE_JOUR = {1}) or ( b.TYPE_BADGE = {2} and j.TYPE_JOUR = {3}))",
+                    otherTypeBadgeage,
+                    otherTypeJour,
+                    typeBadgeage,
+                    typeJour
+                    );
+            } 
+            
+
+            
+            string sql = String.Format(SqlConstants.SELECT_ALL_WHERE, from, where + " order by date_badge desc limit @LIMIT");
 
             command = new SQLiteCommand(sql, dbbManager.Connection);
 

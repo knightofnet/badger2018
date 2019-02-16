@@ -21,10 +21,10 @@ namespace Badger2018.business.saver
 
         public BddPointageWriterReader(MainWindow pwin)
         {
-
             _badgeageService = ServicesMgr.Instance.BadgeagesServices;
             _joursServices = ServicesMgr.Instance.JoursServices;
             _pWinRef = pwin;
+
         }
 
         public void SaveCurrentDayTimes()
@@ -52,14 +52,15 @@ namespace Badger2018.business.saver
                 if (_pWinRef.EtatBadger == EnumBadgeageType.PLAGE_TRAV_APREM_END.Index)
                 {
                     TimeSpan t = TimeSpan.Zero;
-                    if (EnumTypesJournees.Complete == _pWinRef.TypeJournee || EnumTypesJournees.Matin == _pWinRef.TypeJournee)
+                    if (EnumTypesJournees.Complete == _pWinRef.TypeJournee )
                     {
                         t += _pWinRef.Times.GetTpsTravMatin();
-                    }
-                    if (EnumTypesJournees.Complete == _pWinRef.TypeJournee || EnumTypesJournees.ApresMidi == _pWinRef.TypeJournee)
-                    {
                         t += _pWinRef.Times.GetTpsTravAprem();
+                    } else 
+                    {
+                        t = _pWinRef.Times.PlageTravAprem.EndOrDft - _pWinRef.Times.PlageTravMatin.Start;
                     }
+
 
                     _joursServices.UpdateTpsTravaille(_pWinRef.RealTimes.RealTimeDtNow, t);
                 }
@@ -87,8 +88,6 @@ namespace Badger2018.business.saver
 
                 _logger.Debug("FIN : SaveCurrentDayTimes()");
             }
-
-
 
         }
 

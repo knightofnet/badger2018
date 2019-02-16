@@ -53,12 +53,6 @@ namespace Badger2018
                 Environment.Exit(EnumExitCodes.M_ALREADY_RUNNING_INSTANCE.ExitCodeInt);
             }
 
-            if (StringUtils.CsvStringContains(Environment.UserName.ToUpper(),
-                ((string)Settings.Default["licencedUser"]).ToUpper()) && !System.IO.File.Exists(Environment.UserName.ToUpper() + ".auth"))
-            {
-                _logger.Error("Utilisation non autorisée");
-                Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
-            }
 
             if (Settings.Default.UpgradeRequired)
             {
@@ -66,6 +60,14 @@ namespace Badger2018
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
             }
+
+            if (StringUtils.CsvStringContains(Environment.UserName.ToUpper(),
+                ((string)Settings.Default["licencedUser"]).ToUpper()) && !System.IO.File.Exists(Environment.UserName.ToUpper() + ".auth"))
+            {
+                _logger.Error("Utilisation non autorisée");
+                Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
+            }
+
 
             AppOptions prgOptions = null;
             UpdaterManager updaterManager = null;
@@ -97,6 +99,13 @@ namespace Badger2018
                     ExceptionHandlingUtils.LogAndNewException("Erreur lors du chargement des options du programme. Impossible de démarrer le programme");
 
                 }
+                
+                if (StringUtils.IsNullOrWhiteSpace(prgOptions.SqliteAppUserSalt) || prgOptions.SqliteAppUserSalt.Equals("NULL"))
+                {
+                    prgOptions.SqliteAppUserSalt = StringUtils.RandomString(32, @"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789-+%.;,:_*/&é()[]");
+
+                }
+                
 
 
                 argsDto = LoadArgs(e, argsDto);
@@ -117,6 +126,8 @@ namespace Badger2018
 
                 }
 
+
+               // DbbAccessManager.DbbPasswd = CommonCst.SqliteAppSalt + prgOptions.SqliteAppUserSalt + Environment.UserName.ToUpper();
                 RemoveLegacyBadgeage(prgOptions);
                 UpdateBdd();
                 ConvertsXmlPointageToDEbb();

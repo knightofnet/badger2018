@@ -62,6 +62,11 @@ namespace Badger2018.constants
 
 
         public const string XmlRootName = "ConfigFile";
+
+        public const string TableBadgeages = "BADGEAGES";
+        public const string TableJours = "JOURS";
+
         public static string ApplicationDirectory { get; set; }
+        
     }
 }

@@ -2637,6 +2637,11 @@ args.Key == Key.F12 ||
 
 
 
+        public void ExtShowNotif(string title, string content, int timeoutInMs)
+        {
+            MiscAppUtils.ShowNotificationBaloon(_notifyIcon, title, content, null, timeoutInMs, null, PrgOptions.IsUseAlternateNotification);
+        }
+
 
         private void RestartApp()
         {
@@ -2704,6 +2709,16 @@ args.Key == Key.F12 ||
             // m.Dispatcher = Dispatcher.CurrentDispatcher;
             l.Add(m);
 
+            m = new MethodRecordWithInstance();
+            m.Instance = this;
+            // m.StaticType = typeof(XXXX);
+            m.TargetHookName = "ExtShowNotificationBaloon";
+            //  OptionManager.SaveOptions(PrgOptions);
+            m.MethodResponder = "ExtShowNotif";
+            m.Dispatcher = Dispatcher.CurrentDispatcher;
+            l.Add(m);
+
+            
 
 
             return l.ToArray();

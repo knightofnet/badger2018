@@ -173,5 +173,11 @@
     <Setting Name="LastCdSeen" Type="System.TimeSpan" Scope="User">
       <Value Profile="(Default)">00:00:00</Value>
     </Setting>
+    <Setting Name="SqliteAppUserSalt" Type="System.String" Scope="User">
+      <Value Profile="(Default)">NULL</Value>
+    </Setting>
+    <Setting Name="CompteurCDMaxAbs" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">07:48:00</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

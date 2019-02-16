@@ -43,6 +43,12 @@ namespace BadgerCommonLibrary.constants
 
 
         /// <summary>
+        /// Code 153, "Erreur lors de la mise à jour de la BDD"
+        /// </summary>
+        public static readonly EnumExitCodes M_ERROR_UPDATE_BDD = new EnumExitCodes(153, "Erreur lors de la mise à jour de la BDD");
+
+
+        /// <summary>
         /// Code 199, "Erreur inconnue"
         /// </summary>
         public static readonly EnumExitCodes M_ERROR_UNKNOW_IN_APP = new EnumExitCodes(199, "Erreur inconnue");

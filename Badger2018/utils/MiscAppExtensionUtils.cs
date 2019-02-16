@@ -20,6 +20,18 @@ namespace Badger2018.utils
             label.Content = MiscAppUtils.TimeSpanShortStrFormat(ts);
         }
 
-
+        /// <summary>
+        /// Return absolute value (positive) of a TimeSpan.
+        /// </summary>
+        /// <param name="thisTs"></param>
+        /// <returns></returns>
+        public static TimeSpan Absolute(this TimeSpan thisTs)
+        {
+            if (thisTs.TotalMilliseconds < 0)
+            {
+                return thisTs.Negate();
+            }
+            return thisTs;
+        }
     }
 }

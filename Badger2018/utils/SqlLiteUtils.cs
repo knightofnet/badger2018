@@ -49,7 +49,7 @@ namespace Badger2018.utils
         }
 
 
-        public static SQLiteConnection InitAndGetConnection(String file)
+        public static SQLiteConnection InitAndGetConnection(String file, String password=null)
         {
             if (_connection != null)
             {
@@ -65,8 +65,14 @@ namespace Badger2018.utils
                     throw new FileNotFoundException("Le fichier de base de donnée n'existe pas");
                 }
 
-
-                _connection = new SQLiteConnection(String.Format("Data Source={0};Version=3;New=False", file));
+                if (password != null)
+                {
+                    _connection = new SQLiteConnection(String.Format("Data Source={0};Version=3;New=False;Password={1}", file, password));
+                }
+                else
+                {
+                    _connection = new SQLiteConnection(String.Format("Data Source={0};Version=3;New=False", file));
+                }
                 _connection.Open();
 
                 return _connection;

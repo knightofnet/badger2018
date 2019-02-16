@@ -152,6 +152,10 @@ namespace Badger2018.dto
 
         public TimeSpan LastCdSeen { get; set; }
 
+        public TimeSpan CompteurCDMaxAbs { get; set; }
+
+        public string SqliteAppUserSalt { get; set; }
+
 
         public void ResetSpecOption()
         {

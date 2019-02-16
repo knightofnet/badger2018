@@ -18,6 +18,8 @@ namespace Badger2018.business
 
         private bool isEnabled = true;
 
+        public static string DbbPasswd;
+
         private static DbbAccessManager _instance;
         public static DbbAccessManager Instance
         {
@@ -42,8 +44,8 @@ namespace Badger2018.business
                 }
 
                 _logger.Debug("Initialisation de la connexion");
-                Connection = SqlLiteUtils.InitAndGetConnection(Properties.Resources.dbbFile);
-
+                Connection = SqlLiteUtils.InitAndGetConnection(dbFileName, DbbPasswd);
+                DbbPasswd = null;
 
             }
             catch (Exception ex)

@@ -44,6 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembly.cs">
+      <DependentUpon>Assembly.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="business\UpdaterManager.cs" />
     <Compile Include="constants\CommonCst.cs" />
     <Compile Include="constants\EnumExitCodes.cs" />
@@ -68,6 +73,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\updateNew.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assembly.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Assembly.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

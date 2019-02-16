@@ -12,7 +12,7 @@ namespace Badger2018.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -707,6 +707,30 @@ namespace Badger2018.Properties {
             }
             set {
                 this["LastCdSeen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("NULL")]
+        public string SqliteAppUserSalt {
+            get {
+                return ((string)(this["SqliteAppUserSalt"]));
+            }
+            set {
+                this["SqliteAppUserSalt"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("07:48:00")]
+        public global::System.TimeSpan CompteurCDMaxAbs {
+            get {
+                return ((global::System.TimeSpan)(this["CompteurCDMaxAbs"]));
+            }
+            set {
+                this["CompteurCDMaxAbs"] = value;
             }
         }
     }

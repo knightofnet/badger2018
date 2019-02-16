@@ -200,6 +200,7 @@ namespace Badger2018.views.usercontrols
 
         private void UpdateInfosTempsTravailDuJour()
         {
+            SolidColorBrush colFont = Cst.SCBBlack;
 
             TimeSpan tpsTravRestant = TimesRef.EndTheoDateTime - RealTimesRef.RealTimeDtNow;
 
@@ -238,7 +239,7 @@ namespace Badger2018.views.usercontrols
 
             lblTpsTravReelLbl.Content = lblTpsTrav;
             lblTpsTravReel.Content = strTpsTrav;
-            // lblTpsTravReel.ToolTip = msgTooltip;
+             lblTpsTravReel.ToolTip = null;
 
 
 
@@ -257,19 +258,21 @@ namespace Badger2018.views.usercontrols
                     if (!PrgSwitchRef.IsMoreThanTpsTheo && RealTimesRef.RealTimeTempsTravaille.CompareTo(OptionsRef.TempsMaxJournee) < 0)
                     {
                         PrgSwitchRef.IsMoreThanTpsTheo = true;
-                        lblTpsTravReel.Foreground = Cst.SCBDarkGreen;
+                        colFont = Cst.SCBDarkGreen;
 
                     }
                     else if (RealTimesRef.RealTimeTempsTravaille.CompareTo(OptionsRef.TempsMaxJournee) >= 0)
                     {
                         PrgSwitchRef.IsMoreThanTpsTheo = false;
-                        lblTpsTravReel.Foreground = Cst.SCBDarkRed;
+                        colFont = Cst.SCBDarkRed;
                     }
                 }
                 lblTpsTravReelSuppl.Content = String.Format(tplTpsReelSuppl, MiscAppUtils.TimeSpanShortStrFormat((RealTimesRef.RealTimeTempsTravaille - tTravTheo)));
 
 
             }
+
+            lblTpsTravReel.Foreground = colFont;
         }
 
 
@@ -291,9 +294,10 @@ namespace Badger2018.views.usercontrols
 
             lblTpsTravReelLbl.Content = lblTpsTrav;
             lblTpsTravReel.Content = strTpsTrav;
+            lblTpsTravReel.ToolTip = null;
             lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
 
-
+            lblTpsTravReel.Foreground = Cst.SCBBlack;
 
 
         }
@@ -301,28 +305,41 @@ namespace Badger2018.views.usercontrols
         private void UpdateInfosTempsCdRealTime()
         {
 
-
+            if (!PrgSwitchRef.PbarMainTimerActif)
+            {
+                return;
+            }
 
             TimeSpan tpsTravRestant = TimesRef.EndTheoDateTime - RealTimesRef.RealTimeDtNow;
             TimeSpan tpsCdReal = OptionsRef.LastCdSeen.Subtract(tpsTravRestant);
 
-            // Tps trav pour une journée ou une demie-journée.
-            TimeSpan tTravTheo = TimesUtils.GetTpsTravTheoriqueOneDay(OptionsRef, TyJourneeRef);
 
+            SolidColorBrush colFont = Cst.SCBBlack;
+            if (tpsCdReal.Absolute() > OptionsRef.CompteurCDMaxAbs)
+            {
+                colFont = Cst.SCBDarkRed;
+                tpsCdReal = OptionsRef.CompteurCDMaxAbs;
+            } else if (tpsCdReal.TotalMinutes > 0)
+            {
+                colFont = Cst.SCBDarkGreen;
+            }
 
 
             String lblTpsTrav = "Crédit/débit actuel :";
 
 
             String strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(tpsCdReal);
-
+            string msgToolTip = String.Format("C/D relevé lors du dernier badgeage : {0}", MiscAppUtils.TimeSpanShortStrFormat(OptionsRef.LastCdSeen));
 
 
             lblTpsTravReelLbl.Content = lblTpsTrav;
             lblTpsTravReel.Content = strTpsTrav;
+            lblTpsTravReel.Foreground = colFont;
             lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
 
-            //lblTpsTravReel.ToolTip = msgTooltip;
+
+            lblTpsTravReel.ToolTip = "C/D calculé si départ maintenant (dernier C/D officiel relevé - temps restant)";
+            lblTpsTravReelLbl.ToolTip = msgToolTip;
 
 
 

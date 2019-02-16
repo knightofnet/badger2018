@@ -78,6 +78,9 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions Notif2Obj = new EnumAppOptions("Notif2Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu'il n'est pas l'heure de rentrer ?", false);
 
         public static readonly EnumAppOptions LastCdSeen = new EnumAppOptions("LastCdSeen", typeof(TimeSpan), "00:00:00", false);
+        public static readonly EnumAppOptions CompteurCDMaxAbs = new EnumAppOptions("CompteurCDMaxAbs", typeof(TimeSpan), "07:48:00", false);
+
+        public static readonly EnumAppOptions SqliteAppUserSalt = new EnumAppOptions("SqliteAppUserSalt", typeof(string), "NULL", false);
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -139,6 +142,9 @@ namespace Badger2018.constants
                 yield return Notif2Obj;
 
                 yield return LastCdSeen;
+                yield return CompteurCDMaxAbs;
+
+                yield return SqliteAppUserSalt;
 
 
 
