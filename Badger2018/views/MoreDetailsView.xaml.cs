@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AryxDevLibrary.utils;
 using Badger2018.constants;
 using Badger2018.dto;
@@ -20,9 +14,7 @@ using Badger2018.services;
 using Badger2018.utils;
 using Badger2018.views.usercontrols;
 using BadgerCommonLibrary.utils;
-using IWshRuntimeLibrary;
-using Label = System.Windows.Controls.Label;
-using Path = System.IO.Path;
+using ExceptionHandlingUtils = BadgerCommonLibrary.utils.ExceptionHandlingUtils;
 
 namespace Badger2018.views
 {
@@ -109,7 +101,7 @@ namespace Badger2018.views
 
                 string fileSshot = MiscAppUtils.GetFileNameScreenshot(lblDtime.Time, fr.EtatBadgeageAssociated + "");
 
-                fr.SetBtnScreenshotVisible(System.IO.File.Exists(Path.Combine(Cst.ScreenshotDir, fileSshot)));
+                fr.SetBtnScreenshotVisible(File.Exists(Path.Combine(Cst.ScreenshotDir, fileSshot)));
                 fr.SetEndBloc(lblDtime.IsEndBloc);
 
                 stackBadgeage.Children.Add(fr);
@@ -372,9 +364,9 @@ namespace Badger2018.views
                 AdaptUiToAnotherDay(dateSelected.Value, bServices, jServices);
 
                 //   dateSelected = jServices.GetNextDayOf(currentShowDay);
-                ///   btnNextDay.IsEnabled = dateSelected.HasValue;
-                ///
-                /// 
+                //   btnNextDay.IsEnabled = dateSelected.HasValue;
+                //
+                // 
             }
             catch (Exception ex)
             {
@@ -385,14 +377,14 @@ namespace Badger2018.views
 
         private void AdaptUiToAnotherDay(DateTime dtLastDay, BadgeagesServices bServices, JoursServices jServices)
         {
-
-
+            
             string dtLastDayStr = dtLastDay.ToString("d");
 
             TimesBadgerDto times = new TimesBadgerDto();
             times.TimeRef = dtLastDay;
 
-
+            // désactive le bouton si un autre jour que le jour courant.
+            btnModTimes.IsEnabled = dtLastDayStr.Equals(AppDateUtils.DtNow().ToString("d"));
 
             if (jServices.IsJourExistFor(dtLastDay))
             {
@@ -405,7 +397,7 @@ namespace Badger2018.views
                 int etatBadgeage = j.EtatBadger;
                 EnumTypesJournees typesJournees = j.TypeJour;
 
-                times.PlageTravMatin.Start =
+                times.PlageTravMatin.Start = 
                     DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, dtLastDay));
                 times.PlageTravMatin.End =
                     DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END, dtLastDay));
@@ -437,7 +429,7 @@ namespace Badger2018.views
             {
                 if (!dtLastDay.ToString("d").Equals(AppDateUtils.DtNow().ToString("d")))
                 {
-                    System.Windows.MessageBox.Show(
+                    MessageBox.Show(
                         String.Format("Aucun enregistrement a été trouvé pour le {0}", dtLastDay.ToString("D")),
                         "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     dtPickCurrentDay.SelectedDate = AppDateUtils.DtNow();

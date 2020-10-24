@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="business\AppArgsParser.cs" />
     <Compile Include="business\IJobInterface.cs" />
+    <Compile Include="business\job\DaemonWaitingOrdersJob.cs" />
     <Compile Include="business\job\FullDumpJob.cs" />
     <Compile Include="business\job\PlaySoundJob.cs" />
     <Compile Include="business\job\ShowSoundDevicesJob.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utils\SoundInfo.cs" />
+    <Compile Include="utils\SoundUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="constants\" />

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Badger2018.constants;
 using Badger2018.dto;
 using BadgerCommonLibrary.utils;
@@ -25,10 +22,9 @@ namespace Badger2018.utils
             };
 
 
-
+            // Si le type de journée est une journée complète
             if (EnumTypesJournees.Complete == tyJournee)
-            {
-
+            {              
                 retDt = startTime + appOptions.TempsDemieJournee + appOptions.TempsDemieJournee + appOptions.TempsMinPause;
                 actionsCommunes(retDt, appOptions);
                 if (retDt.TimeOfDay.CompareTo(appOptions.PlageFixeApremFin) < 0)
@@ -88,7 +84,10 @@ namespace Badger2018.utils
             {
                 retTsTpsTrav = now.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
 
-                retTsTpsTrav -= times.GetTpsPause();
+                if (isGetPausesInCalcul)
+                {
+                    retTsTpsTrav -= times.GetTpsPause();
+                }
 
                 if (appOptions.IsStopCptAtMaxDemieJournee && retTsTpsTrav.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
                 {
@@ -101,7 +100,10 @@ namespace Badger2018.utils
             else if (etatBadger == 1)
             {
                 retTsTpsTrav = times.PlageTravMatin.EndOrDft.TimeOfDay - times.PlageTravMatin.Start.TimeOfDay;
-                retTsTpsTrav -= times.GetTpsPause();
+                if (isGetPausesInCalcul)
+                {
+                    retTsTpsTrav -= times.GetTpsPause();
+                }
                 if (appOptions.IsStopCptAtMaxDemieJournee && retTsTpsTrav.CompareTo(appOptions.TempsMaxDemieJournee) >= 0)
                 {
                     retTsTpsTrav = appOptions.TempsMaxDemieJournee;
@@ -150,7 +152,10 @@ namespace Badger2018.utils
                 }
 
                 retTsTpsTrav = current + matin;
-                retTsTpsTrav -= times.GetTpsPause();
+                if (isGetPausesInCalcul)
+                {
+                    retTsTpsTrav -= times.GetTpsPause();
+                }
 
             }
             else if (etatBadger == 3)
@@ -183,7 +188,10 @@ namespace Badger2018.utils
                     }
 
                     retTsTpsTrav = aprem + matin;
-                    retTsTpsTrav -= times.GetTpsPause();
+                    if (isGetPausesInCalcul)
+                    {
+                        retTsTpsTrav -= times.GetTpsPause();
+                    }
 
                 }
                 else

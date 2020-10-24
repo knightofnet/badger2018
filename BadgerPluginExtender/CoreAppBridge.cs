@@ -55,6 +55,7 @@ namespace BadgerPluginExtender
 
         public object PlayHookAndReturn(string hookName, object[] arg1, Type returnType)
         {
+            if (AppPresentedMethods == null) return null;
 
             if (!AppPresentedMethods.Any(r => r.Key.Equals(hookName)))
             {
@@ -119,7 +120,7 @@ namespace BadgerPluginExtender
                     if (!(parameterInfo.ParameterType == arg1[i].GetType()))
                     {
                         throw new Exception(String.Format("CoreAppBridge::PlayOneMethodRecord : Le parametre {0} est de type {1}. {2} fournit. Les types ne correspondent pas", parameterInfo.Name, parameterInfo.ParameterType.Name, arg1[i].GetType().Name));
-                       
+
                     }
                     i++;
                 }

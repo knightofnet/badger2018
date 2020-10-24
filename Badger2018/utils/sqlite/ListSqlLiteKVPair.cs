@@ -99,7 +99,7 @@ namespace Badger2018.utils.sqlite
                 }
                 else if (options.HasFlag(AddOptions.TimeSpanToStrTime))
                 {
-                    kv.Value = ((TimeSpan)value).ToString(Cst.TimeSpanFormat);
+                    kv.Value = ((TimeSpan)value).ToString("c");
                 }
             }
             else if (value is bool)
@@ -163,6 +163,20 @@ namespace Badger2018.utils.sqlite
 
         }
 
+        public string DeleteWhereStr(string tableName)
+        {
+            List<String> whereClauseList = new List<string>();
+            foreach (SqlLiteKVPair kvPair in _inList)
+            {
+                String str = String.Format("{0}=@{0}", kvPair.Key);
+                whereClauseList.Add(str);
+            }
+
+
+            return String.Format(SqlConstants.DELETE_WHERE, tableName,
+                whereClauseList.Any() ? String.Join(" AND ", whereClauseList) : "");
+        }
+
         public void AddSqlParams(SQLiteCommand command)
         {
             foreach (SqlLiteKVPair kvPair in _inList)
@@ -183,5 +197,7 @@ namespace Badger2018.utils.sqlite
 
             return stringBuilder.ToString();
         }
+
+
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using BadgerCommonLibrary.utils;
 
 namespace Badger2018.constants

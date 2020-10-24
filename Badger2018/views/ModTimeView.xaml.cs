@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using AryxDevLibrary.extensions;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.dto.converter;
 using Badger2018.utils;
 using BadgerCommonLibrary.utils;
 
@@ -27,22 +20,31 @@ namespace Badger2018.views
 
         public EnumTypesJournees TypeJournee { get; private set; }
 
+        public AppOptions PrgOptionsRef { get; private set; }
+
         public bool HasChanged { get; private set; }
 
         public int EtatBadger { get; private set; }
+
+        private ObservableCollection<IntervalTemps> obsListPause = new ObservableCollection<IntervalTemps>();
 
         private CoupleCboxTbox c0;
         private CoupleCboxTbox c1;
         private CoupleCboxTbox c2;
         private CoupleCboxTbox c3;
+        private DataGridTextColumn _colColumnStart;
+        private DataGridTextColumn _colColumnEnd;
 
-        public ModTimeView(TimesBadgerDto times, EnumTypesJournees tyJournees, int etatBadger, string urlMesPointages)
+        public ModTimeView(TimesBadgerDto times, EnumTypesJournees tyJournees, int etatBadger, string urlMesPointages, AppOptions appOptions)
         {
             Times = times;
             TypeJournee = tyJournees;
             EtatBadger = etatBadger;
+            PrgOptionsRef = appOptions;
 
             InitializeComponent();
+            InitDg();
+
             c0 = new CoupleCboxTbox(chkB0Tick, tboxB0Time);
             c1 = new CoupleCboxTbox(chkB1Tick, tboxB1Time);
             c2 = new CoupleCboxTbox(chkB2Tick, tboxB2Time);
@@ -54,10 +56,17 @@ namespace Badger2018.views
             }
             cboxTyJournee.SelectedItem = tyJournees.Libelle;
 
+            // On ajoute les 4 temps badgés si dispo
             c0.SetTextTime(Times.PlageTravMatin.Start);
             c1.SetTextTime(Times.PlageTravMatin.EndOrDft);
             c2.SetTextTime(Times.PlageTravAprem.Start);
             c3.SetTextTime(Times.PlageTravAprem.EndOrDft);
+
+            // On ajoute le dernier C/D relevé
+            tboxLastCdSeen.Text = PrgOptionsRef.LastCdSeen.ToStrSignedhhmm();
+
+            // On ajoute les pauses si dispo            
+            Times.PausesHorsDelai.ForEach(r => obsListPause.Add(r.Clone()));
 
 
             EnumTypesJournees locTyJournees = TypeJournee;
@@ -77,6 +86,34 @@ namespace Badger2018.views
 
 
             lienMesBadgeages.Click += (sender, args) => MiscAppUtils.GoTo(urlMesPointages);
+        }
+
+        private void InitDg()
+        {
+            dgPause.AutoGenerateColumns = false;
+            dgPause.CanUserAddRows = true;
+
+            dgPause.ItemsSource = obsListPause;
+
+            _colColumnStart = new DataGridTextColumn();
+            _colColumnStart.Header = "Début";
+            IntervalTempsToStringConverter convColDeb = new IntervalTempsToStringConverter();
+           convColDeb.DataGridRef = dgPause;
+            Binding bindgColumnName = new Binding("Start") { Converter = convColDeb };
+            _colColumnStart.Binding = bindgColumnName;
+          //  _colColumnStart.CellStyle = sCenteredCell;
+            dgPause.Columns.Add(_colColumnStart);
+
+            _colColumnEnd = new DataGridTextColumn();
+            _colColumnEnd.Header = "Fin";
+            convColDeb = new IntervalTempsToStringConverter();
+            convColDeb.DataGridRef = dgPause;
+            convColDeb.Mode = 1;
+            bindgColumnName = new Binding("End") { Converter = convColDeb };
+            _colColumnEnd.Binding = bindgColumnName;
+            //  _colColumnStart.CellStyle = sCenteredCell;
+            dgPause.Columns.Add(_colColumnEnd);
+
         }
 
         private void ChangeUiToEtatBadgerTyJournee(int etatBadger, EnumTypesJournees locTyJournees)
@@ -114,8 +151,6 @@ namespace Badger2018.views
                     c2.IsChecked = false;
                     c3.IsChecked = false;
 
-
-
                     break;
                 case 0:
 
@@ -152,88 +187,7 @@ namespace Badger2018.views
             }
         }
 
-        class CoupleCboxTbox
-        {
-            public bool IsEnabled
-            {
-                get { return Cbox.IsEnabled && Tbox.IsEnabled; }
-                set
-                {
-                    Cbox.IsEnabled = value;
-                    Tbox.IsEnabled = value;
-                }
-            }
-
-            public bool IsChecked
-            {
-                get { return Cbox.IsChecked ?? false; }
-                set
-                {
-                    Cbox.IsChecked = value;
-                    Tbox.IsEnabled = value;
-                }
-            }
-
-            private readonly CheckBox Cbox;
-
-            private readonly TextBox Tbox;
-
-            private DateTime internalDateTime;
-
-            public CoupleCboxTbox(CheckBox cbox, TextBox tbox)
-            {
-                Cbox = cbox;
-                Tbox = tbox;
-
-                Cbox.Click += (sender, args) =>
-                {
-                    tbox.IsEnabled = Cbox.IsChecked.HasValue && Cbox.IsChecked.Value;
-                };
-            }
-
-
-
-            public void SetTextTime(DateTime times)
-            {
-                internalDateTime = times;
-                Tbox.Text = times.TimeOfDay.ToString(Cst.TimeSpanFormat);
-            }
-
-
-            public bool IsValidTextTime()
-            {
-                TimeSpan newTboxTs = new TimeSpan();
-                return TimeSpan.TryParse(Tbox.Text, out newTboxTs);
-
-            }
-
-            public DateTime GetStrictDateTime()
-            {
-                TimeSpan newTboxTs = new TimeSpan();
-                if (TimeSpan.TryParse(Tbox.Text, out newTboxTs))
-                {
-                    return internalDateTime.ChangeTime(newTboxTs);
-                }
-
-                throw new Exception("Erreur lors de la lecture du Temps");
-            }
-
-            public TimeSpan GetStrictTextTime()
-            {
-                TimeSpan newTboxTs = new TimeSpan();
-                if (TimeSpan.TryParse(Tbox.Text, out newTboxTs))
-                {
-                    return newTboxTs;
-                }
-
-                throw new Exception("Erreur lors de la lecture du Temps");
-            }
-
-            public void FocusTbox()
-            {
-                Tbox.Focus();
-            }
-        }
+    
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
@@ -247,6 +201,8 @@ namespace Badger2018.views
                 Times.PlageTravMatin.End = c1.GetStrictDateTime().ChangeDate(dtNow);
                 Times.PlageTravAprem.Start = c2.GetStrictDateTime().ChangeDate(dtNow);
                 Times.PlageTravAprem.End = c3.GetStrictDateTime().ChangeDate(dtNow);
+
+                
 
                 if (TypeJournee == EnumTypesJournees.Complete)
                 {
@@ -303,6 +259,31 @@ namespace Badger2018.views
                     }
                 }
 
+
+                TimeSpan ts;
+                string tboxLastSeenRaw = tboxLastCdSeen.Text.Trim();
+                bool isNegateLastSeen = false;
+                if (tboxLastSeenRaw.StartsWith("-"))
+                {
+                    isNegateLastSeen = true;
+                    tboxLastSeenRaw = tboxLastSeenRaw.Substring(1);
+                }
+                if (MiscAppUtils.TryParseAlt(tboxLastSeenRaw, out ts))
+                {
+                    if (isNegateLastSeen)
+                    {
+                        ts = ts.Negate();
+                    }
+
+                    PrgOptionsRef.LastCdSeen = ts;
+                }
+
+                Times.PausesHorsDelai.Clear();
+                foreach(IntervalTemps pause in obsListPause)
+                {
+                    Times.PausesHorsDelai.Add(pause);
+                }
+
                 Close();
             }
             else
@@ -315,6 +296,23 @@ namespace Badger2018.views
 
         private bool VerifyDatas()
         {
+
+            TimeSpan ts;
+            string tboxLastSeenRaw = tboxLastCdSeen.Text.Trim();
+            //bool isNegateLastSeen = false;
+            if (tboxLastSeenRaw.StartsWith("-"))
+            {
+              //  isNegateLastSeen = true;
+                tboxLastSeenRaw = tboxLastSeenRaw.Substring(1);
+            }
+            if ((!tboxLastSeenRaw.StartsWith("-") && !TimeSpan.TryParse(tboxLastSeenRaw, out ts)) 
+                && (tboxLastSeenRaw.StartsWith("-") && !TimeSpan.TryParse(tboxLastSeenRaw.Substring(1), out ts)))
+            {
+                MessageBox.Show("Le C/D doit être au format HH:mm.");
+                tboxLastCdSeen.Focus();
+                return false;
+            } 
+
             if (!c0.IsValidTextTime())
             {
                 MessageBox.Show("L'heure de premier badgeage de la journée doit être au format HH:mm.");
@@ -346,6 +344,8 @@ namespace Badger2018.views
                 return false;
 
             }
+
+            
 
             if (TypeJournee == EnumTypesJournees.Complete)
             {
@@ -410,6 +410,93 @@ namespace Badger2018.views
             }
 
             return true;
+        }
+    }
+
+
+
+ 
+
+    class CoupleCboxTbox
+    {
+        public bool IsEnabled
+        {
+            get { return Cbox.IsEnabled && Tbox.IsEnabled; }
+            set
+            {
+                Cbox.IsEnabled = value;
+                Tbox.IsEnabled = value;
+            }
+        }
+
+        public bool IsChecked
+        {
+            get { return Cbox.IsChecked ?? false; }
+            set
+            {
+                Cbox.IsChecked = value;
+                Tbox.IsEnabled = value;
+            }
+        }
+
+        private readonly CheckBox Cbox;
+
+        private readonly TextBox Tbox;
+
+        private DateTime internalDateTime;
+
+        public CoupleCboxTbox(CheckBox cbox, TextBox tbox)
+        {
+            Cbox = cbox;
+            Tbox = tbox;
+
+            Cbox.Click += (sender, args) =>
+            {
+                tbox.IsEnabled = Cbox.IsChecked.HasValue && Cbox.IsChecked.Value;
+            };
+        }
+
+
+
+        public void SetTextTime(DateTime times)
+        {
+            internalDateTime = times;
+            Tbox.Text = times.TimeOfDay.ToString(Cst.TimeSpanFormat);
+        }
+
+
+        public bool IsValidTextTime()
+        {
+            TimeSpan newTboxTs = new TimeSpan();
+            return TimeSpan.TryParse(Tbox.Text, out newTboxTs);
+
+        }
+
+        public DateTime GetStrictDateTime()
+        {
+            TimeSpan newTboxTs = new TimeSpan();
+            if (TimeSpan.TryParse(Tbox.Text, out newTboxTs))
+            {
+                return internalDateTime.ChangeTime(newTboxTs);
+            }
+
+            throw new Exception("Erreur lors de la lecture du Temps");
+        }
+
+        public TimeSpan GetStrictTextTime()
+        {
+            TimeSpan newTboxTs = new TimeSpan();
+            if (TimeSpan.TryParse(Tbox.Text, out newTboxTs))
+            {
+                return newTboxTs;
+            }
+
+            throw new Exception("Erreur lors de la lecture du Temps");
+        }
+
+        public void FocusTbox()
+        {
+            Tbox.Focus();
         }
     }
 }

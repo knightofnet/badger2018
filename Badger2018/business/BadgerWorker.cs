@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Threading;
-using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AryxDevViewLibrary.utils;
 using Badger2018.constants;
@@ -18,8 +15,6 @@ using Badger2018.utils;
 using Badger2018.views;
 using BadgerCommonLibrary.utils;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Remote;
 
 namespace Badger2018.business
@@ -32,6 +27,10 @@ namespace Badger2018.business
         private static readonly Logger _logger = Logger.LastLoggerInstance;
         private readonly Action<DateTime?, int> _actionAfterBadgeage;
         public MainWindow Pwin { get; set; }
+
+        //public bool isInBadgeWork = false;
+
+        public DispatcherTimer LastBadgeTimer { get; private set; }
 
         public BadgerWorker(MainWindow pwin)
         {
@@ -49,11 +48,22 @@ namespace Badger2018.business
                     _logger.Info("Sauvegarde de la session (EtatBadger: {0})", Pwin.EtatBadger);
                     Pwin.PointageSaverObj.SaveCurrentDayTimes();
                 }
+
+                Pwin.PrgSwitch.IsInBadgeWork = false;
             };
         }
 
-        public void BadgeFullAction(bool forceWhenMsg = false)
+        public void BadgeFullAction(bool forceWhenMsg = false, bool isOkToShutdownIfOptionEnabled = true)
         {
+
+            if (Pwin.PrgSwitch.IsInBadgeWork)
+            {
+                _logger.Debug("BadgeFullAction : déà en cours");
+                return;
+            }
+
+            Pwin.PrgSwitch.IsInBadgeWork = true;
+
             _logger.Info("BadgeFullAction (forceWhenMsg: {0}) EtatBadger: {1})", forceWhenMsg ? "true" : "false", Pwin.EtatBadger);
 
 
@@ -69,14 +79,13 @@ namespace Badger2018.business
                     BadgeageEtapeP1(forceWhenMsg);
                     break;
                 case 2:
-                    BadgeageEtapeP2(forceWhenMsg);
+                    BadgeageEtapeP2(forceWhenMsg, isOkToShutdownIfOptionEnabled);
                     break;
             }
         }
 
         internal DateTime? BadgerActionBis(String url, String idElt, String idVerif, Action<DateTime?> afterWork)
         {
-
 
             while (true)
             {
@@ -96,7 +105,7 @@ namespace Badger2018.business
         }
 
 
-        public void TestNavigation(string url, string idElt, string idVerif)
+        public bool TestNavigation(string url, string idElt, string idVerif, bool isPreloadFf)
         {
 
             RemoteWebDriver driver = null;
@@ -108,14 +117,22 @@ namespace Badger2018.business
             {
                 try
                 {
-                    driver = BadgingUtils.GetWebDriver(Pwin.PrgOptions);
+                    driver = FfDriverSingleton.Instance.GetWebDriver();
+                    if (driver == null)
+                    {
+                        AppOptions moddedOpt = Pwin.PrgOptions.Clone();
+                        moddedOpt.IsPreloadFF = isPreloadFf;
+                        FfDriverSingleton.Instance.Load(moddedOpt);
+                        driver = FfDriverSingleton.Instance.GetWebDriver();
+                    }
+                    driver.GetScreenshot().SaveAsFile("test.png");
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show("Impossible de charger le navigateur. " + e.Message, "Erreur", MessageBoxButton.OK,
                         MessageBoxImage.Error);
 
-                    return;
+                    return false;
                 }
                 _logger.Debug(" GoToUrl: {0}", url);
                 driver.Navigate().GoToUrl(url);
@@ -131,13 +148,13 @@ namespace Badger2018.business
                     MessageBox.Show("Impossible de charger le navigateur. " + e.Message, "Erreur", MessageBoxButton.OK,
                         MessageBoxImage.Error);
 
-                    return;
+                    return false;
 
                 }
 
                 MessageBox.Show("Test réalisé avec succés.", "Information", MessageBoxButton.OK,
                         MessageBoxImage.Information);
-                return;
+                return true;
             }
             catch (Exception ex)
             {
@@ -146,7 +163,7 @@ namespace Badger2018.business
             finally
             {
                 if (driver != null)
-                    driver.Quit();
+                    FfDriverSingleton.Instance.Quit();
             }
         }
 
@@ -164,6 +181,7 @@ namespace Badger2018.business
                 IdVerif = idVerif,
                 Url = url
             };
+
 
             _badgeageBackgrounder = new BackgroundWorker();
             progress.BackgrounderRef = _badgeageBackgrounder;
@@ -186,7 +204,12 @@ namespace Badger2018.business
             };
             _badgeageBackgrounder.RunWorkerCompleted += (sender, args) =>
             {
-                DateTime dtNow = AppDateUtils.DtNow();
+                DateTime dtNow =  AppDateUtils.DtNow();
+                if (b.ElementsFromPage.HeureBadgee != null)
+                {
+                    _logger.Debug("Prise en compte de l'heure badgée");
+                    dtNow = dtNow.ChangeTime(b.ElementsFromPage.HeureBadgee.Value);
+                }
 
                 if (args.Error == null)
                 {
@@ -197,7 +220,7 @@ namespace Badger2018.business
                     {
                         progress.Hide();
                     }
-                    Pwin.PrgOptions.LastCdSeen = b.TsCd.Value;
+                    Pwin.PrgOptions.LastCdSeen = b.ElementsFromPage.TsCd.Value;
                 }
                 else
                 {
@@ -212,6 +235,7 @@ namespace Badger2018.business
                         progress.Topmost = false;
                     }
 
+                    // Annulation du badgeage par l'utilisateur
                     if (ex is UserCancelBadgeageException)
                     {
 
@@ -243,15 +267,15 @@ namespace Badger2018.business
                         {
                             progress.Hide();
                         }
+
+                        Pwin.PrgSwitch.IsInBadgeWork = false;
                         return;
                     }
 
-                    //Pwin.RestoreWindow();
-                    IntPtr hwnd = new System.Windows.Interop.WindowInteropHelper(Pwin).Handle;
-
+                    // Erreur lors du badgeage
+                    IntPtr hwnd = new WindowInteropHelper(Pwin).Handle;
                     FlashWindowUtils.Flash(hwnd, 10);
-
-                    EnumErrorCodeRetour response = MessageErrorBadgeageView.ShowMessageError(ex, dtNow, progress, b.EtapeTrt > 3);
+                    EnumErrorCodeRetour response = MessageErrorBadgeageView.ShowMessageError(ex, dtNow, progress, b.EtapeTrt);
                     if (response == EnumErrorCodeRetour.ANNULER)
                     {
                         _logger.Info("Erreur lors du badgeage : aucune action");
@@ -262,6 +286,8 @@ namespace Badger2018.business
                         {
                             progress.Hide();
                         }
+
+                   
 
                     }
                     if (response == EnumErrorCodeRetour.CONSULTER_POINTAGE)
@@ -297,6 +323,8 @@ namespace Badger2018.business
                     }
                 }
 
+                Pwin.PrgSwitch.IsInBadgeWork = false;
+
             };
 
             _badgeageBackgrounder.RunWorkerAsync();
@@ -320,7 +348,7 @@ namespace Badger2018.business
             _actionAfterBadgeage(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset), etatBadger);
         }
 
-        private void BadgeageEtapeP2(bool forceWhenMsg)
+        private void BadgeageEtapeP2(bool forceWhenMsg, bool isOkToShutdownIfOptionEnabled)
         {
 
             if (!forceWhenMsg && !ShowMessageAvertissementFinPlageFixe())
@@ -329,14 +357,15 @@ namespace Badger2018.business
             }
 
             DateTime endTimer = AppDateUtils.DtNow().AddSeconds(Pwin.PrgOptions.LastBadgeDelay);
-            DispatcherTimer lastBadgeTimer = new DispatcherTimer();
-            lastBadgeTimer.Interval = new TimeSpan(0, 0, 1);
-            lastBadgeTimer.Tick += (sender, args) =>
+            Pwin.StopTimers();
+            LastBadgeTimer = new DispatcherTimer();
+            LastBadgeTimer.Interval = new TimeSpan(0, 0, 1);
+            LastBadgeTimer.Tick += (sender, args) =>
             {
                 TimeSpan remainingTimer = endTimer - AppDateUtils.DtNow();
                 if (remainingTimer < TimeSpan.Zero)
                 {
-                    LastBadgeCoreAction(lastBadgeTimer);
+                    LastBadgeCoreAction(LastBadgeTimer, isOkToShutdownIfOptionEnabled);
                     Pwin.PrgSwitch.PbarMainTimerActif = true;
                 }
                 else
@@ -348,11 +377,11 @@ namespace Badger2018.business
             if (Pwin.PrgOptions.LastBadgeDelay > 0)
             {
                 Pwin.PrgSwitch.PbarMainTimerActif = false;
-                lastBadgeTimer.Start();
+                LastBadgeTimer.Start();
             }
             else
             {
-                LastBadgeCoreAction(lastBadgeTimer);
+                LastBadgeCoreAction(LastBadgeTimer, isOkToShutdownIfOptionEnabled);
             }
         }
 
@@ -510,7 +539,7 @@ namespace Badger2018.business
 
         }
 
-        private void LastBadgeCoreAction(DispatcherTimer lastBadgeTimer)
+        private void LastBadgeCoreAction(DispatcherTimer lastBadgeTimer, bool isOkToShutdownIfOptionEnabled)
         {
             lastBadgeTimer.Stop();
 
@@ -529,9 +558,12 @@ namespace Badger2018.business
                 Pwin.EtatBadger = 3;
                 Pwin.AdaptUiFromState(Pwin.EtatBadger, null);
 
+                if (isOkToShutdownIfOptionEnabled && !Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
+                {
+                    _logger.Info("Extinction de l'ordinateur refusée");
+                }
 
-
-                if (Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
+                    if (isOkToShutdownIfOptionEnabled && Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
                 {
                     var psi = new ProcessStartInfo("shutdown", "/s /t 10");
                     psi.CreateNoWindow = true;

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
@@ -91,6 +88,10 @@ namespace Badger2018.utils
                 fOpt.BrowserExecutableLocation = prgOptions.FfExePath;
                 //fOpt.BrowserExecutableLocation = @"C:\Program Files(x86)\Mozilla Firefox\firefox.exe";
 
+               if (prgOptions.IsPreloadFF) {
+                    fOpt.AddArguments("-headless");
+                }
+               
 
 
                 return new FirefoxDriver(service, fOpt);

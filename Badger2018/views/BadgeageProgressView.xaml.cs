@@ -2,16 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Badger2018.constants;
 using Badger2018.dto;
 
@@ -26,18 +18,22 @@ namespace Badger2018.views
         private readonly List<Label> _lstLabel;
         private AppOptions prgOptionRef;
 
+        private DateTime dateStep;
+
         public BackgroundWorker BackgrounderRef { get; internal set; }
 
-        public BadgeageProgressView(dto.AppOptions prgOptions)
+        public BadgeageProgressView(AppOptions prgOptions)
         {
             InitializeComponent();
 
-            _lstLabel = new List<Label>(6) { lblEt1, lblEt2, lblEt3, lblEt4, lblEt5, lblEt6 };
-            _lstImage = new List<Image>(6) { tickEt1, tickEt2, tickEt3, tickEt4, tickEt5, tickEt6 };
+            _lstLabel = new List<Label>(7) { lblEt1, lblEt2, lblEt3, lblEt4, lblEt5, lblEt6, lblEt7 };
+            _lstImage = new List<Image>(7) { tickEt1, tickEt2, tickEt3, tickEt4, tickEt5, tickEt6, tickEt7 };
 
             RaZProgress();
 
             prgOptionRef = prgOptions;
+
+            dateStep = DateTime.Now;
 
         }
 
@@ -77,6 +73,9 @@ namespace Badger2018.views
 
             _lstImage[i].Visibility = Visibility.Visible;
             _lstLabel[i].Foreground = Cst.SCBDarkGreen;
+
+            _lstLabel[i].Content += String.Format(" ( {0:0.00}s)", (DateTime.Now - dateStep).TotalSeconds);
+            dateStep = DateTime.Now;
 
         }
 

@@ -134,9 +134,13 @@ namespace Badger2018.Properties {
         ///   Recherche une chaîne localisée semblable à &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;root&gt;
         ///  &lt;elt&gt;
-        ///    Comment me rappeler l&apos;heure du gouter ?
-        ///    Habitué à prendre une pause gouter à 16h00 ? Vous pouvez ajouter jusqu&apos;à deux notifications personnalisées à Badger2018. Elles s&apos;afficheront à l&apos;heure désirées avec un message personnalisé.
-        ///    Pour les paramétrer, rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l&apos;onglet Notifications. Dans la partie inférieure, cocher les cases pour activer les notifications de votre choix. A [le reste de la chaîne a été tronqué]&quot;;.
+        ///    Un licence à renouveler
+        ///    Afin de protéger l&apos;outil et éviter sa diffusion de façon trop large, chaque utilisateur dispose d&apos;une licence. Cette dernière est à renouveler environ tous les deux ans.
+        ///    Pour constulter les informations de votre licence, appuyer sur la touche F8 dans la fenêtre principale.
+        ///    Quelques jours avant l&apos;expiration de votre licence, vous serez averti à chaque démarrage de l&apos;outil par un message.
+        ///  &lt;/elt&gt;
+        ///  &lt;elt&gt;
+        ///    Comment me rapp [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string didyouknow {
             get {
@@ -163,6 +167,16 @@ namespace Badger2018.Properties {
         internal static string EnableGeckoDebug {
             get {
                 return ResourceManager.GetString("EnableGeckoDebug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap firefox_light_016 {
+            get {
+                object obj = ResourceManager.GetObject("firefox_light_016", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -243,6 +257,16 @@ namespace Badger2018.Properties {
         internal static System.Drawing.Bitmap iconSetting {
             get {
                 object obj = ResourceManager.GetObject("iconSetting", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconWarning {
+            get {
+                object obj = ResourceManager.GetObject("iconWarning", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -371,7 +395,7 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Hotel Héron.
+        ///   Recherche une chaîne localisée semblable à Tango Tigre.
         /// </summary>
         internal static string versionName {
             get {

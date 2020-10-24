@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Media;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using Badger2018.utils;
 using BadgerCommonLibrary.utils;
-using Color = System.Windows.Media.Color;
 
 namespace Badger2018.views
 {
@@ -45,12 +35,12 @@ namespace Badger2018.views
         {
             ModerNotifView v = new ModerNotifView();
             v.WindowStartupLocation = WindowStartupLocation.Manual;
-            v.Left = SystemParameters.PrimaryScreenWidth - v.Width;
+            v.Left = SystemParameters.PrimaryScreenWidth - v.Width ;
             v.SetTitle(title);
             v.SetText(text);
 
             v.Show();
-            System.Media.SystemSounds.Asterisk.Play();
+            SystemSounds.Asterisk.Play();
 
 
 

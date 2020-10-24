@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Badger2018.constants;
 
 namespace Badger2018.dto
@@ -23,9 +20,13 @@ namespace Badger2018.dto
 
         // public bool IsNotifMaxTempsTrav { get; set; }
         public bool IsRealClose { get; set; }
+        public bool IsCloseWithSave { get; set; }
 
 
         public bool PbarMainTimerActif { get; set; }
+
+        public bool IsCompteHeureTravActif { get; set; }
+
         public bool IsMoreThanTpsTheo { get; internal set; }
         public bool IsTimerStoppedByMaxTime { get; internal set; }
         public bool IsTimeRemainingNotTimeWork { get; internal set; }
@@ -52,10 +53,28 @@ namespace Badger2018.dto
 
         public bool UseBddSupport { get; set; }
         public bool IsShowResumeLastDayNotif { get; internal set; }
+        public bool IsCheckLicence { get; internal set; }
+
+        /// <summary>
+        /// Indique que l'instance de Firefox en arrière plan est démarrée.
+        /// </summary>
+        public bool IsFfNormalyLoaded { get; internal set; }
+
+        /// <summary>
+        /// Indique que le démarrage de l'instance de Firefox en arrière plan a été démarré manuellement.
+        /// </summary>
+        public bool IsFfForcedLoaded { get; internal set; }
+
+        /// <summary>
+        /// Indique que le traitement de badgeage est en cours.
+        /// </summary>
+        public bool IsInBadgeWork { get; internal set; }
 
         public AppSwitchs()
         {
             PauseCurrentState = EnumStatePause.NONE;
+
+            IsCheckLicence = true;
 
         }
     }

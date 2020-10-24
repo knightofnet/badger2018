@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
-using AryxDevLibrary.utils.logger;
 
 namespace Badger2018.constants
 {
@@ -36,6 +30,12 @@ namespace Badger2018.constants
 
         public const string ScreenshotDir = "./" + ScreenshotDirName + "/";
 
+        public const string LogArchiveDirName = "logsArchives";
+
+        public const string LogArchiveDir = "./" + LogArchiveDirName + "/";
+
+
+
         public static readonly Thickness BtnBadgerPositionAtLeft = new Thickness(39.5, 10, 0, 10);
 
         public static readonly Thickness BtnBadgerPositionAtCenter = new Thickness(218.5, 10, 0, 10);
@@ -65,8 +65,13 @@ namespace Badger2018.constants
 
         public const string TableBadgeages = "BADGEAGES";
         public const string TableJours = "JOURS";
+        public const string TableAbsences = "ABSENCES";
+
+
+        public const string DecryptKey = @"PUzfy'tP29VX9,_SdSJ*tvhMv.g`6-+]";
+
 
         public static string ApplicationDirectory { get; set; }
-        
+
     }
 }

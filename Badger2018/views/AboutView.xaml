@@ -12,15 +12,15 @@
             <ColumnDefinition Width="417*"/>
         </Grid.ColumnDefinitions>
         <Image Height="105" VerticalAlignment="Top" Source="/Badger2018;component/Resources/fondGta.png" Stretch="UniformToFill" Grid.ColumnSpan="2"/>
-        <Label Content="Badger 2018" HorizontalAlignment="Left" Margin="0,110,0,0" VerticalAlignment="Top" Grid.Column="1" FontWeight="Bold"/>
-        <Label x:Name="lblVersion" Content="Version {0} {1} par Arnaud Leblanc" HorizontalAlignment="Left" Margin="0,130,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-        <Label HorizontalAlignment="Left" Margin="0,155,0,0" VerticalAlignment="Top" Grid.Column="1">
-            <AccessText>
-                Badger2018 est un assistant dédiée à facilité la gestion des badgeages.
-            </AccessText>
-            
-        </Label>
-        <Button Content="OK" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" IsDefault="True" IsCancel="True" Click="Button_Click"/>
+        <Label Content="Badger 2018" HorizontalAlignment="Left" Margin="0,110,0,0" VerticalAlignment="Top" Grid.Column="1" FontWeight="Bold" Padding="5,5,5,2"/>
+        <Label x:Name="lblVersion" Content="Version {1} ({0})" HorizontalAlignment="Left" Margin="0,133,0,0" VerticalAlignment="Top" Grid.Column="1" Padding="5,1"/>
+        <Label x:Name="lblYearVersion"  Content="© {0} par Arnaud Leblanc" HorizontalAlignment="Left" Margin="0,151,0,0" VerticalAlignment="Top" Grid.Column="1" Padding="5,1"/>
 
+        <Label  Content="Ce produit est fourni sous licence à :" Grid.Column="1" Margin="0,183,10,0" VerticalAlignment="Top" Padding="5,1"/>
+        
+        <Label x:Name="lblLicenceUser" Content="Arnaud Leblanc" Grid.Column="1" Margin="0,201,10,0" VerticalAlignment="Top" Padding="10,1"/>
+        <Label x:Name="lblLicence" Content="Licence ambassadeur. Validitée perpetuelle" Grid.Column="1" Margin="0,219,10,0" VerticalAlignment="Top" Padding="10,1"/>
+
+        <Button Content="OK" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" IsDefault="True" IsCancel="True" Click="Button_Click"/>
     </Grid>
 </Window>

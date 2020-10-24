@@ -4,13 +4,16 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      d:DesignHeight="366" d:DesignWidth="594"
+      d:DesignHeight="332" d:DesignWidth="522"
 	Title="Page1">
 
     <Grid Background="White">
-        <TextBlock Margin="10,10,9.6,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52">
-            L'assitant de configuration va vous aider à paramètrer le programme de façon à le rendre adapté à vos besoins.
-            De la notification, au rappel de badgeage, tout va pouvoir se configurer ici.
-        </TextBlock>
+        <TextBlock Margin="10,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="74"><Run Text="Ceci est votre premier lancement de Badger2018. Merci de l'intérêt que vous portez à cet outil. Développé"/><Run Text=" hors du périmètre CNAV, mais adapté pour les horaires variables à la CNAV, Badger2018 a été conçu"/><Run Text=" pour facilit"/><Run Text="er"/><Run Text=" la gestion quotidienne du temps de travail et des badgeages, Badger2018 est prévu pour vous assister dans plusieurs tâches :"/></TextBlock>
+        <TextBlock Margin="10,115,9,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="41"><Run Text="C'est le cœur de l'outil. Il n'est plus nécessaire d'ouvrir la page GTA pour pointer durant la journée. Un simple clic sur le bouton &quot;Badger&quot; dans la fenêtre principale de l'outil suffira."/></TextBlock>
+        <Label Content="Badger directement depuis Badger2018 :" HorizontalAlignment="Left" Margin="10,89,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock Margin="9,187,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52" Text="Au fur et à mesure que la journée s'écoule et que les pointages sont réalisés, vous pourrez suivre votre temps de travail. De plus, Badger2018 vous indiquera l'heure théorique à laquelle vous pouvez partir en ayant travaillé une journée complète."/>
+        <Label Content="Suivre son temps de travail :" HorizontalAlignment="Left" Margin="10,161,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock Margin="10,270,9,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52"><Run Text="Selon vos préférences, vous pourrez demander à l'outil de vous prévenir lorsque vous oublierez de pointer. Vous pouvez également activer des notifications pour être averti durant la journée "/><Run Text="lorsqu'il est possible de pointer, ou lorsque votre journée est complète."/></TextBlock>
+        <Label Content="Afficher des rappels et de notifications en cas d'oubli :" HorizontalAlignment="Left" Margin="10,244,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
     </Grid>
 </Page>

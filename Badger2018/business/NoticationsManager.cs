@@ -1,15 +1,12 @@
-﻿using Badger2018.constants;
-using Badger2018.dto;
-using Badger2018.utils;
-using BadgerPluginExtender;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Windows.Navigation;
-
+using Badger2018.constants;
+using Badger2018.dto;
+using Badger2018.utils;
+using BadgerPluginExtender;
 
 namespace Badger2018.business
 {

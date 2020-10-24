@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
 using System.Windows;
 using System.Xml;
 using AryxDevLibrary.extensions;
@@ -13,8 +10,8 @@ using AryxDevLibrary.utils.xml;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.Properties;
-using Badger2018.views;
 using BadgerCommonLibrary.utils;
+using ExceptionHandlingUtils = BadgerCommonLibrary.utils.ExceptionHandlingUtils;
 
 namespace Badger2018.business
 {

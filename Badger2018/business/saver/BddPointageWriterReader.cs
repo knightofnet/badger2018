@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
+using Badger2018.business.dbb;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.dto.bdd;
 using Badger2018.services;
 using BadgerCommonLibrary.utils;
+using ExceptionHandlingUtils = BadgerCommonLibrary.utils.ExceptionHandlingUtils;
 
 namespace Badger2018.business.saver
 {
@@ -52,11 +52,12 @@ namespace Badger2018.business.saver
                 if (_pWinRef.EtatBadger == EnumBadgeageType.PLAGE_TRAV_APREM_END.Index)
                 {
                     TimeSpan t = TimeSpan.Zero;
-                    if (EnumTypesJournees.Complete == _pWinRef.TypeJournee )
+                    if (EnumTypesJournees.Complete == _pWinRef.TypeJournee)
                     {
                         t += _pWinRef.Times.GetTpsTravMatin();
                         t += _pWinRef.Times.GetTpsTravAprem();
-                    } else 
+                    }
+                    else
                     {
                         t = _pWinRef.Times.PlageTravAprem.EndOrDft - _pWinRef.Times.PlageTravMatin.Start;
                     }

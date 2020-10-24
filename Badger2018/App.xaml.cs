@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +9,9 @@ using System.Windows;
 using System.Windows.Threading;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
+using AryxDevLibrary4.utils.logger;
 using Badger2018.business;
+using Badger2018.business.dbb;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.Properties;
@@ -25,8 +22,8 @@ using BadgerCommonLibrary.business;
 using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
 using BadgerPluginExtender;
-using BadgerPluginExtender.dto;
 using IWshRuntimeLibrary;
+using ExceptionHandlingUtils = BadgerCommonLibrary.utils.ExceptionHandlingUtils;
 using File = System.IO.File;
 
 namespace Badger2018
@@ -61,12 +58,16 @@ namespace Badger2018
                 Settings.Default.Save();
             }
 
+            LicenceInfo licenceInfo = VerifyLicence();
+
+            /*
             if (StringUtils.CsvStringContains(Environment.UserName.ToUpper(),
-                ((string)Settings.Default["licencedUser"]).ToUpper()) && !System.IO.File.Exists(Environment.UserName.ToUpper() + ".auth"))
+                ((string)Settings.Default["licencedUser"]).ToUpper()) && !File.Exists(Environment.UserName.ToUpper() + ".auth"))
             {
                 _logger.Error("Utilisation non autorisée");
                 Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
             }
+            */
 
 
             AppOptions prgOptions = null;
@@ -99,13 +100,13 @@ namespace Badger2018
                     ExceptionHandlingUtils.LogAndNewException("Erreur lors du chargement des options du programme. Impossible de démarrer le programme");
 
                 }
-                
+
                 if (StringUtils.IsNullOrWhiteSpace(prgOptions.SqliteAppUserSalt) || prgOptions.SqliteAppUserSalt.Equals("NULL"))
                 {
                     prgOptions.SqliteAppUserSalt = StringUtils.RandomString(32, @"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789-+%.;,:_*/&é()[]");
 
                 }
-                
+
 
 
                 argsDto = LoadArgs(e, argsDto);
@@ -127,9 +128,9 @@ namespace Badger2018
                 }
 
 
-               // DbbAccessManager.DbbPasswd = CommonCst.SqliteAppSalt + prgOptions.SqliteAppUserSalt + Environment.UserName.ToUpper();
+                // DbbAccessManager.DbbPasswd = CommonCst.SqliteAppSalt + prgOptions.SqliteAppUserSalt + Environment.UserName.ToUpper();
                 RemoveLegacyBadgeage(prgOptions);
-                UpdateBdd();
+                UpdateBdd(prgOptions);
                 ConvertsXmlPointageToDEbb();
             }
             catch (Exception ex)
@@ -149,7 +150,7 @@ namespace Badger2018
             try
             {
 
-                MainWindow mainWindow = new MainWindow(prgOptions, updaterManager, pManager);
+                MainWindow mainWindow = new MainWindow(prgOptions, updaterManager, pManager, licenceInfo);
                 mainWindow.ShowDialog();
 
             }
@@ -167,21 +168,74 @@ namespace Badger2018
 
         }
 
-        private void UpdateBdd()
+        private static LicenceInfo VerifyLicence()
+        {
+#if DEBUG
+            LicenceInfo l = new LicenceInfo();
+            l.DateExpiration = new DateTime(2050, 1, 1, 1, 1, 1);
+            l.NiceName = "Developper";
+            l.TypeUser = 0;
+            l.Username = "Developper";
+            l.ReArmMail = "wolfaryx@gmail.com";
+            return l;
+#endif
+            string licenceFile = Environment.UserName.ToUpper() + ".auth";
+            if (File.Exists(licenceFile))
+            {
+
+                String fileContent = File.ReadAllText(licenceFile);
+                LicenceInfo li = LicenceInfo.GetFromString(CryptUtils.Decrypt(fileContent));
+                if (li != null && li.TypeUser == 0)
+                {
+                    _logger.Info("Licence ambassadeur");
+                }
+                else if (li == null || !Environment.UserName.Equals(li.Username, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    _logger.Error("Utilisation non autorisée");
+
+                    MessageBox.Show("La licence du programme n'est pas valide.", "Erreur de licence utilisateur", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
+
+                }
+                else if (li != null && DateTime.Now > li.DateExpiration)
+                {
+                    _logger.Error("Utilisation non autorisée - date expirée");
+
+                    MessageBox.Show(String.Format("La licence du programme a expiré. Contacter '{0}' pour renouveler votre licence.", li.ReArmMail),
+                        "Erreur de licence utilisateur", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
+                }
+
+                return li;
+            }
+            else
+            {
+                _logger.Error("Utilisation non autorisée");
+                MessageBox.Show(String.Format("Le fichier de licence '{0}' n'a pas été trouvé.", licenceFile),
+                      "Erreur de licence utilisateur", MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(EnumExitCodes.M_NOT_LICENCED_USER.ExitCodeInt);
+
+            }
+
+            return null;
+        }
+
+        private void UpdateBdd(AppOptions prgOptions)
         {
             try
             {
-                String fileUpdBdd = String.Format("sqlUpd-{0}.sql", Assembly.GetExecutingAssembly().GetName().Version);
-                if (File.Exists(fileUpdBdd))
-                {
-                    _logger.Info("Fichier de mise à jour BDD detecté ({0}). Exécution", fileUpdBdd);
 
-                    SqlLiteUtils.ExecuteContentFile(DbbAccessManager.Instance.Connection, fileUpdBdd);
-                    System.IO.File.Delete(fileUpdBdd);
+                DbbUpdateManager dbbUpd = new DbbUpdateManager(DbbAccessManager.Instance.Connection, prgOptions.LastSqlUpdateVersion);
+                if (dbbUpd.CheckUpdateRequired())
+                {
+                    dbbUpd.BackupDbb();
+                    dbbUpd.UpdateDbb();
                 }
                 else
                 {
-                    _logger.Debug("Fichier de mise à jour BDD non detecté ({0}).", fileUpdBdd);
+                    _logger.Debug("Fichier de mise à jour BDD non detecté.");
                 }
             }
             catch (Exception ex)
@@ -263,7 +317,7 @@ namespace Badger2018
 
             }
 
-            if (System.IO.File.Exists(CommonCst.OneShotUpdateConfFilename))
+            if (File.Exists(CommonCst.OneShotUpdateConfFilename))
             {
                 _logger.Info("Importation de la configuration à partir de {0}", CommonCst.OneShotUpdateConfFilename);
                 _logger.Debug(" Lecture du fichier");
@@ -272,7 +326,7 @@ namespace Badger2018
                 _logger.Debug(" Prise en compte des nouvelles options");
                 OptionManager.ChangeOptions(optionImported, prgOptions, CommonCst.OneShotUpdateConfFilename);
 
-                System.IO.File.Delete(CommonCst.OneShotUpdateConfFilename);
+                File.Delete(CommonCst.OneShotUpdateConfFilename);
             }
 
             OptionManager.SaveOptions(prgOptions);

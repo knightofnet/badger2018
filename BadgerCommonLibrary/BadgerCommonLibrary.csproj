@@ -30,9 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AryxDevLibrary, Version=1.0.3.204, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
+    <Reference Include="AryxDevLibrary, Version=1.0.5.20, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AryxDevLibrary.1.0.5.20\lib\net35-client\AryxDevLibrary.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -72,6 +71,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\updateNew.xml" />
   </ItemGroup>
   <ItemGroup>

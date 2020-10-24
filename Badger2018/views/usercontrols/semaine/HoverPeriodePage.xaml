@@ -1,0 +1,35 @@
+﻿<Page x:Class="Badger2018.views.usercontrols.semaine.HoverPeriodePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Badger2018.views.usercontrols.semaine"
+      mc:Ignorable="d" 
+      d:DesignHeight="150" d:DesignWidth="150"
+      Title="HoverPeriodePage" Background="White">
+
+    <Grid>
+
+        <!-- controls -->
+
+
+        <Label x:Name="lblNamePer" Content="Après-midi du 03/07/2019" Margin="5,5,5,0" VerticalAlignment="Top" FontSize="10" HorizontalContentAlignment="Center"/>
+        <Rectangle x:Name="rectA" Fill="#FF0080FF" HorizontalAlignment="Left" Height="3" Margin="5,28,0,0" Stroke="#FF0097FF" VerticalAlignment="Top" Width="140" StrokeThickness="0"/>
+
+
+        <Label Content="Début : " HorizontalAlignment="Left" Margin="5,36,0,0" VerticalAlignment="Top" FontSize="10" Padding="2" Foreground="#99000000" />
+        <Label x:Name="lblHdeb" Content="10h00" HorizontalAlignment="Right" Margin="0,36,5,0" VerticalAlignment="Top" FontSize="10" Padding="2" Width="64" HorizontalContentAlignment="Right" />
+
+        <Label Content="Fin : " HorizontalAlignment="Left" Margin="5,53,0,0" VerticalAlignment="Top" FontSize="10" Padding="2" Foreground="#99000000" />
+        <Label x:Name="lblHfin" Content="22h00" HorizontalAlignment="Right" Margin="0,53,5,0" VerticalAlignment="Top" FontSize="10" Padding="2" Width="64" HorizontalContentAlignment="Right" />
+
+        <Label Content="Tps trav. : " HorizontalAlignment="Left" Margin="5,70,0,0" VerticalAlignment="Top" FontSize="10" Padding="2" Foreground="#99000000" />
+        <Label x:Name="lblTpsTravPer" Content="22h00" HorizontalAlignment="Right" Margin="0,70,5,0" VerticalAlignment="Top" FontSize="10" Padding="2" Width="64" HorizontalContentAlignment="Right" />
+
+        <Rectangle x:Name="rectB" Fill="#FF0080FF" HorizontalAlignment="Left" Height="3" Margin="5,92,0,0" Stroke="#FF0097FF" VerticalAlignment="Top" Width="140" StrokeThickness="0"/>
+
+        <Label Content="Tps trav. total : " HorizontalAlignment="Left" Margin="5,100,0,0" VerticalAlignment="Top" FontSize="10" Padding="2" Foreground="#99000000" />
+        <Label x:Name="lblTpsTravTot" Content="24h00" HorizontalAlignment="Right" Margin="0,100,5,0" VerticalAlignment="Top" FontSize="10" Padding="2" Width="64" HorizontalContentAlignment="Right" />
+
+    </Grid>
+</Page>

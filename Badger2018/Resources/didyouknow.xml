@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <root>
   <elt>
+    Un licence à renouveler
+    Afin de protéger l'outil et éviter sa diffusion de façon trop large, chaque utilisateur dispose d'une licence. Cette dernière est à renouveler environ tous les deux ans.
+    Pour constulter les informations de votre licence, appuyer sur la touche F8 dans la fenêtre principale.
+    Quelques jours avant l'expiration de votre licence, vous serez averti à chaque démarrage de l'outil par un message.
+  </elt>
+  <elt>
     Comment me rappeler l'heure du gouter ?
     Habitué à prendre une pause gouter à 16h00 ? Vous pouvez ajouter jusqu'à deux notifications personnalisées à Badger2018. Elles s'afficheront à l'heure désirées avec un message personnalisé.
     Pour les paramétrer, rendez-vous dans la fenêtre des options (la petite roue dentée en bas à gauche), puis dans l'onglet Notifications. Dans la partie inférieure, cocher les cases pour activer les notifications de votre choix. Ajuster l'heure et le message.
@@ -9,7 +15,7 @@
   <elt>
     Badger plus que 4 fois avec Badger2018
     L'application Badger2018 vous assiste dans les 4 badgeages quotidiens d'une journée classique : en arrivant le matin, en fin de matinée avant de prendre la pause du midi, en début d'après-midi et en fin de journée. Ces 4 badgeages font évoluer l'interface de sorte que vous pouvez savoir rapidement où vous en êtes et combien de temps vous avez travaillé.
-    Mais vous pouvez réaliser d'autres badgeages : pour cela, cliquez simplement sur le bouton "Badger manuellement". Ce badgeage ne sera pas pris en compte par Badger2018, alors attention à avoir un nombre pair de badgeages.
+    Mais vous pouvez réaliser d'autres badgeages : pour cela, cliquez simplement sur le bouton "Badger et suspendre". Cette action entrainera un badgeage, suspendra le calcul du temps travaillé et afficher un chronomètre. Une fois revenu, vous n'aurez qu'à cliquer sur "Badger et reprendre" et l'outil reprendra ses calculs en prenant en compte la durée de cette sortie.
   </elt>
   <elt>
     Que se passe-t-il si le site GTA ne réponds pas ?

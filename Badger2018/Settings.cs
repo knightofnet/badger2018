@@ -1,4 +1,7 @@
-﻿namespace Badger2018.Properties {
+﻿using System.ComponentModel;
+using System.Configuration;
+
+namespace Badger2018.Properties {
     
     
     // Cette classe vous permet de gérer des événements spécifiques dans la classe de paramètres :
@@ -17,11 +20,11 @@
             //
         }
         
-        private void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e) {
+        private void SettingChangingEventHandler(object sender, SettingChangingEventArgs e) {
             // Ajouter du code pour gérer l'événement SettingChangingEvent ici.
         }
         
-        private void SettingsSavingEventHandler(object sender, System.ComponentModel.CancelEventArgs e) {
+        private void SettingsSavingEventHandler(object sender, CancelEventArgs e) {
             // Ajouter du code pour gérer l'événement SettingsSaving ici.
         }
     }

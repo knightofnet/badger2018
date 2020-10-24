@@ -1,10 +1,11 @@
 ﻿<Window x:Class="Badger2018.views.ModTimeView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Report des badgeages" Height="383.2" Width="469.6" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
+        Title="Report des badgeages" Height="523.085" Width="469.6" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
     <Grid>
         <CheckBox x:Name="chkB0Tick" Content="Premier badgeage de la journée" HorizontalAlignment="Left" Margin="31,194,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tboxB0Time" HorizontalAlignment="Left" Height="23" Margin="155,214,0,0" TextWrapping="Wrap" Text="07:00" VerticalAlignment="Top" Width="66"/>
+
 
         <CheckBox x:Name="chkB1Tick" Content="Badgeage de la fin de matinée" HorizontalAlignment="Left" Margin="249,194,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tboxB1Time" HorizontalAlignment="Left" Height="23" Margin="364,214,0,0" TextWrapping="Wrap" Text="11:30" VerticalAlignment="Top" Width="66"/>
@@ -16,8 +17,12 @@
         <CheckBox x:Name="chkB3Tick" Content="Badgeage de fin de journée" HorizontalAlignment="Left" Margin="249,253,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tboxB3Time" HorizontalAlignment="Left" Height="23" Margin="364,273,0,0" TextWrapping="Wrap" Text="15:30" VerticalAlignment="Top" Width="66" RenderTransformOrigin="0.515,0.513"/>
         <Label Content="Entrez les horaires badgés du jour :" Margin="8,163,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="270"/>
-        <Label Content="Choisissez le type de journée réalisée :" Margin="8,103,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="270"/>
+        <Label Content="Choisissez le type de journée réalisée :" Margin="8,103,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="218"/>
         <ComboBox x:Name="cboxTyJournee" HorizontalAlignment="Left" Margin="31,134,0,0" VerticalAlignment="Top" Width="190"/>
+
+
+        <Label Content="Pauses de la journée :" Margin="10,301,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="270"/>
+
 
         <TextBlock Margin="10,10,10.2,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="88" TextAlignment="Justify">
             Dans cette fenêtre, vous allez pouvoir modifier les heures badgées du programme, afin par exemple, de reporter des badgeages
@@ -34,5 +39,8 @@
         <Button x:Name="btnOk" Content="Appliquer" HorizontalAlignment="Right" Margin="0,0,10.2,10.6" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOk_Click"/>
         <Button x:Name="btnCancel" Content="Annuler" HorizontalAlignment="Right" Margin="0,0,90.2,10.6" VerticalAlignment="Bottom" Width="75" IsCancel="True"/>
 
+        <Label Content="C/D au moment du dernier relevé :" Margin="250,103,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="204"/>
+        <TextBox x:Name="tboxLastCdSeen" HorizontalAlignment="Left" Height="23" Margin="364,134,0,0" TextWrapping="Wrap" Text="07:48" VerticalAlignment="Top" Width="66"/>
+        <DataGrid x:Name="dgPause" Height="126" Margin="31,332,34,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

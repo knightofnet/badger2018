@@ -733,5 +733,53 @@ namespace Badger2018.Properties {
                 this["CompteurCDMaxAbs"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastSqlUpdateVersion {
+            get {
+                return ((string)(this["LastSqlUpdateVersion"]));
+            }
+            set {
+                this["LastSqlUpdateVersion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowOnScreenProgressBar {
+            get {
+                return ((bool)(this["ShowOnScreenProgressBar"]));
+            }
+            set {
+                this["ShowOnScreenProgressBar"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00")]
+        public global::System.TimeSpan LastCdMondaySeen {
+            get {
+                return ((global::System.TimeSpan)(this["LastCdMondaySeen"]));
+            }
+            set {
+                this["LastCdMondaySeen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsPreloadFF {
+            get {
+                return ((bool)(this["IsPreloadFF"]));
+            }
+            set {
+                this["IsPreloadFF"] = value;
+            }
+        }
     }
 }

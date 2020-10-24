@@ -39,17 +39,15 @@
     <ApplicationIcon>Resources\Paomedia-Small-N-Flat-Clock.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AryxDevLibrary">
-      <HintPath>..\..\AryxDevLibrary\bin\Release\AryxDevLibrary.dll</HintPath>
+    <Reference Include="AryxDevLibrary, Version=1.0.5.20, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AryxDevLibrary.1.0.5.20\lib\net35-client\AryxDevLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="AryxDevLibrary4, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\AryxDevLibrary\AryxDevLibrary4.0\bin\Release\AryxDevLibrary4.dll</HintPath>
     </Reference>
     <Reference Include="AryxDevViewLibrary">
       <HintPath>..\..\AryxDevLibrary\AryxDevViewLibrary\bin\Release\AryxDevViewLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AudioSwitcher.AudioApi.3.0.0\lib\net40\AudioSwitcher.AudioApi.dll</HintPath>
-    </Reference>
-    <Reference Include="AudioSwitcher.AudioApi.CoreAudio, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AudioSwitcher.AudioApi.CoreAudio.3.0.0.1\lib\net40\AudioSwitcher.AudioApi.CoreAudio.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip.Reduced">
       <HintPath>..\externals\Ionic.Zip.Reduced.dll</HintPath>
@@ -92,9 +90,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WebDriver, Version=3.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.WebDriver.3.14.0\lib\net40\WebDriver.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebDriver, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.3.141.0\lib\net40\WebDriver.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -113,7 +110,8 @@
     <Compile Include="business\AppArgsParser.cs" />
     <Compile Include="business\BadgerWorker.cs" />
     <Compile Include="business\BadgingBckder.cs" />
-    <Compile Include="business\DbbAccessManager.cs" />
+    <Compile Include="business\dbb\DbbAccessManager.cs" />
+    <Compile Include="business\dbb\DbbUpdateManager.cs" />
     <Compile Include="business\MainTimerManager.cs" />
     <Compile Include="business\saver\BddPointageWriterReader.cs" />
     <Compile Include="business\saver\ISaverTimes.cs" />
@@ -135,17 +133,24 @@
     <Compile Include="constants\EnumErrorCodeRetour.cs" />
     <Compile Include="constants\EnumModePointage.cs" />
     <Compile Include="constants\EnumActionBtnBadgeM.cs" />
+    <Compile Include="constants\EnumTypesAbsences.cs" />
     <Compile Include="constants\EnumTypesJournees.cs" />
     <Compile Include="constants\SqlConstants.cs" />
     <Compile Include="dto\AppArgsDto.cs" />
     <Compile Include="dto\AppOptions.cs" />
     <Compile Include="dto\AppSwitchs.cs" />
     <Compile Include="constants\EnumTypesTemps.cs" />
+    <Compile Include="dto\bdd\AbsencesEntryDto.cs" />
     <Compile Include="dto\bdd\BadgeageEntryDto.cs" />
     <Compile Include="dto\bdd\JourEntryDto.cs" />
     <Compile Include="dto\converter\CustomNotificationConverter.cs" />
+    <Compile Include="dto\converter\IntervalTempsToStringConverter.cs" />
     <Compile Include="dto\CustomNotificationDto.cs" />
+    <Compile Include="dto\ElementsFromPageBadgeage.cs" />
+    <Compile Include="dto\FfDriverSingleton.cs" />
+    <Compile Include="dto\InfosDay.cs" />
     <Compile Include="dto\IntervalTemps.cs" />
+    <Compile Include="dto\LicenceInfo.cs" />
     <Compile Include="dto\NotificationDto.cs" />
     <Compile Include="dto\PointageElt.cs" />
     <Compile Include="dto\RealTimesObj.cs" />
@@ -156,7 +161,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="services\AbsencesServices.cs" />
     <Compile Include="services\BadgeagesServices.cs" />
+    <Compile Include="services\bddLastLayer\AbsencesBddLayer.cs" />
     <Compile Include="services\bddLastLayer\BadgeageBddLayer.cs" />
     <Compile Include="services\bddLastLayer\JoursBddLayer.cs" />
     <Compile Include="services\JoursServices.cs" />
@@ -164,13 +171,16 @@
     <Compile Include="Settings.cs" />
     <Compile Include="utils\BadgingUtils.cs" />
     <Compile Include="utils\CoreAudioCtrlerFactory.cs" />
+    <Compile Include="utils\CryptUtils.cs" />
     <Compile Include="utils\FlashWindowUtils.cs" />
     <Compile Include="utils\MiscAppExtensionUtils.cs" />
     <Compile Include="utils\MiscApputils.cs" />
     <Compile Include="utils\sqlite\ListSqlLiteKVPair.cs" />
     <Compile Include="utils\sqlite\SqlLiteKVPair.cs" />
     <Compile Include="utils\SqlLiteUtils.cs" />
+    <Compile Include="utils\TcpRequestsStore.cs" />
     <Compile Include="utils\TestUtils.cs" />
+    <Compile Include="utils\TimeSpanToPixelsFrise.cs" />
     <Compile Include="utils\TimesUtils.cs" />
     <Compile Include="views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
@@ -217,8 +227,17 @@
     <Compile Include="views\OptionsView.xaml.cs">
       <DependentUpon>OptionsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\RealTimesView.xaml.cs">
+      <DependentUpon>RealTimesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\SaisieManuelleTsView.xaml.cs">
       <DependentUpon>SaisieManuelleTsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\ScreenProgressBarView.xaml.cs">
+      <DependentUpon>ScreenProgressBarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\SemaineView.xaml.cs">
+      <DependentUpon>SemaineView.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\UpdatesReviewerView.xaml.cs">
       <DependentUpon>UpdatesReviewerView.xaml</DependentUpon>
@@ -235,11 +254,29 @@
     <Compile Include="views\usercontrols\InfoItemControl.xaml.cs">
       <DependentUpon>InfoItemControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\usercontrols\semaine\HoverInfoControl.xaml.cs">
+      <DependentUpon>HoverInfoControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\usercontrols\semaine\HoverPeriodePage.xaml.cs">
+      <DependentUpon>HoverPeriodePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\usercontrols\semaine\HoverPointPage.xaml.cs">
+      <DependentUpon>HoverPointPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\usercontrols\semaine\JourSemaineControl.xaml.cs">
+      <DependentUpon>JourSemaineControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\usercontrols\TypeJourneeControl.xaml.cs">
       <DependentUpon>TypeJourneeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\wizard\Page1.xaml.cs">
       <DependentUpon>Page1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\wizard\Page2.xaml.cs">
+      <DependentUpon>Page2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\wizard\Page3.xaml.cs">
+      <DependentUpon>Page3.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\wizard\WizardMainView.xaml.cs">
       <DependentUpon>WizardMainView.xaml</DependentUpon>
@@ -316,7 +353,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="views\RealTimesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="views\SaisieManuelleTsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\ScreenProgressBarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\SemaineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -340,11 +389,35 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="views\usercontrols\semaine\HoverInfoControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\usercontrols\semaine\HoverPeriodePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\usercontrols\semaine\HoverPointPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\usercontrols\semaine\JourSemaineControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="views\usercontrols\TypeJourneeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\wizard\Page1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\wizard\Page2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\wizard\Page3.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -387,6 +460,10 @@
     <Content Include="Resources\didyouknow.xml">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\font-awesome_4-7-0_warning_27_0_e74c3c_none.png" />
+    <Resource Include="Resources\firefox_light_016.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\help.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -395,6 +472,7 @@
     <Resource Include="Resources\sign-warning-icon.png" />
     <Resource Include="Resources\pauseBlinkOn.png" />
     <Resource Include="Resources\pauseExists.png" />
+    <Resource Include="Resources\iconWarning.png" />
     <Content Include="Resources\updateBadger.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

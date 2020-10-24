@@ -86,6 +86,9 @@ namespace WaveCompagnonPlayer
                 else if (EnumWaveCompModeTraitement.TestAllDeviceMode.Equals(prgArgs.WaveCompModeTraitements))
                 {
                     jobInstance = new TestAllPlayerDeviceJob();
+                } else if (EnumWaveCompModeTraitement.DaemonWaitingOrders.Equals(prgArgs.WaveCompModeTraitements))
+                {
+                    jobInstance = new DaemonWaitingOrdersJob();
                 }
 
                 jobInstance.DoJob(prgArgs);

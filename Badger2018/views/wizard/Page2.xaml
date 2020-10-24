@@ -1,0 +1,20 @@
+﻿<Page x:Class="Badger2018.views.wizard.Page2"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Badger2018.views.wizard"
+      mc:Ignorable="d" 
+      d:DesignHeight="332" d:DesignWidth="522"
+      Title="Page2">
+
+    <Grid Background="white">
+        <TextBlock Margin="10,36,9,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="51" Text="Il est possible de faire en sorte que l'outil badge automatiquement lorsqu'il démarre pour la première fois de la journée. Avec ça, impossible d'oublier de badger en arrivant ! Il n'est donc plus nécessaire de badger sur GTA."/>
+        <Label Content="Badger automatiquement au démarrage de l'ordinateur :" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock Margin="9,118,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="54"><Run Text="Eteindre le PC après le dernier badgeage de la journée, voir le C/D en temps réel, visualiser les pauses/badgeages supplémentaires facilement, consulter les badgeages réalisés les jours précédents"/><Run Text=", raccourcis utiles"/><Run Text="..."/></TextBlock>
+        <Label Content="Et d'autres fonctionnalités... :" HorizontalAlignment="Left" Margin="10,92,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock Margin="10,203,9,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="89"><Run Text="Badger2018 effectue les badgeages sur GTA comme vous le feriez. L'outil ouvre la page GTA et clic sur le bouton badger. Rien de plus, et rien d'obscur afin de toujours assurer "/><Run Text="à l'"/><Run Text="utilisateur un"/><Run Text=" badgeage dans les règles. Une capture d'écran du résultat est également effectué"/><Run Text="e"/><Run Text="."/><Run Text=" De plus, en cas de souci avec GTA, une assistance particulière est proposée afin de reporter votre horaire"/><Run Text="."/></TextBlock>
+        <Label Content="Un badgeage réalisé par ordinateur, comme un humain ! :" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+
+    </Grid>
+</Page>

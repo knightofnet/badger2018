@@ -5,7 +5,9 @@ using System.Reflection;
 using System.Text;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
+using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.views;
 using BadgerPluginExtender;
 using BadgerPluginExtender.dto;
 using BadgerPluginExtender.interfaces;
@@ -18,17 +20,20 @@ namespace BetaUserAddons
         private static readonly Logger _logger = Logger.LastLoggerInstance;
         public PluginInfo CurrPluginInfo { get; private set; }
 
+        private bool _isloaded = false;
+
         public BetaUserAddonsClass()
         {
             CurrPluginInfo = new PluginInfo("BetaUserAddons", Assembly.GetAssembly(GetType()).GetName().Version);
 
-
+            _isloaded = true;
         }
 
 
 
         public PluginInfo GetPluginInfo()
         {
+        
             return CurrPluginInfo;
 
         }
@@ -44,11 +49,17 @@ namespace BetaUserAddons
             t.MethodResponder = "IsBetaUser";
 
             MethodRecord v = new MethodRecord();
-            v.TargetHookName = "BadgeBetaTest";
+            v.TargetHookName = "FullOnClockUpdTimerOnOnTick";
             v.MethodResponder = "BadgeBetaTest";
 
             return new MethodRecord[] { m, t, v };
         }
+
+        public void OnOptionsViewInitHandler(OptionsView optView)
+        {
+            // optView.
+        }
+
 
         public void TestMethod(bool iss)
         {
@@ -72,34 +83,30 @@ namespace BetaUserAddons
 
 
 
-        public void BadgeBetaTest(TimesBadgerDto Times, AppOptions PrgOptions, AppSwitchs PrgSwitch, int EtatBadger, TimeSpan RealTimeTsNow)
+        public void BadgeBetaTest(TimesBadgerDto times, AppOptions prgOptions, AppSwitchs prgSwitch, int etatBadger, RealTimesObj realTimeObj, EnumTypesJournees typeJournees)
         {
-            if (PrgSwitch.IsBetaUser
-               && PrgOptions.IsAutoBadgeMeridienne
-               && EtatBadger == 1
-               && !PrgSwitch.IsAutoBadgeage
-
-               // TODO RND A refaire
-                //&& RealTimeTsNow.CompareTo(Times.PlageTravMatin.EndOrDft.TimeOfDay + PrgOptions.TempsMinPause + new TimeSpan(0, 0, SpecDelayMeridAutoBadgage)) >= 0)
-
-                && RealTimeTsNow.CompareTo(Times.PlageTravMatin.EndOrDft.TimeOfDay + PrgOptions.TempsMinPause) >= 0)
+            if (prgSwitch.IsBetaUser
+               && prgOptions.IsAutoBadgeMeridienne
+               && etatBadger == 1
+               && !prgSwitch.IsAutoBadgeage
+               && realTimeObj.RealTimeTsNow.CompareTo(times.PlageTravMatin.EndOrDft.TimeOfDay + prgOptions.TempsMinPause + new TimeSpan(0, 0, prgOptions.DeltaAutoBadgeageMinute)) >= 0)
             {
-                PrgSwitch.IsAutoBadgeage = true;
+                prgSwitch.IsAutoBadgeage = true;
 
                 _logger.Debug("Spec: Autobadgeage");
 
                 CoreAppBridge.Instance.PlayHook("ExtSetBtnBadger", new object[] { false });
                 //btnBadger.IsEnabled = false;
-                CoreAppBridge.Instance.PlayHook("BadgeFullAction", new object[] { true });
+                CoreAppBridge.Instance.PlayHook("BadgeFullAction", new object[] { true, true });
 
                 CoreAppBridge.Instance.PlayHook("ExtSetBtnBadger", new object[] { false });
                 //btnBadger.IsEnabled = true;
 
-                if (PrgOptions.IsDailyDisableAutoBadgeMerid)
+                if (prgOptions.IsDailyDisableAutoBadgeMerid)
                 {
-                    PrgOptions.IsAutoBadgeMeridienne = false;
+                    prgOptions.IsAutoBadgeMeridienne = false;
 
-                    CoreAppBridge.Instance.PlayHook("ExtSaveOptions", new object[] { PrgOptions });
+                    CoreAppBridge.Instance.PlayHook("ExtSaveOptions", new object[] { prgOptions });
                     //OptionManager.SaveOptions(PrgOptions);
 
                     _logger.Debug("Spec: Autobadgeage désactivé par IsDailyDisableAutoBadgeMerid");

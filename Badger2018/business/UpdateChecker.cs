@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Windows;
-using AryxDevLibrary.utils;
-using AryxDevLibrary.utils.logger;
-using AryxDevLibrary.utils.xml;
-using Badger2018.constants;
-using Badger2018.dto;
-using Badger2018.utils;
 
 namespace Badger2018.business
 {
-    [System.Obsolete]
+    [Obsolete]
     public sealed class UpdateChecker
     {
         /*

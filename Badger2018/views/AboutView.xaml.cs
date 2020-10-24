@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Badger2018.dto;
 
 namespace Badger2018.views
 {
@@ -18,11 +10,48 @@ namespace Badger2018.views
     /// </summary>
     public partial class AboutView : Window
     {
+
+        private LicenceInfo _licenceRef;
+
+        public LicenceInfo LicenceRef
+        {
+            get
+            {
+                return _licenceRef;
+            }
+
+            set
+            {
+                _licenceRef = value;
+                AdapteUi();
+            }
+
+        }
+
         public AboutView()
         {
             InitializeComponent();
-            lblVersion.Content = String.Format(lblVersion.Content.ToString(), System.Reflection.Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
+            lblVersion.Content = String.Format(lblVersion.Content.ToString(), Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
+            lblYearVersion.Content = String.Format(lblYearVersion.Content.ToString(), DateTime.Now.Year);
 
+        }
+
+ 
+
+        private void AdapteUi()
+        {
+
+            lblLicenceUser.Content = LicenceRef.NiceName.Trim();
+
+            lblLicence.Content = String.Format("Licence {0}. ", LicenceRef.TypeUser == 0 ? "ambassadeur" : "utilisateur");
+            if (LicenceRef.TypeUser == 0)
+            {
+                lblLicence.Content += "Validitée perpétuelle.";                
+            } else
+            {
+                lblLicence.Content += String.Format("Valide jusqu'au {0}.", LicenceRef.DateExpiration.ToShortDateString());
+            }
+            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

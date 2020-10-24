@@ -2,26 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Media;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
 using Badger2018.views;
-using BadgerCommonLibrary.utils;
-using OpenQA.Selenium.Remote;
-using Application = System.Windows.Application;
-using Color = System.Drawing.Color;
-using MessageBox = System.Windows.Forms.MessageBox;
 using Timer = System.Threading.Timer;
 
 namespace Badger2018.utils
@@ -109,6 +100,17 @@ namespace Badger2018.utils
             {
                 Directory.CreateDirectory(Cst.ScreenshotDirName);
             }
+
+            if (!Directory.Exists(Cst.LogArchiveDirName))
+            {
+                Directory.CreateDirectory(Cst.LogArchiveDirName);
+
+                foreach (String f in Directory.GetFiles(".").Where(r => r.Contains("log.log.2")))
+                {
+                    File.Move(f, Cst.LogArchiveDir + f);
+                    _logger.Debug("Déplacement de {0} vers {1} réussi.", f, Cst.LogArchiveDirName);
+                }
+            }
         }
 
 
@@ -124,14 +126,14 @@ namespace Badger2018.utils
         {
             _logger.Debug("RecDelayAction");
 
-            MiscAppUtils.Delay(0).ContinueWith(delegate
+            Delay(0).ContinueWith(delegate
             {
                 _logger.Debug("RecDelayAction.Inner");
                 stepAction.Invoke(null);
                 numberAction--;
                 if (numberAction > 0)
                 {
-                    MiscAppUtils.Delay(timeoutStep).ContinueWith(delegate
+                    Delay(timeoutStep).ContinueWith(delegate
                     {
                         RecDelayAction(stepAction, numberAction, timeoutStep, finalAction);
                     });
@@ -190,6 +192,17 @@ namespace Badger2018.utils
             double moy = sumlstDec / lstDec.Count;
 
             return moy;
+        }
+
+        internal static Color Opacify(double v, Color color)
+        {
+            Color c = new Color();
+            c.R = color.R;
+            c.G = color.G;
+            c.B = color.B;
+            c.A = Convert.ToByte(v * 255 );
+
+            return c;
         }
     }
 }

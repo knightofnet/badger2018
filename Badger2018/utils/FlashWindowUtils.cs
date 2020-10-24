@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Windows.Forms;
 
 namespace Badger2018.utils
 {
@@ -121,7 +119,7 @@ namespace Badger2018.utils
         /// </summary>
         /// <param name="form">The Form (Window) to Flash.</param>
         /// <returns></returns>
-        public static bool Start(System.Windows.Forms.Form form)
+        public static bool Start(Form form)
         {
             if (Win2000OrLater)
             {
@@ -136,7 +134,7 @@ namespace Badger2018.utils
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public static bool Stop(System.Windows.Forms.Form form)
+        public static bool Stop(Form form)
         {
             if (Win2000OrLater)
             {
@@ -151,7 +149,7 @@ namespace Badger2018.utils
         /// </summary>
         private static bool Win2000OrLater
         {
-            get { return System.Environment.OSVersion.Version.Major >= 5; }
+            get { return Environment.OSVersion.Version.Major >= 5; }
         }
 
 

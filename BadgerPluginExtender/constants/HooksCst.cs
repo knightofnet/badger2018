@@ -8,7 +8,7 @@ namespace BadgerPluginExtender.constants
     public static class HooksCst
     {
 
-        public const String BadgeBetaTest = "BadgeBetaTest";
+        public const String BadgeBetaTest = "FullOnClockUpdTimerOnOnTick";
         public const String IsBetaUser = "IsBetaUser";
 
     }

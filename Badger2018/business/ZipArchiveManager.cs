@@ -1,12 +1,8 @@
-﻿using AryxDevLibrary.extensions;
-using Badger2018.utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Packaging;
 using System.Linq;
-using System.Text;
-using AryxDevLibrary.utils;
+using AryxDevLibrary.extensions;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
 using BadgerCommonLibrary.utils;

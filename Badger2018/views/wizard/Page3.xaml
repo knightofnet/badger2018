@@ -1,0 +1,28 @@
+﻿<Page x:Class="Badger2018.views.wizard.Page3"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Badger2018.views.wizard"
+      mc:Ignorable="d" 
+       d:DesignHeight="332" d:DesignWidth="522"
+      Title="Page3">
+
+    <Grid Background="White">
+        <TextBlock Margin="10,36,9,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="125"><Run Text="Le badgeage à l'aide de ce programme est réalisé de façon indirecte en utilisant un navigateur. Ce mode de fonctionnent, qui ne fait que mimer la navigation et le clic sur le bouton 'Badger' n'est pas infaillible. Bien que tout "/><Run Text="soit "/><Run Text="fait pour alerter en cas d'échec du badg"/><Run Text="e"/><Run Text="age"/><Run Text=", il est de votre responsabilité de vérifier que le badgeage a bien été effectué."/><LineBreak/><Run/><LineBreak/><Run Text="Le programme ne pourra pas être tenu pour responsable en cas d'erreurs ou de manquements."/></TextBlock>
+        <Label Content="Limites de l'application :" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+
+        <Label Content="A vous de jouer :" HorizontalAlignment="Left" Margin="10,166,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Content="Badger2018 est une application : " HorizontalAlignment="Left" Margin="10,192,0,0" VerticalAlignment="Top"/>
+      
+        <Label Content="Avec cet outil, il n'est plus nécessaire de badger sur GTA ? : " HorizontalAlignment="Left" Margin="10,223,0,0" VerticalAlignment="Top"/>
+        <Label HorizontalAlignment="Left" Margin="10,254,0,0" VerticalAlignment="Top">
+            <AccessText TextWrapping="WrapWithOverflow">Un souci s'est produit lors du badgeage. C'est de la responsabilité de l'outil de gérer le rattrapage ? :</AccessText>
+        </Label>
+
+        <ComboBox x:Name="cboxQa" HorizontalAlignment="Left" Margin="201,196,0,0" VerticalAlignment="Top" Width="120"/>
+        <ComboBox x:Name="cboxQb" HorizontalAlignment="Left" Margin="338,223,0,0" VerticalAlignment="Top" Width="120"/>
+        <ComboBox x:Name="cboxQc" HorizontalAlignment="Left" Margin="338,296,0,0" VerticalAlignment="Top" Width="120"/>
+
+    </Grid>
+</Page>

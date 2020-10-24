@@ -6,6 +6,7 @@ using System.Xml;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AryxDevLibrary.utils.xml;
+using Badger2018.business.dbb;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;

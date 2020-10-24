@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Badger2018.utils;
+using AryxDevLibrary.utils;
+using AryxDevLibrary.utils.logger;
 using BadgerCommonLibrary.utils;
 
 namespace Badger2018.views
@@ -24,21 +15,39 @@ namespace Badger2018.views
         {
             InitializeComponent();
 
-            tbox.Text = AppDateUtils.DtNow().ToString();
+            
+           
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
+            String textInput = tbox.Text;
             DateTime newTboxTmin = new DateTime();
-            if (DateTime.TryParse(tbox.Text, out newTboxTmin))
+
+            if (StringUtils.IsNullOrWhiteSpace(textInput)) return;
+
+            if ("log".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
+            {
+                ProcessUtils.GoTo(Logger.LastLoggerInstance.FileLog.FullName);
+            } else if ("folder".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
+            {
+                FileUtils.ShowFileInWindowsExplorer(Logger.LastLoggerInstance.FileLog.DirectoryName);
+            }
+            else if ("modDate".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
+            {
+                tbox.Text = AppDateUtils.DtNow().ToString();
+            }
+            else if ("cleardate".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
+            {
+                AppDateUtils.ForceDtNow(null);
+            }
+            else if (DateTime.TryParse(tbox.Text, out newTboxTmin))
             {
                 AppDateUtils.ForceDtNow(newTboxTmin);
 
             }
-            else
-            {
-                AppDateUtils.ForceDtNow(null);
-            }
+            
         }
     }
 }

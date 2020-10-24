@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Badger2018.dto;
 using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
@@ -78,9 +76,15 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions Notif2Obj = new EnumAppOptions("Notif2Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu'il n'est pas l'heure de rentrer ?", false);
 
         public static readonly EnumAppOptions LastCdSeen = new EnumAppOptions("LastCdSeen", typeof(TimeSpan), "00:00:00", false);
+        public static readonly EnumAppOptions LastCdMondaySeen = new EnumAppOptions("LastCdMondaySeen", typeof(TimeSpan), "00:00:00", false);
         public static readonly EnumAppOptions CompteurCDMaxAbs = new EnumAppOptions("CompteurCDMaxAbs", typeof(TimeSpan), "07:48:00", false);
 
         public static readonly EnumAppOptions SqliteAppUserSalt = new EnumAppOptions("SqliteAppUserSalt", typeof(string), "NULL", false);
+        public static readonly EnumAppOptions LastSqlUpdateVersion = new EnumAppOptions("LastSqlUpdateVersion", typeof(string), "", false);
+
+        public static readonly EnumAppOptions ShowOnScreenProgressBar = new EnumAppOptions("ShowOnScreenProgressBar", typeof(bool), "False", false);
+
+        public static readonly EnumAppOptions IsPreloadFF = new EnumAppOptions("IsPreloadFF", typeof(bool), "False", false);
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -142,9 +146,15 @@ namespace Badger2018.constants
                 yield return Notif2Obj;
 
                 yield return LastCdSeen;
+                yield return LastCdMondaySeen;
                 yield return CompteurCDMaxAbs;
 
+                yield return LastSqlUpdateVersion;
                 yield return SqliteAppUserSalt;
+
+                yield return ShowOnScreenProgressBar;
+
+                yield return IsPreloadFF;
 
 
 

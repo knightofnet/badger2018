@@ -179,5 +179,17 @@
     <Setting Name="CompteurCDMaxAbs" Type="System.TimeSpan" Scope="User">
       <Value Profile="(Default)">07:48:00</Value>
     </Setting>
+    <Setting Name="LastSqlUpdateVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ShowOnScreenProgressBar" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LastCdMondaySeen" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">00:00:00</Value>
+    </Setting>
+    <Setting Name="IsPreloadFF" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

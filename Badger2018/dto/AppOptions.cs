@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
 using Badger2018.constants;
 using BadgerCommonLibrary.constants;
 
@@ -128,6 +126,27 @@ namespace Badger2018.dto
 
         public bool IsStopCptAtMax { get; set; }
 
+        internal AppOptions Clone()
+        {
+            AppOptions newOptions = new AppOptions();
+            foreach (PropertyInfo pInfo in this.GetType().GetProperties())
+            {
+
+                EnumAppOptions eApp = EnumAppOptions.GetEnumFromOptName(pInfo.Name);
+                if (eApp != null)
+                {
+                    pInfo.SetValue(newOptions, pInfo.GetValue(this, new object[] { }), null);
+                }
+                else
+                {
+                    // _logger.Warn("La propriétée {0} n'existe pas dans EnumAppOptions.", pInfo.Name);
+                }
+
+            }
+
+            return newOptions;
+        }
+
         public bool IsStopCptAtMaxDemieJournee { get; set; }
 
         public bool IsAdd5minCpt { get; set; }
@@ -151,11 +170,17 @@ namespace Badger2018.dto
         public CustomNotificationDto Notif2Obj { get; set; }
 
         public TimeSpan LastCdSeen { get; set; }
+        public TimeSpan LastCdMondaySeen { get; set; }
 
         public TimeSpan CompteurCDMaxAbs { get; set; }
 
         public string SqliteAppUserSalt { get; set; }
+        public string LastSqlUpdateVersion { get; set; }
 
+        public bool ShowOnScreenProgressBar { get; set; }
+        public bool IsAutoBadgeAtStartDelayed { get; internal set; }
+
+        public bool IsPreloadFF { get; internal set; }
 
         public void ResetSpecOption()
         {

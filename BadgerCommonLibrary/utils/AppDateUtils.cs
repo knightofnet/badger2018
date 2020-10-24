@@ -95,6 +95,14 @@ namespace BadgerCommonLibrary.utils
 
         }
 
+        public static DateTime WithFirstDayOfWeek(this DateTime date)
+        {
+
+
+            return date.AddDays(DayOfWeek.Monday - date.DayOfWeek);
+
+        }
+
 
     }
 }

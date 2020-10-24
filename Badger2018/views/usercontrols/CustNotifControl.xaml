@@ -10,9 +10,9 @@
         <ComboBox x:Name="cboxListHeureTypeNotifA" Margin="222,23,23,0" VerticalAlignment="Top"/>
         <Label Content="Afficher une notification personnalisée à" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top"/>
         <Label Content="La notification s'affichera" HorizontalAlignment="Left" Margin="0,51,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="tboxHeureDeltaNotifA" Text="XXhXX" HorizontalAlignment="Left" Margin="143,55,0,0" VerticalAlignment="Top" Width="50" Height="22"/>
+        <TextBox x:Name="tboxHeureDeltaNotifA" Text="00h00" HorizontalAlignment="Left" Margin="143,55,0,0" VerticalAlignment="Top" Width="50" Height="22"/>
         <ComboBox x:Name="cboxEltCompNotifA" HorizontalAlignment="Left" Margin="198,55,0,0" VerticalAlignment="Top" Width="85" Height="22"/>
-        <TextBox x:Name="tboxHeureRefNotifA" Text="XXhXX" HorizontalAlignment="Left" Margin="288,56,0,0" VerticalAlignment="Top" Width="45" Height="21"/>
+        <TextBox x:Name="tboxHeureRefNotifA" Text="00h00" HorizontalAlignment="Left" Margin="288,56,0,0" VerticalAlignment="Top" Width="45" Height="21"/>
         <Label Content="." HorizontalAlignment="Left" Margin="333,51,0,0" VerticalAlignment="Top"/>
         <Label Content="." HorizontalAlignment="Left" Margin="378,20,0,0" VerticalAlignment="Top" Width="12" />
         <Label Content="Message à afficher :" HorizontalAlignment="Left" Margin="0,82,0,0" VerticalAlignment="Top"/>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
-using Badger2018.business;
+using Badger2018.business.dbb;
 using Badger2018.constants;
 using Badger2018.dto.bdd;
 using Badger2018.utils;
@@ -183,19 +183,19 @@ namespace Badger2018.services.bddLastLayer
                 int otherTypeJour = 1;
                 if (typeBadgeage == 3)
                 {
-                    otherTypeJour = 2;                    
+                    otherTypeJour = 2;
                 }
-                where = String.Format( 
+                where = String.Format(
                     "b.DATE_BADGE = j.DATE_JOUR and ((  b.TYPE_BADGE = {0} and j.TYPE_JOUR = {1}) or ( b.TYPE_BADGE = {2} and j.TYPE_JOUR = {3}))",
                     otherTypeBadgeage,
                     otherTypeJour,
                     typeBadgeage,
                     typeJour
                     );
-            } 
-            
+            }
 
-            
+
+
             string sql = String.Format(SqlConstants.SELECT_ALL_WHERE, from, where + " order by date_badge desc limit @LIMIT");
 
             command = new SQLiteCommand(sql, dbbManager.Connection);

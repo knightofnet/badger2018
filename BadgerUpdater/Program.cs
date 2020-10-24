@@ -22,6 +22,7 @@ using BadgerUpdater.dto;
 using BadgerUpdater.Properties;
 using BadgerUpdater.utils;
 using Ionic.Zip;
+using ExceptionHandlingUtils = BadgerCommonLibrary.utils.ExceptionHandlingUtils;
 
 namespace BadgerUpdater
 {

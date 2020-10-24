@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 using System.Threading;
-using System.Threading.Tasks;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
+using Badger2018.dto;
 using Badger2018.exceptions;
 using Badger2018.utils;
 using BadgerCommonLibrary.utils;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using ExceptionHandlingUtils = BadgerCommonLibrary.utils.ExceptionHandlingUtils;
 
 namespace Badger2018.business
 {
@@ -28,6 +27,7 @@ namespace Badger2018.business
         public String Url { get; set; }
 
         public bool HasSucceedTrt { get; private set; }
+
 
         public Action<int> OnEtapeChange;
         private int _etapeTrt;
@@ -45,12 +45,17 @@ namespace Badger2018.business
             }
         }
 
-        public TimeSpan? TsCd { get; private set; }
+        //public TimeSpan? TsCd { get; private set; }
+        public ElementsFromPageBadgeage ElementsFromPage { get; private set; }
 
         public void BadgeageBackgrounderOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
         {
-            BackgroundWorker bkg = sender as BackgroundWorker;
+            if (Thread.CurrentThread.Name == null)
+                Thread.CurrentThread.Name = "BadgerBckder";
 
+            BackgroundWorker bkg = sender as BackgroundWorker;
+            
+            ElementsFromPage = new ElementsFromPageBadgeage();
 
             RemoteWebDriver driver = null;
             _logger.Info("Badgeage");
@@ -62,11 +67,23 @@ namespace Badger2018.business
 
             try
             {
-                TsCd = null;
+                ElementsFromPage.TsCd = null;
+                ElementsFromPage.HeureBadgee = null;
+
+
                 try
                 {
-                    driver = BadgingUtils.GetWebDriver(Pwin.PrgOptions);
-                } catch (Exception ex)
+                    if (FfDriverSingleton.Instance.IsLoaded())
+                    {
+                        driver = FfDriverSingleton.Instance.GetWebDriver();
+                    }
+                    else
+                    {
+                        FfDriverSingleton.Instance.Load(Pwin.PrgOptions);
+                        driver = FfDriverSingleton.Instance.FfDriver;
+                    }
+                }
+                catch (Exception ex)
                 {
                     if (bkg.CancellationPending)
                     {
@@ -90,6 +107,7 @@ namespace Badger2018.business
                     throw new UserCancelBadgeageException();
                 }
                 bkg.ReportProgress(EtapeTrt);
+
                 driver.Navigate().GoToUrl(Url);
 
                 EtapeTrt = 2;
@@ -133,34 +151,7 @@ namespace Badger2018.business
 
                 BadgingUtils.SaveScreenshot(Pwin.Times.TimeRef, Pwin.EtatBadger + "", driver);
 
-                try
-                {
-                    //_logger.Debug(driver.PageSource);
-                    string txt = driver.FindElementByCssSelector("#gv_cpt tr:last-child td:last-child").Text;
-                    if (!StringUtils.IsNullOrWhiteSpace(txt))
-                    {
-                        _logger.Debug("TXT : '{0}'", txt);
-
-                        if (txt.Contains("h"))
-                        {
-                           
-                            TsCd = TimeSpan.ParseExact(txt.Substring(txt.IndexOf("h") - 2, 5), "hh'h'mm", System.Globalization.CultureInfo.CurrentCulture);
-                            if (txt.Contains("-"))
-                            {
-                                TsCd = TsCd.Value.Negate();
-                            }
-
-                        }
-                    }
-                }
-                catch (Exception e) {
-                    ExceptionHandlingUtils.LogAndHideException(e);
-                }
-                finally
-                {
-                    _logger.Warn("Enregistré");
-
-                }
+              
 
                 if (!StringUtils.IsNullOrWhiteSpace(IdVerif))
                 {
@@ -172,20 +163,91 @@ namespace Badger2018.business
 
                 }
 
+                string cssSelector = "";
+                try
+                {
+                    EtapeTrt = 6;
+                    bkg.ReportProgress(EtapeTrt);
+                    cssSelector = "#gv_detailBadgeage tr:last-child td:last-child";
+                    ElementsFromPage.HeureBadgee = GetTimeSpanEltByCssSelector(driver, cssSelector);
+
+                }
+                catch (Exception e)
+                {
+                    ExceptionHandlingUtils.LogAndHideException(e, "Erreur lor de la lecture de " + cssSelector);
+                }
+                finally
+                {
+                    _logger.Warn("Enregistré");
+
+                }
+
+
+                try
+                {           
+                    EtapeTrt = 7;
+                    bkg.ReportProgress(EtapeTrt);
+                    //_logger.Debug(driver.PageSource);
+                    cssSelector = "#gv_cpt tr:last-child td:last-child";
+                    ElementsFromPage.TsCd = GetTimeSpanEltByCssSelector(driver, cssSelector);
+
+                }
+                catch (Exception e)
+                {
+                    ExceptionHandlingUtils.LogAndHideException(e, "Erreur lor de la lecture de " + cssSelector);
+                    ElementsFromPage.TsCd = TimeSpan.Zero;
+                }
+                finally
+                {
+                    _logger.Warn("Enregistré");
+
+                }
 
                 HasSucceedTrt = true;
                 return;
             }
             catch (Exception ex)
             {
-
                 throw ex;
+
             }
             finally
             {
                 if (driver != null)
-                    driver.Quit();
+                    FfDriverSingleton.Instance.Quit();
+
             }
+        }
+
+        private static TimeSpan? GetTimeSpanEltByCssSelector(RemoteWebDriver driver, string cssSelectorCreditDebit)
+        {
+            TimeSpan? tsCd = null;
+            string txt = driver.FindElementByCssSelector(cssSelectorCreditDebit).Text;
+            if (!StringUtils.IsNullOrWhiteSpace(txt))
+            {
+                _logger.Debug("Raw({0}) : '{1}'", cssSelectorCreditDebit, txt);
+
+                // On extrait l'heure
+                string charPivot = txt.Contains("h") ? "h" : ":";
+
+                String hPartStr = txt.Substring(txt.IndexOf(charPivot) - 2, 2);
+                String mPartStr = txt.Substring(txt.IndexOf(charPivot) + 1, 2);
+
+                short hPart;
+                short mPart;
+                if (Int16.TryParse(hPartStr, out hPart) && Int16.TryParse(mPartStr, out mPart))
+                {
+                    tsCd = new TimeSpan(hPart, mPart, 0);
+                    if (txt.Contains("-"))
+                    {
+                        tsCd = tsCd.Value.Negate();
+                    }
+                }
+
+
+            }
+
+            return tsCd;
         }
     }
 }

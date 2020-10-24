@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
@@ -100,12 +90,15 @@ namespace Badger2018.views.usercontrols
             EndMoyPfMatin = endMoyPfMatin;
             EndMoyPfAprem = endMoyPfAprem;
 
-            tboxHeureDeltaNotifA.Text = CnotifObj.Delta.ToString(Cst.TimeSpanFormatWithH);
-            tboxHeureRefNotifA.Text = CnotifObj.HeureRef.ToString(Cst.TimeSpanFormatWithH);
-            cboxListHeureTypeNotifA.SelectedItem = CnotifObj.HeurePersoNotif.Libelle;
-            cboxEltCompNotifA.SelectedIndex = CnotifObj.CompSign;
-            chkActiveNotifA.IsChecked = CnotifObj.IsActive;
-            tboxMsg.Text = CnotifObj.Message;
+            if (CnotifObj != null)
+            {
+                tboxHeureDeltaNotifA.Text = CnotifObj.Delta.ToString(Cst.TimeSpanFormatWithH);
+                tboxHeureRefNotifA.Text = CnotifObj.HeureRef.ToString(Cst.TimeSpanFormatWithH);
+                cboxListHeureTypeNotifA.SelectedItem = CnotifObj.HeurePersoNotif.Libelle;
+                cboxEltCompNotifA.SelectedIndex = CnotifObj.CompSign;
+                chkActiveNotifA.IsChecked = CnotifObj.IsActive;
+                tboxMsg.Text = CnotifObj.Message;
+            }
         }
 
 

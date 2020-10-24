@@ -1,18 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Badger2018.constants;
+﻿using System.Windows;
 using Badger2018.dto;
-using Badger2018.utils;
 
 namespace Badger2018.views
 {
@@ -37,7 +24,10 @@ namespace Badger2018.views
 
 
             custNotifA.LoadsUi(NotifA, options, times.EndTheoDateTime, times.EndMoyPfMatin, times.EndMoyPfAprem);
+            
+
             custNotifB.LoadsUi(NotifB, options, times.EndTheoDateTime, times.EndMoyPfMatin, times.EndMoyPfAprem);
+            
 
 
         }

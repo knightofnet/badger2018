@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Badger2018.views.BadgeageProgressView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Progression du badgeage..." Height="297.345" Width="242" Topmost="True" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
+        Title="Progression du badgeage..." Height="331.618" Width="242" Topmost="True" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
     <Grid>
         <Label x:Name="lblEt1" Content="Démarrage du navigateur" HorizontalAlignment="Left" Margin="35,70,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblEt2" Content="Navigation vers le site" HorizontalAlignment="Left" Margin="35,96,0,0" VerticalAlignment="Top"/>
@@ -9,6 +9,7 @@
         <Label x:Name="lblEt4" Content="Action sur l'élement" HorizontalAlignment="Left" Margin="35,147,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblEt5" Content="Attente de la réponse" HorizontalAlignment="Left" Margin="35,173,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblEt6" Content="Vérification finale" HorizontalAlignment="Left" Margin="35,200,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblEt7" Content="Lectures d'informations" HorizontalAlignment="Left" Margin="35,227,0,0" VerticalAlignment="Top"/>
 
         <Image x:Name="tickEt1" HorizontalAlignment="Left" Height="18" Margin="17,73,0,0" VerticalAlignment="Top" Width="18" Source="/Badger2018;component/Resources/iconOkHover.png"/>
         <Image x:Name="tickEt2" HorizontalAlignment="Left" Height="18" Margin="17,98,0,0" VerticalAlignment="Top" Width="18" Source="/Badger2018;component/Resources/iconOkHover.png"/>
@@ -16,6 +17,7 @@
         <Image x:Name="tickEt4" HorizontalAlignment="Left" Height="18" Margin="17,150,0,0" VerticalAlignment="Top" Width="18" Source="/Badger2018;component/Resources/iconOkHover.png"/>
         <Image x:Name="tickEt5" HorizontalAlignment="Left" Height="18" Margin="17,176,0,0" VerticalAlignment="Top" Width="18" Source="/Badger2018;component/Resources/iconOkHover.png"/>
         <Image x:Name="tickEt6" HorizontalAlignment="Left" Height="18" Margin="17,204,0,0" VerticalAlignment="Top" Width="18" Source="/Badger2018;component/Resources/iconOkHover.png"/>
+        <Image x:Name="tickEt7" HorizontalAlignment="Left" Height="18" Margin="17,231,0,0" VerticalAlignment="Top" Width="18" Source="/Badger2018;component/Resources/iconOkHover.png"/>
         <Label Content="Badgeage en cours" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
         <Label Content="Statut :" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnCancelBadgeage" Content="Annuler le badgeage en cours" Margin="10,0,10,10" VerticalAlignment="Bottom" Height="23" Foreground="#FFB80101" Click="btnCancelBadgeage_Click"/>

@@ -5,17 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Badger2018.views"
         mc:Ignorable="d"
-        Title="Bienvenue" Height="486.757" Width="528.089" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
+        Title="Bienvenue" Height="523.371" Width="543.166" ResizeMode="NoResize" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
     <Grid>
         <Image Height="105" VerticalAlignment="Top" Source="/Badger2018;component/Resources/fondGta.png" Stretch="Fill"/>
         <Button x:Name="btnOK" Margin="0,0,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="211" Height="37" Click="btnOK_Click" IsEnabled="False">
-            <AccessText TextWrapping="Wrap" Text="Je souhaite utiliser ce programme et j'accepte ses limitations" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextAlignment="Center" />
+            <AccessText x:Name="btnAcceptText" TextWrapping="Wrap" Text="Je souhaite utiliser ce programme et j'accepte ses limitations" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextAlignment="Center" />
         </Button>
         <Button x:Name="btnCancel" Margin="10,0,0,10" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="187" Height="37" Click="btnCancel_Click" IsCancel="True">
             <AccessText TextWrapping="Wrap" Text="Je ne souhaite pas utiliser ce programme" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextAlignment="Center" />
         </Button>
 
-        <Label Margin="10,110,10,0" x:Name="lblFirst" Content="Ceci est votre premier lancement de l'outil Badger2018." Height="26" VerticalAlignment="Top" />
-        <TextBlock Margin="10,136,10,52" TextWrapping="Wrap" TextAlignment="Justify" ><Run Text="Cet outil a été développé afin de faciliter le suivi des pointages journaliers dans le cadre des horaires variables. Il s'agit d'un assistant qui permet :"/><LineBreak/><Run Text="- de badger,"/><LineBreak/><Run Text="- de badger automatiquement au démarrage pour le premier pointage du jour,"/><LineBreak/><Run Text="- d'afficher les pointages effectués (parmis les 4 journaliers),"/><LineBreak/><Run Text="- d'adapter l'heure de fin de travail théorique selon les pointages,"/><LineBreak/><Run Text="- d'afficher des notifications à la fin des plages fixes, de la pause méridienne et une fois les 7h48 écoulées,"/><LineBreak/><Run Text="- d'afficher des notifications à des instants personnalisés."/><LineBreak/><Run Text="- d'empêcher l'extinction de l'ordinateur si le dernier badgeage n'a pas été effectué,"/><LineBreak/><LineBreak/><Run Text="La badgeage à l'aide de ce programme est réalisé de façon indirecte en utilisant un navigateur. Ce mode de fonctionnement, qui ne fait que mimer la navigation et le clic sur le bouton 'Badger' n'est pas infaillible. Bien que tout est fait pour alerter en cas d'échec du badgeage, il est de votre responsabilité de vérifier que le badgeage a bien été effectué; ce programme ne pouvant pas être tenu responsable en cas d'erreurs ou de manquements."/><LineBreak/><LineBreak/></TextBlock>
+        <Label Margin="202,447,226,0" x:Name="lblFirst" Content="1er lancement" Height="26" VerticalAlignment="Top" />
+        
+        <Frame x:Name="mainFrame" Content="" Margin="5,110,10,52"/>
     </Grid>
 </Window>

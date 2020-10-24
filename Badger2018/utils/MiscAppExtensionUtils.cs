@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Badger2018.constants;
+using System;
 using System.Windows.Controls;
-using Badger2018.constants;
 
 namespace Badger2018.utils
 {
@@ -32,6 +29,11 @@ namespace Badger2018.utils
                 return thisTs.Negate();
             }
             return thisTs;
+        }
+
+        public static String ToStrSignedhhmm(this TimeSpan thisTs)
+        {
+            return String.Format("{0}{1}", thisTs.TotalMilliseconds < 0 ? "-" : "", thisTs.ToString(Cst.TimeSpanFormatWithH));
         }
     }
 }

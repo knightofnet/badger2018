@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AryxDevViewLibrary.utils;
 using Badger2018.business;
-using Badger2018.constants;
 using Badger2018.dto;
-using Badger2018.utils;
+using Microsoft.Win32;
 
 namespace Badger2018.views
 {
@@ -114,7 +104,7 @@ namespace Badger2018.views
                 }
 
                 FileInfo fi = new FileInfo(FileName);
-                _logger.Info("Fichier XML : {0}", System.IO.Path.GetFullPath(fi.FullName));
+                _logger.Info("Fichier XML : {0}", Path.GetFullPath(fi.FullName));
 
                 if (IsImportJob)
                 {
@@ -194,7 +184,7 @@ namespace Badger2018.views
             if (IsImportJob)
             {
                 // Create OpenFileDialog 
-                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
+                OpenFileDialog dlg = new OpenFileDialog
                 {
                     DefaultExt = ".xml",
                     Filter = "Fichier XML (*.xml)|*.xml"
@@ -214,7 +204,7 @@ namespace Badger2018.views
             else
             {
                 // Create OpenFileDialog 
-                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog
+                SaveFileDialog dlg = new SaveFileDialog
                 {
                     DefaultExt = ".xml",
                     Filter = "Fichier XML (*.xml)|*.xml"

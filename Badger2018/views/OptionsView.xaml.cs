@@ -1,41 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AryxDevLibrary.extensions;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
-using AryxDevLibrary.utils.xml;
-using AudioSwitcher.AudioApi;
-using AudioSwitcher.AudioApi.CoreAudio;
 using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
-using Badger2018.services;
 using Badger2018.utils;
 using BadgerCommonLibrary.constants;
-using BadgerCommonLibrary.utils;
+using BadgerPluginExtender.dto;
 using IWshRuntimeLibrary;
 using CheckBox = System.Windows.Controls.CheckBox;
-using ComboBox = System.Windows.Controls.ComboBox;
-using Control = System.Windows.Controls.Control;
 using File = System.IO.File;
+using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
 
 namespace Badger2018.views
@@ -62,13 +46,16 @@ namespace Badger2018.views
         public OptionsView(AppOptions appOptions, bool isSpecUse, NotifyIcon notifyIcon, bool specShowSpecOpt, MainWindow parentWindow)
         {
             InitializeComponent();
+            parentWindow.PluginMgr.PlayHook("OnOptionsViewInit", new object[] { tabCtrl });
+
+
             OrigOptions = appOptions;
 
             KeyUp += (sender, args) =>
             {
                 if (args.Key == Key.F1 && (c == null || !c.IsLoaded))
                 {
-                    c = new OptionsCtxtHelpView(System.IO.Path.GetFullPath("./Resources/help.htm"));
+                    c = new OptionsCtxtHelpView(Path.GetFullPath("./Resources/help.htm"));
                     c.Show();
                 }
             };
@@ -92,7 +79,7 @@ namespace Badger2018.views
             NotifyIcon = notifyIcon;
 
             IsSpecUse = isSpecUse;
-            tabSpec.Visibility = isSpecUse && specShowSpecOpt ? Visibility.Visible : Visibility.Hidden;
+            tabSpec.Visibility = isSpecUse && specShowSpecOpt ? Visibility.Visible : Visibility.Collapsed;
 
             foreach (EnumModePointage enumModeP in EnumModePointage.Values)
             {
@@ -103,6 +90,8 @@ namespace Badger2018.views
             {
                 cboxListBrowser.Items.Add(enumBrowser.Libelle);
             }
+            cboxListBrowser.SelectedItem = EnumBrowser.FF.Libelle;
+
 
             foreach (EnumActionButtonClose enumAbOc in EnumActionButtonClose.Values)
             {
@@ -133,24 +122,10 @@ namespace Badger2018.views
                 cboxDeltaAutoBadgeage.Items.Add(i);
             }
 
-            NewOptions = new AppOptions();
-            foreach (PropertyInfo pInfo in appOptions.GetType().GetProperties())
-            {
-
-                EnumAppOptions eApp = EnumAppOptions.GetEnumFromOptName(pInfo.Name);
-                if (eApp != null)
-                {
-                    pInfo.SetValue(NewOptions, pInfo.GetValue(appOptions, new object[] { }), null);
-                }
-                else
-                {
-                    _logger.Warn("La propriétée {0} n'existe pas dans EnumAppOptions.", pInfo.Name);
-                }
-
-            }
+            NewOptions = appOptions.Clone();
 
 
-
+            imgBtnHelp.Visibility = IsSpecUse ? Visibility.Visible : Visibility.Collapsed;
 
 
             LoadOptionsFrom(OrigOptions);
@@ -241,7 +216,7 @@ namespace Badger2018.views
 
             chkboxAlternateNotifs.IsChecked = opt.IsUseAlternateNotification;
 
-
+            chkIsPreloadFF.IsChecked = opt.IsPreloadFF;
 
             chkStopAfterMaxTravTime.IsChecked = opt.IsStopCptAtMax;
             chkStopAfterMaxTravTimeJournee.IsChecked = opt.IsStopCptAtMaxDemieJournee;
@@ -261,6 +236,8 @@ namespace Badger2018.views
             chkAutoShutdown.IsChecked = opt.IsLastBadgeIsAutoShutdown;
             chkRemoveLegacyShorcutFirefox.IsChecked = opt.IsRemoveLegacyShorcutFirefox;
 
+
+            chkShowScreenBar.IsChecked = opt.ShowOnScreenProgressBar;
 
             //Spec
             if (IsSpecUse)
@@ -297,9 +274,9 @@ namespace Badger2018.views
             String text = "";
             if (lblOrAccessText == null) return text;
 
-            if (lblOrAccessText is System.Windows.Controls.Label)
+            if (lblOrAccessText is Label)
             {
-                text = (string)((System.Windows.Controls.Label)lblOrAccessText).Content;
+                text = (string)((Label)lblOrAccessText).Content;
             }
             else if (lblOrAccessText is AccessText)
             {
@@ -336,10 +313,17 @@ namespace Badger2018.views
                 if (VerifDatasOngletSpecial()) return;
             }
 
+            HookReturns hookReturns = Pwin.PluginMgr.PlayHookAndReturn("OnOptionsValidOptions", new object[] { }, typeof(bool));
+            if (hookReturns.ListReturns.Any(r => ((bool)r.ReturnedObject) == false))
+            {
+                return;
+            }
+
+
             PostActions();
 
 
-
+            Pwin.PluginMgr.PlayHook("OnSaveOptions", new object[] { });
             Close();
 
         }
@@ -562,6 +546,16 @@ namespace Badger2018.views
                 }
             }
 
+
+            // PreloadFF
+            CheckBox chkBox = chkIsPreloadFF;
+            if (chkBox.IsChecked != null &&
+                chkBox.IsChecked.Value != OrigOptions.IsPreloadFF)
+            {
+                HasChangeOption = true;
+                NewOptions.IsPreloadFF = chkBox.IsChecked.Value;
+            }
+
             // Uri
             String tboxUrlStr = tboxUrl.Text;
             if (tboxUrlStr == null || tboxUrlStr.IsEmpty())
@@ -661,6 +655,17 @@ namespace Badger2018.views
                 HasChangeOption = true;
                 NewOptions.IsRemoveLegacyShorcutFirefox = chkBox.IsChecked.Value;
             }
+
+            // Option ShowOnScreenProgressBar
+            chkBox = chkShowScreenBar;
+            if (chkBox.IsChecked != null &&
+                chkBox.IsChecked.Value != OrigOptions.ShowOnScreenProgressBar)
+            {
+                HasChangeOption = true;
+                NewOptions.ShowOnScreenProgressBar = chkBox.IsChecked.Value;
+            }
+
+
 
             return false;
         }
@@ -1050,7 +1055,7 @@ namespace Badger2018.views
 
         private void Image_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Pwin.BadgerWorker.TestNavigation(tboxUrl.Text, tboxIdForm.Text, tboxUriVerif.Text);
+            Pwin.BadgerWorker.TestNavigation(tboxUrl.Text, tboxIdForm.Text, tboxUriVerif.Text, chkIsPreloadFF.IsChecked ?? false);
         }
 
         private void btnExportConfig_Click(object sender, RoutedEventArgs e)
@@ -1096,7 +1101,7 @@ namespace Badger2018.views
         {
             if (c == null || !c.IsLoaded)
             {
-                c = new OptionsCtxtHelpView(System.IO.Path.GetFullPath("./Resources/help.htm"));
+                c = new OptionsCtxtHelpView(Path.GetFullPath("./Resources/help.htm"));
                 c.Show();
             }
         }

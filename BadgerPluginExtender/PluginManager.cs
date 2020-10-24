@@ -66,16 +66,53 @@ namespace BadgerPluginExtender
             PluginsInstance = new Dictionary<string, IGenericPluginInterface>(pluginTypes.Count);
             foreach (Type type in pluginTypes)
             {
+                bool isAddPlugin = true;
                 IGenericPluginInterface plugin = (IGenericPluginInterface)Activator.CreateInstance(type);
+
+                if (!IsPluginOk(plugin)) isAddPlugin = false;
+
+                if (!isAddPlugin)
+                {
+                    continue;
+                }
+
+
+                if (PluginsInstance.ContainsKey(plugin.GetPluginInfo().Name))
+                {
+                    _logger.Warn("Le plugin "+ plugin.GetPluginInfo().Name + " est déjà chargé.");
+                    continue;
+                }
+
+
                 PluginsInstance.Add(plugin.GetPluginInfo().Name, plugin);
+
                 IsAnyPluginLoaded = true;
 
                 _logger.Debug("Extension {0}[{1}] chargée", plugin.GetPluginInfo().Name, plugin.GetPluginInfo().Version);
             }
 
-           
+
         }
 
+        private bool IsPluginOk(IGenericPluginInterface plugin)
+        {
+            foreach(MethodRecord mRec in plugin.GetMethodToRecords() )
+            {
+                if (mRec.MethodResponder == null)
+                {
+                    _logger.Warn("Erreur lors du chargement du plugin " + plugin.GetPluginInfo().Name + " : le nom de la méthode répondante est null.");
+                    return false;
+                }
+
+                if (mRec.TargetHookName == null)
+                {
+                    _logger.Warn("Erreur lors du chargement du plugin " + plugin.GetPluginInfo().Name + " : le nom de l'ancre est null.");
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         public void PlayHook(string hookName, object[] arg1)
         {
@@ -87,7 +124,7 @@ namespace BadgerPluginExtender
         {
             HookReturns retList = new HookReturns();
             retList.ReturnType = returnType;
-            if (!IsAnyPluginLoaded || (PluginsInstance != null && !PluginsInstance.Any()) )
+            if (!IsAnyPluginLoaded || (PluginsInstance != null && !PluginsInstance.Any()))
             {
                 return retList;
             }
@@ -130,8 +167,8 @@ namespace BadgerPluginExtender
                     {
                         if (method.ReturnType != returnType)
                         {
-                            throw new Exception(
-                                "Erreur lors d'appel de l'ancre XX : le type de retour ne correspond pas");
+                            throw new Exception(String.Format(
+                                "Erreur lors d'appel de l'ancre {0} : le type de retour ne correspond pas", hookName));
                         }
                     }
 

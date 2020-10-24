@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using Badger2018.business;
+using Badger2018.business.dbb;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.dto.bdd;
 using Badger2018.utils;
 using Badger2018.utils.sqlite;
-using BadgerCommonLibrary.utils;
 
 namespace Badger2018.services.bddLastLayer
 {

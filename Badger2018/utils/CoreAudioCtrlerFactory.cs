@@ -1,18 +1,11 @@
-﻿using AryxDevLibrary.utils.logger;
-using AudioSwitcher.AudioApi.CoreAudio;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Badger2018.business;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows.Threading;
-using AudioSwitcher.AudioApi;
-using AudioSwitcher.AudioApi.Observables;
-using Badger2018.constants;
+using System.Net.Sockets;
+using System.Text;
+using AryxDevLibrary.utils.logger;
+using Badger2018.business;
 using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
 
@@ -25,6 +18,8 @@ namespace Badger2018.utils
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
+
+        private Process WaveCompProcess;
 
         public IList<string> ListOfSoundDevices { get; set; }
 
@@ -40,42 +35,46 @@ namespace Badger2018.utils
 
         public void AsyncPlaySound(EnumSonWindows sound, string deviceFullName, int volume, Action actionAfterBckger, Action<Exception> actionAfterBckgerFailAction)
         {
-            SoundWorkBckder bckder = new SoundWorkBckder();
-            bckder.CoreAudioFactory = this;
-            bckder.Sound = sound;
-            bckder.Device = deviceFullName;
-            bckder.Volume = volume;
 
-            _bckgWorker = new BackgroundWorker();
-            _bckgWorker.DoWork += bckder.DoWorkPlaySound;
 
-            _bckgWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs args)
-            {
+            Process[] pWaveCompProcs = Process.GetProcessesByName("WaveCompagnonPlayer");
 
-                if (args.Error == null)
+                SoundWorkBckder bckder = new SoundWorkBckder();
+                bckder.CoreAudioFactory = this;
+                bckder.Sound = sound;
+                bckder.Device = deviceFullName;
+                bckder.Volume = volume;
+                bckder.UseTcpRequest = pWaveCompProcs.Length == 1;
+
+                _bckgWorker = new BackgroundWorker();
+                _bckgWorker.DoWork += bckder.DoWorkPlaySound;
+
+                _bckgWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
                 {
-                    _logger.Debug("AsyncPlaySound::Success");
-                    if (actionAfterBckger != null)
+
+                    if (args.Error == null)
                     {
-                        actionAfterBckger.Invoke();
+                        _logger.Debug("AsyncPlaySound::Success");
+                        if (actionAfterBckger != null)
+                        {
+                            actionAfterBckger.Invoke();
+                        }
                     }
-                }
-                else
-                {
-                    _logger.Debug("AsyncPlaySound::Error");
-                    if (actionAfterBckgerFailAction != null)
+                    else
                     {
-                        actionAfterBckgerFailAction.Invoke(args.Error);
+                        _logger.Debug("AsyncPlaySound::Error");
+                        if (actionAfterBckgerFailAction != null)
+                        {
+                            actionAfterBckgerFailAction.Invoke(args.Error);
+                        }
                     }
-                }
 
 
-            };
+                };
 
-            _bckgWorker.RunWorkerAsync();
+                _bckgWorker.RunWorkerAsync();
+            
         }
-
-
 
 
         public void AsyncLoadListOfSoundDevice(Action<IList<string>> actionAfterBckger, Action<Exception> actionAfterBckgerFailAction)
@@ -85,7 +84,7 @@ namespace Badger2018.utils
             _bckgWorker = new BackgroundWorker();
             _bckgWorker.DoWork += bckder.DoWork;
 
-            _bckgWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs args)
+            _bckgWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
             {
 
                 if (args.Error == null)
@@ -113,6 +112,48 @@ namespace Badger2018.utils
             _bckgWorker.RunWorkerAsync();
         }
 
+        internal void InitProcess()
+        {
+            WaveCompProcess = new Process();
+            WaveCompProcess.StartInfo.FileName = "WaveCompagnonPlayer.exe";
+            WaveCompProcess.StartInfo.Arguments = String.Format("-m {0}",
+                EnumWaveCompModeTraitement.DaemonWaitingOrders.LaunchModeOption);
+            WaveCompProcess.StartInfo.UseShellExecute = false;
+            WaveCompProcess.StartInfo.RedirectStandardOutput = true;
+            WaveCompProcess.StartInfo.CreateNoWindow = true;
+            WaveCompProcess.Start();
+            WaveCompProcess.PriorityClass = ProcessPriorityClass.Normal;
+        }
 
+        internal void CloseProcess()
+        {
+            try
+            {
+
+                TcpRequestsStore.CloseWaveCompagnon();
+            }
+            catch (Exception ex)
+            {
+                if (WaveCompProcess != null && !WaveCompProcess.HasExited)
+                {
+                    WaveCompProcess.Close();
+                    
+                }
+
+            } finally
+            {
+                if (WaveCompProcess != null)
+                {
+                    try
+                    {
+                        WaveCompProcess.Kill();
+                    } catch (Exception ex)
+                    {
+                        ExceptionHandlingUtils.LogAndHideException(ex, "Erreur lors de la fermeture de WaveCompagnon");
+                    }
+                }
+            }
+
+        }
     }
 }

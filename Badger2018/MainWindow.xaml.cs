@@ -6,32 +6,27 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Xml.Linq;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AryxDevViewLibrary.controls.Simplifier;
 using AryxDevViewLibrary.utils;
-using AudioSwitcher.AudioApi;
-using AudioSwitcher.AudioApi.CoreAudio;
 using Badger2018.business;
 using Badger2018.business.saver;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.dto.bdd;
-using Badger2018.Properties;
 using Badger2018.services;
 using Badger2018.utils;
 using Badger2018.views;
 using Badger2018.views.usercontrols;
 using BadgerCommonLibrary.business;
+using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.dto;
 using BadgerCommonLibrary.utils;
 using BadgerPluginExtender;
@@ -40,6 +35,7 @@ using BadgerPluginExtender.interfaces;
 using Microsoft.Win32;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
+using ContextMenu = System.Windows.Controls.ContextMenu;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 
@@ -60,6 +56,7 @@ namespace Badger2018
 
 
         DispatcherTimer finPauseMidiTimer = null;
+        DispatcherTimer finHeureReglTimer = null;
         DispatcherTimer pauseHorsPeriodeTimer = null;
 
         public AppOptions PrgOptions { get; set; }
@@ -78,6 +75,8 @@ namespace Badger2018
         private DidYouKnowView DidYouKnowWindow { get; set; }
 
         internal ISaverTimes PointageSaverObj { get; set; }
+
+
 
         private EnumTypesJournees _typeJournee;
         public EnumTypesJournees TypeJournee
@@ -112,6 +111,8 @@ namespace Badger2018
 
         internal int OldEtatBadger { get; set; }
 
+        private ScreenProgressBarView _spv;
+
         private readonly NotifyIcon _notifyIcon = new NotifyIcon();
         private ContextMenuStrip _notifyIconTrayMenu;
         private ToolStripLabel _notifyIconAppNameLblItem;
@@ -135,17 +136,17 @@ namespace Badger2018
         public AppSwitchs PrgSwitch { get; set; }
 
         public RealTimesObj RealTimes { get; private set; }
-        /*
-        public TimeSpan RealTimeTempsTravaille { get; private set; }
-        public TimeSpan RealTimeTempsTravailleMatin { get; private set; }
-        public DateTime RealTimeDtNow { get; private set; }
-        public TimeSpan RealTimeTsNow { get; private set; }
-         * */
+        public LicenceInfo LicenceApp { get; private set; }
         public bool IsFullyLoaded { get; private set; }
 
-        public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager)
+        public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager, LicenceInfo licenceInfo)
         {
             _logger.Debug("Chargement de l'écran principal");
+# if DEBUG
+            AppDateUtils.ForceDtNow(new DateTime(2020, 09, 03, 15,28, 0));
+
+            //SetDarkTheme();
+# endif
 
             PrgSwitch = new AppSwitchs();
 
@@ -157,8 +158,15 @@ namespace Badger2018
             lblVersion.Content = String.Format(lblVersion.Content.ToString(), Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
             pbarTime.IsIndeterminate = true;
 
+            if (prgOptions.ShowOnScreenProgressBar)
+            {
+                _spv = new ScreenProgressBarView();
+                _spv.PairWithProgressBar(pbarTime);
+            }
+
             RealTimes = new RealTimesObj();
 
+            LicenceApp = licenceInfo;
             PrgOptions = prgOptions;
             UpdaterMgr = updaterManager;
             PluginMgr = pluginManager;
@@ -173,23 +181,30 @@ namespace Badger2018
 
             BadgerWorker = new BadgerWorker(this);
 
-
-
+            #region  Initialisation du gestionnation de notification
+            /*
+             * Initialisation du gestionnation de notification
+             */
             NotifManager = new NoticationsManager(_notifyIcon);
             NotifManager.PluginMgrRef = PluginMgr;
             NotifManager.AfterShowNotif += delegate(NotificationDto n)
             {
                 PushNewInfo(n.Message);
             };
+            // evt lors du changement d'état du badgeage
             OnEtatBadgerChange += delegate(int a)
             {
                 NotifManager.EtatBadger = a;
 
             };
+            // evt lors du changement de type de journée
             OnTypeJourneeChange += delegate(EnumTypesJournees a)
             {
                 NotifManager.TypeJournee = a;
             };
+
+            #endregion
+
 
             RealTimes.RealTimeDtNow = AppDateUtils.DtNow();
             RealTimes.RealTimeTsNow = RealTimes.RealTimeDtNow.TimeOfDay;
@@ -201,8 +216,10 @@ namespace Badger2018
             PostInitializeComponent();
 
 
-
-
+            #region Gestion du premier lancement du programme
+            /**
+             * Gestion du premier lancement du programme
+             */
             if (PrgOptions.IsFirstRun || !PrgOptions.IsConsentUse)
             {
                 DisclaimerView dView = new DisclaimerView(PrgOptions.IsFirstRun);
@@ -229,6 +246,7 @@ namespace Badger2018
 
                 OptionManager.SaveOptions(PrgOptions);
             }
+            #endregion
 
 
             MiscAppUtils.CreatePaths();
@@ -238,25 +256,56 @@ namespace Badger2018
             AdaptUiFromOptions(PrgOptions);
 
             Title = Assembly.GetExecutingAssembly().GetName().Name;
+
+           
             PrgSwitch.PbarMainTimerActif = true;
+            PrgSwitch.IsCompteHeureTravActif = true;
+
             InitNotifyIcon();
             Closing += OnClosing;
 
+
+            #region Evt KeyDown
+            KeyDown += (sender, args) =>
+            {
+                if (args.Key == Key.LeftCtrl)
+                {
+                    imgBtnFirefoxLoaded.Visibility = Visibility.Visible;
+
+                }
+            };
+
+
+            #endregion
+
+            #region Evt KeyUp
             KeyUp += (sender, args) =>
             {
+                if (args.Key == Key.LeftCtrl)
+                {
+                    if (!FfDriverSingleton.Instance.IsLoaded()) 
+                        imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
+
+                }
+
+                // Affiche la fenêtre à propos si appuie sur F1
                 if (args.Key == Key.F1)
                 {
                     AboutView aboutView = new AboutView();
+                    aboutView.LicenceRef = LicenceApp;
                     aboutView.ShowDialog();
                 }
+                // Affiche les options si appuie sur F2
                 else if (args.Key == Key.F2)
                 {
                     btnOptions_Click(null, null);
                 }
+                // Teste si maj existante si appuie sur F3
                 else if (args.Key == Key.F3)
                 {
                     SignalUpdate(true);
                 }
+                // Affiche la fenetre "Le saviez vous" si appue sur F4
                 else if (args.Key == Key.F4)
                 {
                     LoadsDidYouKnow();
@@ -265,13 +314,17 @@ namespace Badger2018
                 {
                     btnModTimes_Click(null, null);
                 }
+                else if (args.SystemKey == Key.F8 || args.Key == Key.F8)
+                {
+                    AfficheLicenceInfo(true);
+                }
                 else if (args.SystemKey == Key.F9 || args.Key == Key.F9)
                 {
-                    String title = "";
-                    String message = "";
+                    String title;
+                    String message;
 
                     title = "Dernier C/D relevé";
-                    message = "C/D : " + PrgOptions.LastCdSeen.ToString(Cst.TimeSpanFormatWithH);
+                    message = "C/D : " + PrgOptions.LastCdSeen.ToStrSignedhhmm();
                     MiscAppUtils.ShowNotificationBaloon(
                         _notifyIcon,
                         title, message,
@@ -288,6 +341,9 @@ namespace Badger2018
                         null, 15000, null, PrgOptions.IsUseAlternateNotification);
                     PluginMgr.PlayHook("OnNotifSend", new object[] { AppDateUtils.DtNow().TimeOfDay, title, message });
 
+                    SemaineView semV = new SemaineView(PrgOptions, Times);
+                    semV.ShowDialog();
+
                 }
                 else if (args.Key == Key.F11)
                 {
@@ -296,18 +352,20 @@ namespace Badger2018
 
                 else if (
 #if DEBUG
-args.Key == Key.F12 ||
+                    args.Key == Key.F12 ||
 #endif
- KonamiCodeListener.IsCompletedBy(args.Key))
-                {
-                    DebugCommandView d = new DebugCommandView();
-                    d.Show();
-                }
+                    KonamiCodeListener.IsCompletedBy(args.Key))
+                    {
+                        DebugCommandView d = new DebugCommandView();
+                        d.Show();
+                    }
 
 
             };
 
-            //   btnModTimes.Visibility = prgOptions.IsFirstRun ? Visibility.Visible : Visibility.Hidden;
+
+            #endregion
+                    
 
             EtatBadger = -1;
             TypeJournee = EnumTypesJournees.Complete;
@@ -341,17 +399,27 @@ args.Key == Key.F12 ||
                 TimeSpan tsfinMat = TimesUtils.GetTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions,
                     EnumTypesJournees.Matin);
 
-                if (PrgOptions.IsAutoBadgeAtStart)
+                if (PrgOptions.IsAutoBadgeAtStart && EtatBadger == -1)
                 {
-                    _logger.Info("Badgeage automatique");
-                    btnBadger.IsEnabled = false;
-                    BadgerWorker.BadgeFullAction();
-                    btnBadger.IsEnabled = true;
 
-                    PushNewInfo("Badgeage automatique réalisé. Fin de la matinée à " +
-                                tsfinMat.ToString(Cst.TimeSpanFormat));
+                    if (RealTimes.RealTimeTsNow >= new TimeSpan(6, 45, 0))
+                    {
+
+                        _logger.Info("Badgeage automatique");
+                        btnBadger.IsEnabled = false;
+                        BadgerWorker.BadgeFullAction();
+                        btnBadger.IsEnabled = true;
+
+                        PushNewInfo("Badgeage automatique réalisé. Fin de la matinée à " +
+                                    tsfinMat.ToString(Cst.TimeSpanFormat));
+                        PrgOptions.IsAutoBadgeAtStartDelayed = false;
+                    } else
+                    {
+                        PrgOptions.IsAutoBadgeAtStartDelayed = true;
+                        _logger.Info("Badgeage automatique du matin - en attente");
+                    }
                 }
-                else
+                else if (EtatBadger == 0)
                 {
                     PushNewInfo("Fin de la matinée à " + tsfinMat.ToString(Cst.TimeSpanFormat));
                 }
@@ -394,13 +462,37 @@ args.Key == Key.F12 ||
                 AfterLoadPostInitComponent();
                 CoreAppBridge.Instance.RegisterMethodsForPlugin(this);
 
+                PrgSwitch.IsCloseWithSave = true;
+
                 ReloadPauseState();
+
+                if (EtatBadger < 2)
+                {
+                    CoreAudioFactory.InitProcess();
+                }
+
+                if (_spv != null)
+                {
+                    _spv.Show();
+                }
+
+               
             };
 
         }
 
 
 
+        private void SetDarkTheme()
+        {
+            Background = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#121212"));
+
+            for (int i = 0; i< VisualTreeHelper.GetChildrenCount(this); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(this, i);
+
+            }
+        }
 
         private void AssignBetaRole()
         {
@@ -422,6 +514,8 @@ args.Key == Key.F12 ||
             z.Compress();
             z.Directory = new DirectoryInfo(Cst.ScreenshotDirName);
             z.Compress();
+            z.Directory = new DirectoryInfo(Cst.LogArchiveDirName);
+            z.Compress();
 
         }
 
@@ -434,7 +528,9 @@ args.Key == Key.F12 ||
 #endif
 
             imgBtnUpdate.Visibility = Visibility.Collapsed;
+            imgBtnWarnLicence.Visibility = Visibility.Collapsed;
             imgBtnAutoBadgeMidi.Visibility = Visibility.Collapsed;
+            imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
 
             lblInfos.Visibility = Visibility.Collapsed;
             lblInfoLbl.Visibility = Visibility.Collapsed;
@@ -478,7 +574,7 @@ args.Key == Key.F12 ||
             badgerShowPausesItem.Header = "Consulter les pauses";
             badgerShowPausesItem.Click += (sender, args) => LoadDetailView();
 
-            System.Windows.Controls.ContextMenu btnMContextMenu = new System.Windows.Controls.ContextMenu();
+            ContextMenu btnMContextMenu = new ContextMenu();
             btnMContextMenu.Items.Add(badgerTitleItem);
             btnMContextMenu.Items.Add(badgerOnlyItem);
             btnMContextMenu.Items.Add(badgerPauseItem);
@@ -489,6 +585,13 @@ args.Key == Key.F12 ||
 
             btnBadgerM.ContextMenu = btnMContextMenu;
 
+
+
+
+
+            MenuItem mainCtxQuitItem = new MenuItem();
+            mainCtxQuitItem.Header = "Quitter";
+
         }
         private void AfterLoadPostInitComponent()
         {
@@ -498,11 +601,8 @@ args.Key == Key.F12 ||
                 ChangeTypeJournee();
             };
 
-            ctrlCompteur.TimesRef = Times;
-            ctrlCompteur.OptionsRef = PrgOptions;
-            ctrlCompteur.PrgSwitchRef = PrgSwitch;
-            ctrlCompteur.RealTimesRef = RealTimes;
-            ctrlCompteur.TyJourneeRef = TypeJournee;
+
+            ctrlCompteur.PwinRef = this;
 
             ctrlCompteur.IsEnabledCtrl = true;
             ctrlCompteur.UpdateInfos();
@@ -551,6 +651,11 @@ args.Key == Key.F12 ||
         {
             //_notifyIcon.Visible = false;
             ShowInTaskbar = true;
+
+            if (_spv != null && _spv.Visibility == Visibility.Visible)
+            {
+                _spv.BringToFront();
+            }
 
 
         }
@@ -613,22 +718,24 @@ args.Key == Key.F12 ||
                 pauseHorsPeriodeTimer = new DispatcherTimer();
                 pauseHorsPeriodeTimer.Tick += (sender, args) =>
                 {
-                    IntervalTemps ivlTemps = Times.PausesHorsDelai.First(r => !r.IsIntervalComplet());
-                    TimeSpan tpsPause = AppDateUtils.DtNow().TimeOfDay - ivlTemps.Start.TimeOfDay;
+                    IntervalTemps ivlTemps = Times.PausesHorsDelai.FirstOrDefault(r => !r.IsIntervalComplet());
+                    if (ivlTemps != null)
+                    {
+                        TimeSpan tpsPause = AppDateUtils.DtNow().TimeOfDay - ivlTemps.Start.TimeOfDay;
 
-                    ctrlCompteur.SetText(tpsPause.ToString("h':'mm':'ss"));
-                    ctrlCompteur.SetTitle("Temps de la pause en cours :");
-                    ctrlCompteur.SetVisibility(CompteurControl.CompteurVisibility.OnlyMain);
-                    //lblTpsTravReel.Content = tpsPause.ToString("h':'mm':'ss");
-                    //lblTpsTravReelLbl.Content = "Temps de la pause en cours :";
+                        ctrlCompteur.SetText(tpsPause.ToString("h':'mm':'ss"));
+                        ctrlCompteur.SetTitle("Temps de la pause en cours :");
+                        ctrlCompteur.SetVisibility(CompteurControl.CompteurVisibility.OnlyMain);
+                        //lblTpsTravReel.Content = tpsPause.ToString("h':'mm':'ss");
+                        //lblTpsTravReelLbl.Content = "Temps de la pause en cours :";
 
-                    DateTime newEndTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
-                                PrgOptions, EnumTypesJournees.Complete)
-                                                    + Times.GetTpsPause() + tpsPause;
-                    lblEndTime.ContentShortTime(newEndTime);
-                    //lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
+                        DateTime newEndTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
+                                    PrgOptions, EnumTypesJournees.Complete)
+                                                        + Times.GetTpsPause() + tpsPause;
+                        lblEndTime.ContentShortTime(newEndTime);
+                        //lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
 
-
+                    }
                 };
                 pauseHorsPeriodeTimer.Interval = new TimeSpan(0, 0, 1);
 
@@ -696,6 +803,7 @@ args.Key == Key.F12 ||
         {
             if (EtatBadger == 0 && e.Reason == SessionSwitchReason.SessionLock && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeMatinFin)
             {
+                _logger.Debug("SessionLock->Play");
                 PlayAdvertise();
             }
         }
@@ -822,6 +930,10 @@ args.Key == Key.F12 ||
                 btnBadger.IsEnabled = false;
                 btnBadgerM.IsEnabled = false;
 
+                int origDelay = PrgOptions.LastBadgeDelay;
+                PrgOptions.LastBadgeDelay = 0;
+                
+
                 try
                 {
                     BadgerWorker.BadgeAction(PrgOptions.Uri, PrgOptions.UriParam, PrgOptions.UriVerif, time =>
@@ -866,6 +978,9 @@ args.Key == Key.F12 ||
                             PrgSwitch.PauseCurrentState = EnumStatePause.HAVE_PAUSES;
                             _mainTimerManager.Resume();
                         }
+
+                        PrgOptions.LastBadgeDelay = origDelay;
+
                     }, -2);
                 }
                 catch (Exception ex)
@@ -996,21 +1111,77 @@ args.Key == Key.F12 ||
                 return;
             }
 
+            rectTemoinActivite.Visibility = rectTemoinActivite.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            //this.ToolTip = RealTimes.RealTimeDtNow.ToString("dd/MM/yy HH:mm:ss");
+
             bool isMaxDepass = UpdRealTimes();
+            PluginMgr.PlayHook("OnClockUpdTimerOnOnTick", null);
+
 
             TimeSpan diffTotal = Times.EndTheoDateTime - Times.PlageTravMatin.Start;
             TimeSpan diff = RealTimes.RealTimeDtNow - Times.PlageTravMatin.Start;
 
-            if (PrgSwitch.PbarMainTimerActif)
+            if (PrgSwitch.PbarMainTimerActif && EtatBadger < 3)
             {
-                pbarTime.IsIndeterminate = false;
-                pbarTime.Value = 100 * diff.TotalSeconds / diffTotal.TotalSeconds;
+                TimeSpan tpsTravRestant = Times.EndTheoDateTime - RealTimes.RealTimeDtNow;
+
+                if (tpsTravRestant.TotalSeconds >= 0)
+                {
+
+                    pbarTime.IsIndeterminate = false;
+                    pbarTime.Value = 100 * diff.TotalSeconds / diffTotal.TotalSeconds;
+                } else
+                {
+                    if (finHeureReglTimer == null || !finHeureReglTimer.IsEnabled)
+                    {
+                        TimeSpan maxTpsAutorise = (PrgOptions.TempsMaxJournee - (PrgOptions.TempsDemieJournee + PrgOptions.TempsDemieJournee));
+                        TimeSpan tsFinJourneeReglementaire = Times.EndTheoDateTime.TimeOfDay + maxTpsAutorise;
+
+                        finHeureReglTimer = new DispatcherTimer();
+                        finHeureReglTimer.Interval = new TimeSpan(0, 0, 5);
+                        finHeureReglTimer.Tick += (senderO, args) =>
+                        {
+                            TimeSpan remainingTimer = tsFinJourneeReglementaire - RealTimes.RealTimeTsNow;
+                            if (remainingTimer < TimeSpan.Zero)
+                            {
+                                //
+                                PrgSwitch.PbarMainTimerActif = false;
+                                pbarTime.IsIndeterminate = true;
+                                pbarTime.ToolTip = String.Format("Fin du temps depuis {0}. Avez-vous pensé à badger ?", tsFinJourneeReglementaire.ToStrSignedhhmm());
+                                pbarTime.Foreground = Cst.SCBDarkRed;
+
+                            }
+                            else if (remainingTimer > maxTpsAutorise)
+                            {
+                                pbarTime.IsIndeterminate = false;                                
+                                pbarTime.Foreground = Cst.SCBGreenPbar;
+                                pbarTime.ToolTip = null;
+                                PrgSwitch.PbarMainTimerActif = true;
+                                btnBadgerM.IsEnabled = true;
+
+                                finHeureReglTimer.Stop();
+                            }
+                            else
+                            {
+                                pbarTime.IsIndeterminate = false;
+                                double percentRemain = 100 * remainingTimer.TotalSeconds / maxTpsAutorise.TotalSeconds;
+                                ChangePBarValue(percentRemain);
+                                pbarTime.Foreground = percentRemain <= 50 ? (percentRemain <= 10 ? Cst.SCBDarkRed : Cst.SCBGold) : Cst.SCBGreenPbar;
+                                pbarTime.ToolTip = String.Format("Travail au-dela du temps hebdomadaire : fin de l'accumulation du temps supplémentaire à {0}.", tsFinJourneeReglementaire.ToStrSignedhhmm());
+                                PrgSwitch.PbarMainTimerActif = false;
+                                btnBadgerM.IsEnabled = false;
+                            }
+                        };
+                        finHeureReglTimer.Start();
+                    }
+                }
             }
 
             if (RealTimes.RealTimeDtNow.DayOfYear != Times.TimeRef.DayOfYear)
             {
                 // Le jour a changé. Il faut redémarrer.
-                PointageSaverObj.SaveCurrentDayTimes();
+                // PointageSaverObj.SaveCurrentDayTimes();
+                PrgSwitch.IsCloseWithSave = false;
                 RestartApp();
             }
 
@@ -1031,36 +1202,89 @@ args.Key == Key.F12 ||
             }
 
 
+            if (PrgOptions.IsAutoBadgeAtStartDelayed && PrgOptions.IsAutoBadgeAtStart && RealTimes.RealTimeTsNow >= new TimeSpan(6,45,0) && EtatBadger == -1)
+            {
+                PrgOptions.IsAutoBadgeAtStartDelayed = false;
+
+                _logger.Info("Badgeage automatique du matin - délayé");
+                btnBadger.IsEnabled = false;
+                BadgerWorker.BadgeFullAction();
+                btnBadger.IsEnabled = true;
+            }
+
+            // ***************
+            // On précharge FF si les conditions de temps, ou d'instance sont réunis.
+            if (PrgOptions.IsPreloadFF) {
+                bool isOkToStartPreloadedFf = false;
+
+                if (PrgSwitch.IsFfForcedLoaded)
+                {
+                    isOkToStartPreloadedFf = true;
+                }
+
+                if (EtatBadger == 0 
+                    && TypeJournee == EnumTypesJournees.Complete
+                    && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeMatinFin)
+                {
+                    isOkToStartPreloadedFf = true;
+                }
+
+                if (EtatBadger == 1
+                    && TypeJournee == EnumTypesJournees.Complete
+                    && RealTimes.RealTimeTsNow >= (PrgOptions.PlageFixeMatinFin + PrgOptions.TempsMinPause))
+                {
+                    isOkToStartPreloadedFf = true;
+                }
+
+                if (EtatBadger == 2
+                    && (TypeJournee == EnumTypesJournees.Complete || EnumTypesJournees.IsDemiJournee(TypeJournee))
+                    && (
+                        (TypeJournee == EnumTypesJournees.Complete && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeApremFin)
+                        || (TypeJournee == EnumTypesJournees.Matin && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeMatinFin)
+                        || (TypeJournee == EnumTypesJournees.ApresMidi && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeApremFin)
+                    )
+                    )
+                {
+                    isOkToStartPreloadedFf = true;
+                }
+
+                if (isOkToStartPreloadedFf)
+                {
+                    FfDriverSingleton.Instance.Load(PrgOptions);
+                    PrgSwitch.IsFfNormalyLoaded = true;
+                } else
+                {
+                    if (!PrgSwitch.IsInBadgeWork)
+                    {
+                        FfDriverSingleton.Instance.Quit();
+                    }
+                    PrgSwitch.IsFfNormalyLoaded = false;
+                }
+                
+            }
+
+            // On adapte l'interface (l'icone d'instance de Ff préchargée)
+            if (PrgSwitch.IsFfNormalyLoaded 
+                && FfDriverSingleton.Instance.IsLoaded())
+            {
+                imgBtnFirefoxLoaded.Visibility = Visibility.Visible;
+            } else
+            {
+                imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
+                PrgSwitch.IsFfNormalyLoaded = false;
+            }
+
             //
             // (TimesBadgerDto Times, AppOptions PrgOptions, AppSwitchs PrgSwitch, int EtatBadger, TimeSpan RealTimeTsNow)
 
-            PluginMgr.PlayHook("BadgeBetaTest", new object[]
+            if (IsLoaded)
             {
-                 Times, PrgOptions, PrgSwitch, EtatBadger, RealTimes.RealTimeTsNow
-            });
-
-            /*
-            if (PrgSwitch.IsBetaUser
-                && PrgOptions.IsAutoBadgeMeridienne
-                && EtatBadger == 1
-                && !PrgSwitch.IsAutoBadgeage
-                && RealTimeTsNow.CompareTo(Times.PlageTravMatin.EndOrDft.TimeOfDay + PrgOptions.TempsMinPause + new TimeSpan(0, 0, SpecDelayMeridAutoBadgage)) >= 0)
-            {
-                PrgSwitch.IsAutoBadgeage = true;
-
-                _logger.Debug("Spec: Autobadgeage");
-                btnBadger.IsEnabled = false;
-                BadgerWorker.BadgeFullAction(true);
-                btnBadger.IsEnabled = true;
-
-                if (PrgOptions.IsDailyDisableAutoBadgeMerid)
+                PluginMgr.PlayHook("FullOnClockUpdTimerOnOnTick", new object[]
                 {
-                    PrgOptions.IsAutoBadgeMeridienne = false;
-                    OptionManager.SaveOptions(PrgOptions);
-                    _logger.Debug("Spec: Autobadgeage désactivé par IsDailyDisableAutoBadgeMerid");
-                }
+                 Times, PrgOptions, PrgSwitch, EtatBadger, RealTimes, TypeJournee
+                });
             }
-             * */
+
 
             //UpdateInfos();
             ctrlCompteur.UpdateInfos();
@@ -1068,6 +1292,13 @@ args.Key == Key.F12 ||
             if (PrgSwitch.CanCheckUpdate)
             {
                 SignalUpdate();
+            }
+
+            if (PrgSwitch.IsCheckLicence)
+            {
+                PrgSwitch.IsCheckLicence = false;
+                AfficheLicenceInfo();
+
             }
 
             if (PrgOptions.ShowTipsAtStart && EtatBadger >= 0 && !PrgSwitch.IsShowOnStartupDone && IsLoaded)
@@ -1258,6 +1489,36 @@ args.Key == Key.F12 ||
             */
         }
 
+        public void AfficheLicenceInfo(bool isForceShowMsgBox = false)
+        {
+            if (LicenceApp == null) return;
+
+            bool showMsgBox = false;
+
+            String message = String.Format("Badger2018 est activé.{0}{0}Type de licence : {1}.{0}Attribuée à : {2}{0}{0}Date d'expiration : {3}",
+                    Environment.NewLine,
+                    LicenceApp.TypeUser == 0 ? "ambassadeur" : "utilisateur",
+                    LicenceApp.NiceName.Trim(),
+                    LicenceApp.TypeUser == 0 ? "validitée perpétuelle" : LicenceApp.DateExpiration.ToShortDateString()
+
+                );
+            MessageBoxImage icon = MessageBoxImage.Information;
+
+            if (RealTimes.RealTimeDtNow.AddDays(31) >= LicenceApp.DateExpiration && LicenceApp.TypeUser > 0)
+            {
+                icon = MessageBoxImage.Warning;
+                message += Environment.NewLine + "Licence bientôt expirée : pensez à demander son renouvellement.";
+
+                imgBtnWarnLicence.Visibility = Visibility.Visible;
+                showMsgBox = true;
+            }
+
+            if (isForceShowMsgBox || showMsgBox)
+            {
+                MessageBox.Show(message, "Information sur la licence", MessageBoxButton.OK, icon);
+            }
+        }
+
         private void SignalUpdate(bool isForceCheck = false)
         {
             //UpdateChecker chk = UpdateChecker.Instance;
@@ -1373,7 +1634,7 @@ args.Key == Key.F12 ||
         {
             bool specShowSpecOpt = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
 
-            bool isOrigOptAdd5min = PrgOptions.IsAdd5minCpt;
+            bool isOrigOptAdd5Min = PrgOptions.IsAdd5minCpt;
 
             ShowInTaskbar = true;
             _notifyIcon.Visible = false;
@@ -1398,17 +1659,42 @@ args.Key == Key.F12 ||
                 UpdaterMgr.XmlUpdFilePath = PrgOptions.UpdateXmlUri;
                 if (EtatBadger < 3)
                 {
-                    if (isOrigOptAdd5min && !PrgOptions.IsAdd5minCpt)
+                    if (isOrigOptAdd5Min && !PrgOptions.IsAdd5minCpt)
                     {
                         Times.EndTheoDateTime += new TimeSpan(0, 5, 0);
                     }
-                    else if (!isOrigOptAdd5min && PrgOptions.IsAdd5minCpt)
+                    else if (!isOrigOptAdd5Min && PrgOptions.IsAdd5minCpt)
                     {
                         Times.EndTheoDateTime -= new TimeSpan(0, 5, 0);
                     }
 
                     lblEndTime.ContentShortTime(Times.EndTheoDateTime);
                 }
+
+
+                if (PrgOptions.ShowOnScreenProgressBar)
+                {
+                    if (_spv == null) { 
+                        _spv = new ScreenProgressBarView();
+                        _spv.PairWithProgressBar(pbarTime);
+                        _spv.Show();
+                    } else
+                    {
+                        _spv.Visibility = Visibility.Visible;
+                    }
+                } else
+                {
+                    if (_spv != null)
+                    {
+                        _spv.Visibility = Visibility.Collapsed;
+                    }
+                }
+
+                if (!PrgOptions.IsPreloadFF)
+                {
+                    FfDriverSingleton.Instance.Quit() ;
+                }
+
             }
 
             if (opt.IsRazNotifs)
@@ -1435,7 +1721,7 @@ args.Key == Key.F12 ||
                     PrgOptions.IsFirstRun = false;
                 }
 
-                if (EtatBadger != -1)
+                if (EtatBadger != -1 && PrgSwitch.IsCloseWithSave)
                 {
                     _logger.Info("Sauvegarde de la session (EtatBadger: {0})", EtatBadger);
                     PointageSaverObj.SaveCurrentDayTimes();
@@ -1446,7 +1732,10 @@ args.Key == Key.F12 ||
 
                 _notifyIcon.Visible = false;
 
+                CoreAudioFactory.CloseProcess();
+                FfDriverSingleton.Instance.Quit();
 
+                // PluginMgr.PlayHook("OnClosingApp", new object[] { sender, cancelEventArgs });
 
             }
             else if (PrgOptions.ActionButtonClose == EnumActionButtonClose.MINIMIZE)
@@ -1535,6 +1824,15 @@ args.Key == Key.F12 ||
             _notifyIconTrayMenu.Items.Add(_nIconQuit);
 
             _notifyIcon.ContextMenuStrip = _notifyIconTrayMenu;
+
+            _notifyIcon.Click += delegate (object sender, EventArgs args)
+            {
+                if (_spv != null && _spv.IsVisible)
+                {
+                    _spv.BringToFront();
+
+                }
+            };
 
             _notifyIcon.DoubleClick += delegate(object sender, EventArgs args)
             {
@@ -1670,6 +1968,9 @@ args.Key == Key.F12 ||
 
         private void AdaptUiForState1()
         {
+
+            CoreAudioFactory.CloseProcess();
+
             // Etat de l'UI après avoir badgé la fin de la matinée.
             PrgSwitch.PbarMainTimerActif = true;
             pbarTime.IsIndeterminate = false;
@@ -2355,6 +2656,21 @@ args.Key == Key.F12 ||
                 EnumTypesTemps.TpsTravAprem
                 );
             n.DtoAfterShowNotif += afterShowAction;
+
+
+            ///
+            notifName = "Temps maximum travail pour la matinée";
+            n = NotifManager.RegisterNotification(
+                notifName + ":0",
+                "Information",
+                "Le temps maximum de travail pour une demie-journée est dépassé. Le temps supplémentaire pourrait ne pas être pris en compte.",
+                null,
+                0,
+                PrgOptions.PlageFixeApremStart - PrgOptions.TempsMinPause,
+                EnumTypesTemps.RealTime
+                );
+            n.DtoAfterShowNotif += afterShowAction;
+
         }
 
 
@@ -2534,14 +2850,17 @@ args.Key == Key.F12 ||
 
         private void LoadModTimeView()
         {
-            ModTimeView m = new ModTimeView(Times, TypeJournee, EtatBadger, PrgOptions.UrlMesPointages);
+            ModTimeView m = new ModTimeView(Times, TypeJournee, EtatBadger, PrgOptions.UrlMesPointages, PrgOptions);
             m.ShowDialog();
+            
 
             if (m.HasChanged)
             {
                 TypeJournee = m.TypeJournee;
                 EtatBadger = m.EtatBadger;
                 OldEtatBadger = m.EtatBadger;
+
+
 
                 AdaptUiLowerThanState();
 
@@ -2551,12 +2870,15 @@ args.Key == Key.F12 ||
 
                 ClockUpdTimerOnOnTick(null, null);
 
+                
                 PointageSaverObj.SaveCurrentDayTimes();
 
 
                 PrgSwitch.IsMoreThanTpsTheo = false;
                 PrgSwitch.IsTimerStoppedByMaxTime = false;
                 PrgSwitch.PbarMainTimerActif = true;
+
+                StopTimers();
             }
         }
 
@@ -2630,17 +2952,64 @@ args.Key == Key.F12 ||
             SignalUpdate(true);
         }
 
+        private void imgBtnWarnLicence_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            AfficheLicenceInfo(true);
+        }
+
         private void imgBtnPauseReport_MouseUp(object sender, MouseButtonEventArgs e)
         {
             LoadDetailView();
         }
 
-
-
-        public void ExtShowNotif(string title, string content, int timeoutInMs)
+        private void imgBtnFirefoxLoaded_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            MiscAppUtils.ShowNotificationBaloon(_notifyIcon, title, content, null, timeoutInMs, null, PrgOptions.IsUseAlternateNotification);
+            if (FfDriverSingleton.Instance.IsLoaded())
+            {
+                MessageBoxResult result = MessageBox.Show("Voulez-vous terminez l'instance Firefox ?", "Question", MessageBoxButton.YesNo);
+                if (result.Equals(MessageBoxResult.Yes))
+                {
+                    FfDriverSingleton.Instance.Quit();
+                    PrgSwitch.IsFfForcedLoaded = false;
+                    imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
+                }
+            } else
+            {
+                FfDriverSingleton.Instance.Load(PrgOptions);
+                PrgSwitch.IsFfForcedLoaded = true;
+                imgBtnFirefoxLoaded.Visibility = Visibility.Visible;
+            }
+                    
         }
+
+
+        private void lblLastInfoShown_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+
+
+        }
+
+        internal void StopTimers()
+        {
+            if (finHeureReglTimer != null)
+            {
+                finHeureReglTimer.Stop();
+            }
+
+            if (finPauseMidiTimer != null)
+            {
+                finPauseMidiTimer.Stop();
+            }
+
+            if (BadgerWorker != null && BadgerWorker.LastBadgeTimer != null)
+            {
+                BadgerWorker.LastBadgeTimer.Stop();
+            }
+
+            PrgSwitch.IsInBadgeWork = false;
+        }
+
 
 
         private void RestartApp()
@@ -2660,7 +3029,7 @@ args.Key == Key.F12 ||
             var processWatchDogRestarter = Process.Start(processStartInfo);
             if (processWatchDogRestarter == null)
             {
-                _logger.Warn("L'application n'a pas pu redémarrée");
+                _logger.Warn("L'application n'a pas pu redémarrer");
                 return;
             }
             processWatchDogRestarter.WaitForExit(1000);
@@ -2680,6 +3049,11 @@ args.Key == Key.F12 ||
         public void SetBtnBadgerEnabled(bool state)
         {
             btnBadger.IsEnabled = state;
+        }
+
+        public void ExtShowNotif(string title, string content, int timeoutInMs)
+        {
+            MiscAppUtils.ShowNotificationBaloon(_notifyIcon, title, content, null, timeoutInMs, null, PrgOptions.IsUseAlternateNotification);
         }
 
         public MethodRecordWithInstance[] GetMethodToPresents()
@@ -2718,11 +3092,19 @@ args.Key == Key.F12 ||
             m.Dispatcher = Dispatcher.CurrentDispatcher;
             l.Add(m);
 
-            
+
 
 
             return l.ToArray();
         }
+
+
+
+
+
+
+
+
 
 
 

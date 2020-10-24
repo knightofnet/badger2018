@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Badger2018.services
+﻿namespace Badger2018.services
 {
     public class ServicesMgr
     {
@@ -25,12 +20,14 @@ namespace Badger2018.services
         public BadgeagesServices BadgeagesServices { get; private set; }
 
         public JoursServices JoursServices { get; private set; }
+        public AbsencesServices AbsencesServices { get; private set; }
 
 
         public ServicesMgr()
         {
             BadgeagesServices = new BadgeagesServices();
             JoursServices = new JoursServices();
+            AbsencesServices = new AbsencesServices();
         }
 
     }

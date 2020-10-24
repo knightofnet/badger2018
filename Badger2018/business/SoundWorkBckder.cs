@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net.Sockets;
+using System.Text;
 using AryxDevLibrary.extensions;
 using AryxDevLibrary.utils.logger;
 using Badger2018.dto;
@@ -16,6 +18,7 @@ namespace Badger2018.business
         private static readonly Logger _logger = Logger.LastLoggerInstance;
         private static string _delimiter = "###";
         public IList<string> ListDevices { get; set; }
+        public bool UseTcpRequest { get; internal set; }
         public CoreAudioCtrlerFactory CoreAudioFactory { get; set; }
         public AppOptions PrgOptions { get; set; }
         public EnumSonWindows Sound { get; set; }
@@ -36,7 +39,7 @@ namespace Badger2018.business
                 compiler.StartInfo.RedirectStandardOutput = true;
                 compiler.StartInfo.CreateNoWindow = true;
                 compiler.Start();
-                compiler.PriorityClass = ProcessPriorityClass.High;
+                compiler.PriorityClass = ProcessPriorityClass.RealTime;
 
                 string output = compiler.StandardOutput.ReadToEnd();
                 bool hasMoreLineThanNormal = false;
@@ -99,6 +102,35 @@ namespace Badger2018.business
                 return;
             }
 
+            if (UseTcpRequest)
+            {
+                PlaySoundWithTcp();
+            }
+            else
+            {
+                DirectPlaySound();
+            }
+
+        }
+
+        private void PlaySoundWithTcp()
+        {
+
+            try
+            {
+                TcpRequestsStore.PlaySoundTcp(Sound.Index, Volume, Device);
+            } catch (Exception ex)
+            {
+                _logger.Warn("Inner Exception : {0}", ex.Message);
+                throw ex;
+            }
+
+        }
+
+      
+
+        private void DirectPlaySound()
+        {
             Process compiler = new Process();
             try
             {
@@ -135,7 +167,6 @@ namespace Badger2018.business
                     compiler.WaitForExit();
                 }
             }
-
         }
     }
 }

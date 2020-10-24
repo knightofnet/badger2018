@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Documents;
-using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
-using Badger2018.business;
+using Badger2018.business.dbb;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.dto.bdd;

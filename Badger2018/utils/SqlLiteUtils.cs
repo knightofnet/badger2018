@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
-using System.Linq;
-using System.Text;
-using AryxDevLibrary.utils;
+using Badger2018.Properties;
 
 namespace Badger2018.utils
 {
@@ -106,7 +103,7 @@ namespace Badger2018.utils
                     {
 
                         connection.Open();
-                        command.CommandText = Properties.Resources.dbbCreate;
+                        command.CommandText = Resources.dbbCreate;
                         command.ExecuteNonQuery();
 
 

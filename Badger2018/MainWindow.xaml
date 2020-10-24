@@ -82,8 +82,8 @@
             <Label Content="Raccourcis utiles :" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0"/>
 
         </Grid>
-        <Label x:Name="lblInfoLbl" Content="Informations :" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="2" VerticalAlignment="Top" Height="25" Width="83"/>
-        <Label  Margin="105,5,10.2,0" Grid.Row="2" VerticalAlignment="Top" Height="48">
+        <Label x:Name="lblInfoLbl" Content="Informations :" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="2" VerticalAlignment="Top" Height="25" Width="83" />
+        <Label x:Name="lblLastInfoShown"  Margin="105,5,10.2,0" Grid.Row="2" VerticalAlignment="Top" Height="48" MouseDoubleClick="lblLastInfoShown_MouseDoubleClick">
             <AccessText x:Name="lblInfos" TextWrapping="Wrap" Text="" TextAlignment="Justify" />
         </Label>
 
@@ -99,7 +99,10 @@
 
             <Image x:Name="imgBtnPauseReport" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/pauseExists.png" Cursor="Hand" MouseUp="imgBtnPauseReport_MouseUp" />
             <Image x:Name="imgBtnUpdate" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/updateIcon.png" Cursor="Hand" MouseUp="imgBtnUpdate_MouseUp" />
+            <Image x:Name="imgBtnWarnLicence" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/iconWarning.png" Cursor="Hand" MouseUp="imgBtnWarnLicence_MouseUp" />
+            <Image x:Name="imgBtnFirefoxLoaded" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/firefox_light_016.png" Cursor="Hand" MouseUp="imgBtnFirefoxLoaded_MouseUp" ToolTip="L'instance de Firefox est démarrée."/>
         </controls:AlignableWrapPanel>
+        <Rectangle x:Name="rectTemoinActivite" Fill="#FFFFFCB8" HorizontalAlignment="Left" Height="3" Margin="2,10,0,0" Stroke="Black" VerticalAlignment="Top" Width="3" StrokeThickness="0"/>
 
 
 

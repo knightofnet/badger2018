@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AryxDevViewLibrary.utils;
 using Badger2018.constants;
-using Badger2018.utils;
 
 namespace Badger2018.views
 {
@@ -94,8 +83,31 @@ namespace Badger2018.views
             }
         }
 
-        public static EnumErrorCodeRetour ShowMessageError(Exception e, DateTime dt, Window progessWindow, bool isConsultRecommand = false)
+        public static EnumErrorCodeRetour ShowMessageError(Exception e, DateTime dt, Window progessWindow, int etapeBadgage)
         {
+            String messagePrecision = "";
+            bool isConsultRecommand = false;
+            switch (etapeBadgage)
+            {
+                case 1:
+                    messagePrecision = "Le navigateur permettant de badger n'a pas démarré, ou une erreur s'est produite lors de son démarrage.";
+                    break;
+                case 2:
+                    messagePrecision = "Impossible de naviguer vers le site de badgeage. Le site n'est peut-être pas accessible (server hors-service) ou l'URL n'est pas correcte.";
+                    break;
+                case 3:
+                case 4:
+                case 5:
+                    messagePrecision = "Les éléments nécessaires pour effectuer le pointage n'ont pas été trouvé. La page de badgeage est peut-être inacessible ou son contenu à changer.";
+                    isConsultRecommand = true;
+                    break;
+                case 6:
+                    isConsultRecommand = true;
+                    break;
+
+            }
+
+
             MessageErrorBadgeageView m = new MessageErrorBadgeageView();
             m.SetIsWarning(isConsultRecommand);
             m.SetErreurMessage(e.Message);
