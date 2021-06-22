@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:usercontrols="clr-namespace:Badger2018.views.usercontrols"
         xmlns:controls="clr-namespace:AryxDevViewLibrary.controls;assembly=AryxDevViewLibrary"
-        Title="MainWindow" Height="350" Width="538" MinHeight="350" MinWidth="538" MaxHeight="350" MaxWidth="538" ResizeMode="CanMinimize" Deactivated="Window_Deactivated" Activated="Window_Activated" Icon="Resources/Paomedia-Small-N-Flat-Clock.ico">
+        Title="MainWindow" Height="350" Width="538" MinHeight="350" MinWidth="538" MaxHeight="350" MaxWidth="538" ResizeMode="CanMinimize" Deactivated="Window_Deactivated" Activated="Window_Activated" Icon="Resources/Paomedia-Small-N-Flat-Clock.ico" >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="144"/>
@@ -15,29 +15,41 @@
         <Rectangle x:Name="rectMatin" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Left" Width="179" Margin="0,0,0,0"/>
         <Rectangle x:Name="rectAprem" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Right" Width="179" Margin="0,0,0,0"/>
 
+
         <Grid Margin="10,10,0,0" HorizontalAlignment="Left" Width="115" Height="58" VerticalAlignment="Top">
             <Label Content="Démarrage à" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-            <Label x:Name="lblStartTime" Content="17h54" Height="60" Margin="0,18,-19,-17" VerticalAlignment="Top" FontSize="36" Padding="0" ToolTip="Heure du premier badgeage de la journée"/>
+            <Label x:Name="lblStartTime" Content="17h54" Height="60" Margin="0,18,-19,-17" VerticalAlignment="Top" FontSize="36" Padding="0" ToolTip="Heure du premier badgeage de la journée" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
 
         </Grid>
         <Grid Margin="0,10,10,0" HorizontalAlignment="Right" Width="124" Height="58" VerticalAlignment="Top">
             <Label x:Name="lblFinStr" Content="Fin théo. à" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="10,0,0,0"/>
-            <Label x:Name="lblEndTime" Content="20h00*" Height="60" Margin="0,18,0,-20" VerticalAlignment="Top" FontSize="36" Padding="0" HorizontalContentAlignment="Right"/>
+            <Label x:Name="lblEndTime" Content="20h00*" Height="60" Margin="0,18,0,-20" VerticalAlignment="Top" FontSize="36" Padding="0" HorizontalContentAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
 
         </Grid>
-        <ProgressBar x:Name="pbarTime" Height="5" Margin="10,76,10.2,0" VerticalAlignment="Top" Value="100" MouseDoubleClick="pbarTime_MouseDoubleClick"/>
+        <Grid VerticalAlignment="Top" Margin="10,76,10,0" Height="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition  Width="3*"/>
+                <ColumnDefinition x:Name="pbarColSecond" Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <ProgressBar x:Name="pbarTime" Grid.Column="0" Height="5" Margin="0,0,0,0" VerticalAlignment="Top" Value="100" MouseDoubleClick="pbarTime_MouseDoubleClick" />
+            <ProgressBar x:Name="pbarTimeExtension" Grid.Column="1" Height="5" Margin="0,0,0,0" VerticalAlignment="Top" Value="100" MouseDoubleClick="pbarTime_MouseDoubleClick" Foreground="#FFFF8B00" />
 
-        <usercontrols:TypeJourneeControl x:Name="ctrlTyJournee" Margin="10,87,0,0" Width="211" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible"/>
+        </Grid>
 
-        <Button x:Name="btnClose" Content="Fermer" HorizontalAlignment="Right" Margin="0,0,10.2,9.8" Grid.Row="2" VerticalAlignment="Bottom" Width="75" Height="23" Click="Button_Click"/>
+
+        <usercontrols:TypeJourneeControl x:Name="ctrlTyJournee" Margin="10,87,0,0" Width="211" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible" Background="{DynamicResource DefaultBackground}"/>
+
+        <Button x:Name="btnClose" Content="Fermer" HorizontalAlignment="Right" Margin="0,0,10.2,9.8" Grid.Row="2" VerticalAlignment="Bottom" Width="75" Height="23" Click="Button_Click" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Grid x:Name="gridHoraireMerid" Margin="159,0,160.2,0" Grid.Row="1">
             <Rectangle x:Name="rectPause"  Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Margin="20,0,19,0"/>
             <Rectangle Fill="#99FFFFFF" Margin="20,0,19,0"/>
-            <Label x:Name="lblHmidiS" Content="11h59" HorizontalAlignment="Left" Width="38" Background="#EEFFFFFF" BorderBrush="White" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip="Heure du badgeage de fin de matinée" Padding="0,5"/>
-            <Label x:Name="lblHmidiE" Content="11h59" Background="#EEFFFFFF" BorderBrush="White" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Width="38" ToolTip="Heure du badgeage de début d'après-midi" Padding="0,5"/>
+            <Label x:Name="lblHmidiS" Content="11h59" HorizontalAlignment="Left" Width="38" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="White" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip="Heure du badgeage de fin de matinée" Padding="0,5" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" Opacity="0.93
+                   "/>
+            <Label x:Name="lblHmidiE" Content="11h59" Background="#EEFFFFFF" BorderBrush="White" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Width="38" ToolTip="Heure du badgeage de début d'après-midi" Padding="0,5" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+
 
         </Grid>
-        <Button x:Name="btnBadgerM" Content="Badger et suspendre" HorizontalAlignment="Right" Margin="0,0,90.2,9.8" Grid.Row="2" VerticalAlignment="Bottom" Width="146" Height="23" Click="btnBadgerM_Click"/>
+        <Button x:Name="btnBadgerM" Content="Badger et suspendre" HorizontalAlignment="Right" Margin="0,0,90.2,9.8" Grid.Row="2" VerticalAlignment="Bottom" Width="146" Height="23" Click="btnBadgerM_Click" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
 
         <Button x:Name="btnOptions" HorizontalAlignment="Left" Margin="10,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Options et paramêtres" Click="btnOptions_Click" Width="27" Height="27" VerticalAlignment="Bottom" Foreground="#00000000" >
             <Button.Background>
@@ -55,11 +67,16 @@
 
 
 
-        <Label x:Name="lblTpsTravMatin" Content="5h30" HorizontalAlignment="Left" Margin="0,10" Grid.Row="1" Width="159" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" Foreground="White" FontWeight="Bold" FontSize="18" ToolTip="Temps travaillé le matin" />
-        <Label x:Name="lblTpsTravAprem" Content="5h30" HorizontalAlignment="Left" Margin="371,10,0,10" Grid.Row="1" Width="160" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" Foreground="White" FontWeight="Bold" FontSize="18" ToolTip="Temps travaillé l'après-midi"/>
-        <Label x:Name="lblPauseTime" Content="00h45" Margin="198,10,0,10" VerticalContentAlignment="Center" UseLayoutRounding="True" Foreground="White" FontWeight="Bold" FontSize="18" Padding="0" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Width="135" Grid.Row="1" ToolTip="Temps de pause du midi"/>
+        <Label x:Name="lblTpsTravMatin" Content="5h30" HorizontalAlignment="Left" Margin="0,10" Grid.Row="1" Width="159" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontWeight="Bold" FontSize="18" ToolTip="Temps travaillé le matin" />
+        <Label x:Name="lblTpsTravAprem" Content="5h30" HorizontalAlignment="Left" Margin="371,10,0,10" Grid.Row="1" Width="160" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontWeight="Bold" FontSize="18" ToolTip="Temps travaillé l'après-midi"/>
+        <Label x:Name="lblPauseTime" Content="00h45" Margin="198,10,0,10" VerticalContentAlignment="Center" UseLayoutRounding="True" Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontWeight="Bold" FontSize="18" Padding="0" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Width="135" Grid.Row="1" ToolTip="Temps de pause du midi"/>
 
-        <Button x:Name="btnBadger" Content="Badger" Margin="25,10,0,10" Background="#DDDDDDDD" Grid.Row="1" Click="btnBadger_Click" HorizontalAlignment="Left" Width="100" />
+        <Grid x:Name="gridBtnBadger" Margin="25,10,0,9" Grid.Row="1" HorizontalAlignment="Left" Width="100">
+            <Button x:Name="btnBadger" Content="Badger" Margin="0" Background="#E6DDDDDD" Click="btnBadger_Click" />
+            <usercontrols:FourCornerProgressbar x:Name="pbarBtnBadger" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" ></usercontrols:FourCornerProgressbar>
+
+        </Grid>
+
 
         <Grid Margin="10,0,10.2,41.8" Grid.Row="2" Height="21" VerticalAlignment="Bottom">
 
@@ -79,17 +96,17 @@
                 </Hyperlink>
             </Label>
 
-            <Label Content="Raccourcis utiles :" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0"/>
+            <Label Content="Raccourcis utiles :" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
 
         </Grid>
-        <Label x:Name="lblInfoLbl" Content="Informations :" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="2" VerticalAlignment="Top" Height="25" Width="83" />
+        <Label x:Name="lblInfoLbl" Content="Informations :" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="2" VerticalAlignment="Top" Height="25" Width="83" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
         <Label x:Name="lblLastInfoShown"  Margin="105,5,10.2,0" Grid.Row="2" VerticalAlignment="Top" Height="48" MouseDoubleClick="lblLastInfoShown_MouseDoubleClick">
             <AccessText x:Name="lblInfos" TextWrapping="Wrap" Text="" TextAlignment="Justify" />
         </Label>
 
 
 
-        <usercontrols:CompteurControl x:Name="ctrlCompteur" Margin="0,87,10.2,6" HorizontalAlignment="Right" Width="226"/>
+        <usercontrols:CompteurControl x:Name="ctrlCompteur" Margin="0,87,10.2,6" HorizontalAlignment="Right" Width="226" Background="{DynamicResource DefaultBackground}"/>
 
         <controls:AlignableWrapPanel x:Name="wrapPanelTop" HorizontalAlignment="Left" Height="40" Margin="159,10,0,0" VerticalAlignment="Top" Width="213" HorizontalContentAlignment="Center">
             <Image x:Name="imgBtnStartAutoBadge" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/autoStartOn.png" Cursor="Hand" MouseUp="imgBtnStartAutoBadge_MouseUp" />

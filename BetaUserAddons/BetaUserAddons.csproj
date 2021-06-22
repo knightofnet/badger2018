@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="AryxDevLibrary, Version=1.0.5.20, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AryxDevLibrary.1.0.5.20\lib\net35-client\AryxDevLibrary.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

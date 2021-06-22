@@ -40,8 +40,13 @@ namespace Badger2018.business
             {
                 if (dtTime.HasValue && File.Exists(Cst.ScreenshotDir + "tmpScreenshot.png"))
                 {
+                    string destFileName = Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(dtTime.Value.AtSec(Cst.SecondeOffset), etatBadger + "");
+                    if (File.Exists(destFileName))
+                    {
+                        File.Delete(destFileName);
+                    }
                     File.Move(Cst.ScreenshotDir + "tmpScreenshot.png",
-                        Cst.ScreenshotDir + MiscAppUtils.GetFileNameScreenshot(dtTime.Value.AtSec(Cst.SecondeOffset), etatBadger + ""));
+                        destFileName);
                 }
                 if (Pwin.EtatBadger != -1)
                 {
@@ -58,7 +63,7 @@ namespace Badger2018.business
 
             if (Pwin.PrgSwitch.IsInBadgeWork)
             {
-                _logger.Debug("BadgeFullAction : déà en cours");
+                _logger.Debug("BadgeFullAction : déjà en cours");
                 return;
             }
 
@@ -169,10 +174,20 @@ namespace Badger2018.business
 
         internal bool BadgeAction(String url, String idElt, String idVerif, Action<DateTime?> afterWork, int etatBadger)
         {
+
+            if (!File.Exists(Pwin.PrgOptions.FfExePath))
+            {
+                Pwin.NotifManager.NotifyNow("Firefox n'existe pas à cette adrese : " + Pwin.PrgOptions.FfExePath,
+                    "Erreur");
+                _logger.Info("Erreur lors du badgeage : aucune action");
+                _logger.Debug("Firefox n'existe pas à cette adrese : " + Pwin.PrgOptions.FfExePath);
+                afterWork(null);
+                Pwin.SetBtnBadgerEnabled(true);
+                return false;
+            }
+
             BadgeageProgressView progress = new BadgeageProgressView(Pwin.PrgOptions);
             progress.Show();
-
-
 
             BadgingBckder b = new BadgingBckder
             {
@@ -204,7 +219,7 @@ namespace Badger2018.business
             };
             _badgeageBackgrounder.RunWorkerCompleted += (sender, args) =>
             {
-                DateTime dtNow =  AppDateUtils.DtNow();
+                DateTime dtNow = AppDateUtils.DtNow();
                 if (b.ElementsFromPage.HeureBadgee != null)
                 {
                     _logger.Debug("Prise en compte de l'heure badgée");
@@ -234,6 +249,7 @@ namespace Badger2018.business
                         progress.ErrorStep(b.EtapeTrt);
                         progress.Topmost = false;
                     }
+                    Pwin.PrgSwitch.IsInBadgeWork = false;
 
                     // Annulation du badgeage par l'utilisateur
                     if (ex is UserCancelBadgeageException)
@@ -287,7 +303,7 @@ namespace Badger2018.business
                             progress.Hide();
                         }
 
-                   
+
 
                     }
                     if (response == EnumErrorCodeRetour.CONSULTER_POINTAGE)
@@ -302,8 +318,10 @@ namespace Badger2018.business
                         MiscAppUtils.GoTo(Pwin.PrgOptions.UrlSirhius);
                         CommonAfterReprise(afterWork, progress, etatBadger);
                     }
+
                     if (response == EnumErrorCodeRetour.OPEN_BADGE_PAGE)
                     {
+                        Pwin.PrgSwitch.IsInBadgeWork = false;
                         _logger.Info("Erreur lors du badgeage : ouverture page badgeage");
                         MiscAppUtils.GoTo(Pwin.PrgOptions.Uri);
                         CommonAfterReprise(afterWork, progress, etatBadger);
@@ -311,6 +329,7 @@ namespace Badger2018.business
                     }
                     if (response == EnumErrorCodeRetour.RETRY)
                     {
+                        Pwin.PrgSwitch.IsInBadgeWork = true;
                         _logger.Info("Erreur lors du badgeage : réessai");
                         if (progress != null)
                         {
@@ -323,7 +342,7 @@ namespace Badger2018.business
                     }
                 }
 
-                Pwin.PrgSwitch.IsInBadgeWork = false;
+
 
             };
 
@@ -370,7 +389,7 @@ namespace Badger2018.business
                 }
                 else
                 {
-                    Pwin.ChangePBarValue(100 * remainingTimer.TotalSeconds / Pwin.PrgOptions.LastBadgeDelay);
+                    Pwin.ChangeBtnBadgerValue(100 * remainingTimer.TotalSeconds / Pwin.PrgOptions.LastBadgeDelay);
                 }
             };
 
@@ -399,6 +418,7 @@ namespace Badger2018.business
                         MessageBoxImage.Question);
                     if (doValid == MessageBoxResult.No)
                     {
+                        Pwin.SetBtnBadgerEnabled(true);
                         return false;
                     }
                 }
@@ -415,6 +435,7 @@ namespace Badger2018.business
                         MessageBoxImage.Question);
                     if (doValid == MessageBoxResult.No)
                     {
+                        Pwin.SetBtnBadgerEnabled(true);
                         return false;
                     }
                 }
@@ -563,7 +584,7 @@ namespace Badger2018.business
                     _logger.Info("Extinction de l'ordinateur refusée");
                 }
 
-                    if (isOkToShutdownIfOptionEnabled && Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
+                if (isOkToShutdownIfOptionEnabled && Pwin.PrgOptions.IsLastBadgeIsAutoShutdown)
                 {
                     var psi = new ProcessStartInfo("shutdown", "/s /t 10");
                     psi.CreateNoWindow = true;

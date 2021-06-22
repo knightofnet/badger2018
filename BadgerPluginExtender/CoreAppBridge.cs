@@ -106,7 +106,7 @@ namespace BadgerPluginExtender
                 }
             }
 
-            if (method.GetParameters().Any(r => !r.IsOptional) && (arg1 == null || arg1.Length == 0))
+            if (method.GetParameters().Any(r => !r.IsOptional) && (arg1 == null || arg1.Length == 0 || arg1.Length != method.GetParameters().Length))
             {
                 throw new Exception("Erreur lors d'appel de l'ancre XX : le nombre d'arguments ne correspond pas");
             }

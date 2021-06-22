@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
+using BadgerCommonLibrary.utils;
 using BadgerPluginExtender;
 
 namespace Badger2018.business
@@ -106,17 +107,18 @@ namespace Badger2018.business
                     {
                         nTitle = String.Format("Il est {0}", nowTs.ToString(Cst.TimeSpanFormat));
                     }
-                    
+
                     if (isShowNotif)
                     {
                         MiscAppUtils.ShowNotificationBaloon(_notifyIcon, nTitle,
                             notif.Message,
                             actionHandler, 3000, useAlternate: UseAlternateNotification);
-                        PluginMgrRef.PlayHook("OnNotifSend", new object[] { notif.TimePivot() , nTitle, notif.Message});
+                        PluginMgrRef.PlayHook("OnNotifSend", new object[] { notif.TimePivot(), nTitle, notif.Message });
                     }
                     notif.TimeShowed = nowTs;
 
-                    if (AfterShowNotif != null) {
+                    if (AfterShowNotif != null)
+                    {
                         AfterShowNotif(notif);
                     }
 
@@ -187,6 +189,14 @@ namespace Badger2018.business
         internal void ResetNotificationShow()
         {
             listNotifAlreadyShown = new ConcurrentBag<string>();
+        }
+
+        public void NotifyNow(string message, string title = "Badger2018")
+        {
+            MiscAppUtils.ShowNotificationBaloon(_notifyIcon, title,
+                           message,
+                           null, 10000, useAlternate: UseAlternateNotification);
+            PluginMgrRef.PlayHook("OnNotifSend", new object[] { AppDateUtils.DtNow().TimeOfDay, title, message });
         }
     }
 }

@@ -20,10 +20,10 @@ namespace Badger2018.dto
         public String NiceName { get; set; }
         public int TypeUser { get; set; }
         public string ReArmMail { get; set; }
-        
 
 
-        public static LicenceInfo GetFromString (String licenceRaw)
+
+        public static LicenceInfo GetFromString(String licenceRaw)
         {
             try
             {
@@ -54,12 +54,27 @@ namespace Badger2018.dto
                 };
 
                 return licenceInfo;
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 ExceptionHandlingUtils.LogAndHideException(ex, "Erreur lors de la lecture de la licence");
                 return null;
             }
         }
 
+
+        public Dictionary<string, string> ToDictionnary()
+        {
+            Dictionary<String, String> retDico = new Dictionary<string, string>();
+            retDico.Add("NiceName", NiceName);
+            retDico.Add("VersionLicence", VersionLicence.ToString());
+            retDico.Add("DateExpiration", DateExpiration.ToString("g"));
+            retDico.Add("TypeUser", this.TypeUser.ToString());
+            retDico.Add("Username", Username);
+            retDico.Add("ReArmMail", ReArmMail);
+
+            return retDico;
+
+        }
     }
 }

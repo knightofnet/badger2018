@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using AryxDevLibrary.extensions;
 using Badger2018.constants;
 using Badger2018.dto;
 using BadgerCommonLibrary.utils;
@@ -8,6 +10,80 @@ namespace Badger2018.utils
     public static class TimesUtils
     {
 
+        private static readonly Dictionary<String, DateTime> _cacheDatesByKeys = new Dictionary<string, DateTime>(2);
+
+        public static DateTime TransformDateTimeWith(DateTime dateTime, TimeSpan minSpan, TimeSpan minusTs,
+            bool minusBeforeMin = true)
+        {
+
+            String keyCache = "TransformDateTimeWith#" + dateTime.ToString("O") + minSpan + minusTs +
+                  minusBeforeMin;
+
+            // Retourne la date mise en cache si existe (evite les recalculs)
+            if (_cacheDatesByKeys.ContainsKey(keyCache))
+            {
+                return _cacheDatesByKeys[keyCache];
+            }
+
+            DateTime retDateTime = dateTime.Clone();
+
+            if (minusBeforeMin)
+            {
+                retDateTime -= minusTs;
+                if (retDateTime.TimeOfDay.CompareTo(minSpan) < 0)
+                {
+                    retDateTime = AppDateUtils.ChangeTime(retDateTime, minSpan);
+                }
+            }
+            else
+            {
+                if (retDateTime.TimeOfDay.CompareTo(minSpan) < 0)
+                {
+                    retDateTime = AppDateUtils.ChangeTime(retDateTime, minSpan);
+                }
+                retDateTime -= minusTs;
+            }
+
+            _cacheDatesByKeys.Add(keyCache, retDateTime);
+            return retDateTime;
+
+        }
+
+        public static DateTime GetDateTimeEndTravTheoriqueBis(DateTime startTime, AppOptions appOptions, EnumTypesJournees tyJournee)
+        {
+
+            String keyCache = "GetDateTimeEndTravTheoriqueBis#" + startTime.ToString("O") + appOptions.TempsDemieJournee + appOptions.TempsMinPause +
+                              tyJournee.Index;
+
+            // Retourne la date mise en cache si existe (evite les recalculs)
+            if (_cacheDatesByKeys.ContainsKey(keyCache))
+            {
+                return _cacheDatesByKeys[keyCache];
+            }
+
+            DateTime retDt;
+            // Si le type de journée est une journée complète
+            if (EnumTypesJournees.Complete == tyJournee)
+            {
+                retDt = startTime + appOptions.TempsDemieJournee + appOptions.TempsDemieJournee + appOptions.TempsMinPause;
+                return retDt;
+            }
+
+            if (EnumTypesJournees.ApresMidi == tyJournee)
+            {
+                retDt = startTime + appOptions.TempsDemieJournee;
+                return retDt;
+            }
+
+            // Matin
+            retDt = startTime + appOptions.TempsDemieJournee;
+
+            _cacheDatesByKeys.Add(keyCache, retDt);
+            return retDt;
+
+        }
+
+        [ObsoleteAttribute("Use GetDateTimeEndTravTheoriqueBis()")]
         public static DateTime GetDateTimeEndTravTheorique(DateTime startTime, AppOptions appOptions, EnumTypesJournees tyJournee)
         {
             DateTime retDt = startTime;
@@ -24,12 +100,14 @@ namespace Badger2018.utils
 
             // Si le type de journée est une journée complète
             if (EnumTypesJournees.Complete == tyJournee)
-            {              
+            {
                 retDt = startTime + appOptions.TempsDemieJournee + appOptions.TempsDemieJournee + appOptions.TempsMinPause;
+
                 actionsCommunes(retDt, appOptions);
+
                 if (retDt.TimeOfDay.CompareTo(appOptions.PlageFixeApremFin) < 0)
                 {
-                    retDt = retDt.ChangeTime(appOptions.PlageFixeApremFin);
+                    retDt = AppDateUtils.ChangeTime(retDt, appOptions.PlageFixeApremFin);
                 }
                 return retDt;
             }
@@ -37,10 +115,12 @@ namespace Badger2018.utils
             if (EnumTypesJournees.ApresMidi == tyJournee)
             {
                 retDt = startTime + appOptions.TempsDemieJournee;
+
                 actionsCommunes(retDt, appOptions);
+
                 if (retDt.TimeOfDay.CompareTo(appOptions.PlageFixeApremFin) < 0)
                 {
-                    retDt = retDt.ChangeTime(appOptions.PlageFixeApremFin);
+                    retDt = AppDateUtils.ChangeTime(retDt, appOptions.PlageFixeApremFin);
                 }
                 return retDt;
             }
@@ -48,10 +128,12 @@ namespace Badger2018.utils
 
             // Matin
             retDt = startTime + appOptions.TempsDemieJournee;
+
             actionsCommunes(retDt, appOptions);
+
             if (retDt.TimeOfDay.CompareTo(appOptions.PlageFixeMatinFin) < 0)
             {
-                retDt = retDt.ChangeTime(appOptions.PlageFixeMatinFin);
+                retDt = AppDateUtils.ChangeTime(retDt, appOptions.PlageFixeMatinFin);
             }
             return retDt;
 
@@ -72,6 +154,16 @@ namespace Badger2018.utils
                 tTravTheo += appOptions.TempsDemieJournee;
             }
             return tTravTheo;
+        }
+
+        public static DateTime GetMaxDateTimeForOneDay(DateTime endTheoDateTime, AppOptions prgOptions, EnumTypesJournees typeJournee)
+        {
+            TimeSpan maxTpsAutorise = prgOptions.TempsMaxJournee - (prgOptions.TempsDemieJournee + prgOptions.TempsDemieJournee);
+            TimeSpan tsFinJourneeReglementaire = endTheoDateTime.TimeOfDay + maxTpsAutorise -
+                                  (prgOptions.IsAdd5minCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero);
+
+            return DateUtilsExt.ChangeTime(AppDateUtils.DtNow(), tsFinJourneeReglementaire);
+
         }
 
 
@@ -217,5 +309,12 @@ namespace Badger2018.utils
 
         //public TimeSpan parseTimeSpanStringWithTags()
 
+
+        public static DateTime ClassicTransform(DateTime dateTime, AppOptions prgOptions, EnumTypesJournees typeJournee)
+        {
+            return TransformDateTimeWith(dateTime, EnumTypesJournees.ApresMidi.Equals(typeJournee) || EnumTypesJournees.Complete.Equals(typeJournee) ?
+                prgOptions.PlageFixeApremFin : prgOptions.PlageFixeMatinFin,
+                prgOptions.IsAdd5minCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero);
+        }
     }
 }

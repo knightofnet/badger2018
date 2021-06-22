@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static Badger2018.views.usercontrols.semaine.JourSemaineControl;
+
 
 namespace Badger2018.views.usercontrols.semaine
 {
@@ -28,7 +28,7 @@ namespace Badger2018.views.usercontrols.semaine
             InitializeComponent();
         }
 
-        public void Loads(PeriodeG pG, AppOptions appOptions)
+        public void Loads(JourSemaineControl.PeriodeG pG, AppOptions appOptions)
         {
             lblNamePer.Content = pG.Name;
 

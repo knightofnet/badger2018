@@ -26,6 +26,9 @@ namespace Badger2018.dto
         public TimeSpan EndMoyPfMatin { get; set; }
         public TimeSpan EndMoyPfAprem { get; set; }
 
+        public DateTime MaxTimeForOneDay { get; set; }
+        public DateTime EndRawDateTime { get; set; }
+
 
         public TimesBadgerDto()
         {

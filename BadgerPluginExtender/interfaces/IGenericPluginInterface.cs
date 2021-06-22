@@ -10,5 +10,6 @@ namespace BadgerPluginExtender.interfaces
         MethodRecord[] GetMethodToRecords();
 
 
+
     }
 }

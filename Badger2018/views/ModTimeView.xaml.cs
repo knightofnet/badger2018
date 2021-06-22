@@ -5,7 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.dto.bdd;
 using Badger2018.dto.converter;
+using Badger2018.services;
 using Badger2018.utils;
 using BadgerCommonLibrary.utils;
 
@@ -26,6 +28,9 @@ namespace Badger2018.views
 
         public int EtatBadger { get; private set; }
 
+        public DateTime CurrentModDay { get; private set; }
+
+        private bool isCurrentDay;
         private ObservableCollection<IntervalTemps> obsListPause = new ObservableCollection<IntervalTemps>();
 
         private CoupleCboxTbox c0;
@@ -35,15 +40,15 @@ namespace Badger2018.views
         private DataGridTextColumn _colColumnStart;
         private DataGridTextColumn _colColumnEnd;
 
-        public ModTimeView(TimesBadgerDto times, EnumTypesJournees tyJournees, int etatBadger, string urlMesPointages, AppOptions appOptions)
+        public ModTimeView(DateTime dayToMod, string urlMesPointages, AppOptions appOptions)
         {
-            Times = times;
-            TypeJournee = tyJournees;
-            EtatBadger = etatBadger;
+
             PrgOptionsRef = appOptions;
 
             InitializeComponent();
             InitDg();
+
+            Loaded += OnLoaded;
 
             c0 = new CoupleCboxTbox(chkB0Tick, tboxB0Time);
             c1 = new CoupleCboxTbox(chkB1Tick, tboxB1Time);
@@ -54,7 +59,52 @@ namespace Badger2018.views
             {
                 cboxTyJournee.Items.Add(enumTyJ.Libelle);
             }
-            cboxTyJournee.SelectedItem = tyJournees.Libelle;
+            
+
+         
+
+            lienMesBadgeages.Click += (sender, args) => MiscAppUtils.GoTo(urlMesPointages);
+        }
+
+        public void SetCurrentDay(DateTime day, TimesBadgerDto times, EnumTypesJournees tyJournee, int etatBadger, bool isCurrentDay)
+        {
+            CurrentModDay = day;
+            if (isCurrentDay)
+            {
+                Times = times;
+                TypeJournee = tyJournee;
+                EtatBadger = etatBadger;
+               
+            } else
+            {
+                Times = new TimesBadgerDto();
+            }
+
+            this.isCurrentDay = isCurrentDay;
+        }
+
+        private void OnLoaded(object objSender, RoutedEventArgs a)
+        {
+            if (!isCurrentDay)
+            {
+                BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
+                JoursServices jServices = ServicesMgr.Instance.JoursServices;
+
+                JourEntryDto jour = jServices.GetJourData(CurrentModDay);
+                TypeJournee = jour.TypeJour;
+                EtatBadger = jour.EtatBadger;
+
+                Times.PlageTravMatin.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, CurrentModDay)).AtSec(Cst.SecondeOffset);
+                Times.PlageTravMatin.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END , CurrentModDay)).AtSec(Cst.SecondeOffset);
+                Times.PlageTravAprem.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_START, CurrentModDay)).AtSec(Cst.SecondeOffset);
+                Times.PlageTravAprem.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_END, CurrentModDay)).AtSec(Cst.SecondeOffset);
+
+                Times.PausesHorsDelai = new System.Collections.Generic.List<IntervalTemps>();
+                Times.PausesHorsDelai.AddRange(bServices.GetPauses(CurrentModDay));
+            }
+
+
+            cboxTyJournee.SelectedItem = TypeJournee.Libelle;
 
             // On ajoute les 4 temps badgés si dispo
             c0.SetTextTime(Times.PlageTravMatin.Start);
@@ -71,7 +121,7 @@ namespace Badger2018.views
 
             EnumTypesJournees locTyJournees = TypeJournee;
 
-            ChangeUiToEtatBadgerTyJournee(etatBadger, locTyJournees);
+            ChangeUiToEtatBadgerTyJournee(EtatBadger, locTyJournees);
 
             cboxTyJournee.SelectionChanged += (sender, args) =>
             {
@@ -84,8 +134,6 @@ namespace Badger2018.views
                 TypeJournee = eTypesJournees;
             };
 
-
-            lienMesBadgeages.Click += (sender, args) => MiscAppUtils.GoTo(urlMesPointages);
         }
 
         private void InitDg()
@@ -195,7 +243,7 @@ namespace Badger2018.views
             {
                 HasChanged = true;
 
-                DateTime dtNow = AppDateUtils.DtNow();
+                DateTime dtNow = CurrentModDay;
 
                 Times.PlageTravMatin.Start = c0.GetStrictDateTime().ChangeDate(dtNow);
                 Times.PlageTravMatin.End = c1.GetStrictDateTime().ChangeDate(dtNow);

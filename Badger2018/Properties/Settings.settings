@@ -158,12 +158,6 @@
     <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="Notif1Obj" Type="Badger2018.dto.CustomNotificationDto" Scope="User">
-      <Value Profile="(Default)">False#HEURE_PERSO#00:00:00#00:00:00#0#Un message à faire passer ?</Value>
-    </Setting>
-    <Setting Name="Notif2Obj" Type="Badger2018.dto.CustomNotificationDto" Scope="User">
-      <Value Profile="(Default)">False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu'il n'est pas l'heure de rentrer ?</Value>
-    </Setting>
     <Setting Name="ShowNotifEndMoyMatin" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -190,6 +184,9 @@
     </Setting>
     <Setting Name="IsPreloadFF" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CptCtrlStateShowned" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

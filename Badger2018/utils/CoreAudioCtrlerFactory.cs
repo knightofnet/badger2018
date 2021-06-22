@@ -39,41 +39,41 @@ namespace Badger2018.utils
 
             Process[] pWaveCompProcs = Process.GetProcessesByName("WaveCompagnonPlayer");
 
-                SoundWorkBckder bckder = new SoundWorkBckder();
-                bckder.CoreAudioFactory = this;
-                bckder.Sound = sound;
-                bckder.Device = deviceFullName;
-                bckder.Volume = volume;
-                bckder.UseTcpRequest = pWaveCompProcs.Length == 1;
+            SoundWorkBckder bckder = new SoundWorkBckder();
+            bckder.CoreAudioFactory = this;
+            bckder.Sound = sound;
+            bckder.Device = deviceFullName;
+            bckder.Volume = volume;
+            bckder.UseTcpRequest = pWaveCompProcs.Length == 1;
 
-                _bckgWorker = new BackgroundWorker();
-                _bckgWorker.DoWork += bckder.DoWorkPlaySound;
+            _bckgWorker = new BackgroundWorker();
+            _bckgWorker.DoWork += bckder.DoWorkPlaySound;
 
-                _bckgWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
+            _bckgWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs args)
+            {
+
+                if (args.Error == null)
                 {
-
-                    if (args.Error == null)
+                    _logger.Debug("AsyncPlaySound::Success");
+                    if (actionAfterBckger != null)
                     {
-                        _logger.Debug("AsyncPlaySound::Success");
-                        if (actionAfterBckger != null)
-                        {
-                            actionAfterBckger.Invoke();
-                        }
+                        actionAfterBckger.Invoke();
                     }
-                    else
+                }
+                else
+                {
+                    _logger.Debug("AsyncPlaySound::Error");
+                    if (actionAfterBckgerFailAction != null)
                     {
-                        _logger.Debug("AsyncPlaySound::Error");
-                        if (actionAfterBckgerFailAction != null)
-                        {
-                            actionAfterBckgerFailAction.Invoke(args.Error);
-                        }
+                        actionAfterBckgerFailAction.Invoke(args.Error);
                     }
+                }
 
 
-                };
+            };
 
-                _bckgWorker.RunWorkerAsync();
-            
+            _bckgWorker.RunWorkerAsync();
+
         }
 
 
@@ -84,7 +84,7 @@ namespace Badger2018.utils
             _bckgWorker = new BackgroundWorker();
             _bckgWorker.DoWork += bckder.DoWork;
 
-            _bckgWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs args)
+            _bckgWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs args)
             {
 
                 if (args.Error == null)
@@ -123,31 +123,35 @@ namespace Badger2018.utils
             WaveCompProcess.StartInfo.CreateNoWindow = true;
             WaveCompProcess.Start();
             WaveCompProcess.PriorityClass = ProcessPriorityClass.Normal;
+
+
         }
 
         internal void CloseProcess()
         {
             try
             {
-
-                TcpRequestsStore.CloseWaveCompagnon();
+                if (WaveCompProcess != null)
+                    TcpRequestsStore.CloseWaveCompagnon();
             }
             catch (Exception ex)
             {
                 if (WaveCompProcess != null && !WaveCompProcess.HasExited)
                 {
                     WaveCompProcess.Close();
-                    
+
                 }
 
-            } finally
+            }
+            finally
             {
                 if (WaveCompProcess != null)
                 {
                     try
                     {
                         WaveCompProcess.Kill();
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         ExceptionHandlingUtils.LogAndHideException(ex, "Erreur lors de la fermeture de WaveCompagnon");
                     }

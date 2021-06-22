@@ -12,7 +12,7 @@ namespace Badger2018.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -651,31 +651,6 @@ namespace Badger2018.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False#HEURE_PERSO#00:00:00#00:00:00#0#Un message à faire passer ?")]
-        public global::Badger2018.dto.CustomNotificationDto Notif1Obj {
-            get {
-                return ((global::Badger2018.dto.CustomNotificationDto)(this["Notif1Obj"]));
-            }
-            set {
-                this["Notif1Obj"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu\'il n\'est pas l\'heure de rentrer ?" +
-            "")]
-        public global::Badger2018.dto.CustomNotificationDto Notif2Obj {
-            get {
-                return ((global::Badger2018.dto.CustomNotificationDto)(this["Notif2Obj"]));
-            }
-            set {
-                this["Notif2Obj"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ShowNotifEndMoyMatin {
             get {
@@ -779,6 +754,18 @@ namespace Badger2018.Properties {
             }
             set {
                 this["IsPreloadFF"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int CptCtrlStateShowned {
+            get {
+                return ((int)(this["CptCtrlStateShowned"]));
+            }
+            set {
+                this["CptCtrlStateShowned"] = value;
             }
         }
     }

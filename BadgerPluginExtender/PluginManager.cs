@@ -79,7 +79,7 @@ namespace BadgerPluginExtender
 
                 if (PluginsInstance.ContainsKey(plugin.GetPluginInfo().Name))
                 {
-                    _logger.Warn("Le plugin "+ plugin.GetPluginInfo().Name + " est déjà chargé.");
+                    _logger.Warn("Le plugin " + plugin.GetPluginInfo().Name + " est déjà chargé.");
                     continue;
                 }
 
@@ -96,7 +96,7 @@ namespace BadgerPluginExtender
 
         private bool IsPluginOk(IGenericPluginInterface plugin)
         {
-            foreach(MethodRecord mRec in plugin.GetMethodToRecords() )
+            foreach (MethodRecord mRec in plugin.GetMethodToRecords())
             {
                 if (mRec.MethodResponder == null)
                 {
@@ -149,7 +149,36 @@ namespace BadgerPluginExtender
             return retList;
         }
 
+        public HookReturns PlayHookPluginAndReturn(String pluginName, string hookName, object[] arg1, Type returnType)
+        {
+            HookReturns retList = new HookReturns();
+            retList.ReturnType = returnType;
+            if (!IsAnyPluginLoaded || (PluginsInstance != null && !PluginsInstance.Any()))
+            {
+                return retList;
+            }
 
+            foreach (KeyValuePair<string, IGenericPluginInterface> valuePair in PluginsInstance)
+            {
+                if (!valuePair.Key.Equals(pluginName)) continue;
+
+                List<MethodRecord> methodRecords = valuePair.Value.GetMethodToRecords().Where(r => r.TargetHookName.Equals(hookName)).ToList();
+
+                foreach (MethodRecord methodRecord in methodRecords)
+                {
+                    object oRet = PlayOneMethodRecord(hookName, arg1, methodRecord, returnType, valuePair.Value);
+                    HookReturn r = new HookReturn();
+                    r.MethodRecord = methodRecord;
+                    r.PluginInfo = valuePair.Value.GetPluginInfo();
+                    r.ReturnedObject = oRet;
+                    retList.Add(r);
+                }
+
+
+            }
+
+            return retList;
+        }
 
 
 
@@ -172,7 +201,7 @@ namespace BadgerPluginExtender
                         }
                     }
 
-                    if (method.GetParameters().Length > 0 && (arg1 == null || arg1.Length == 0))
+                    if (method.GetParameters().Length > 0 && (arg1 == null || arg1.Length == 0 || arg1.Length != method.GetParameters().Length))
                     {
                         throw new Exception(String.Format("PluginManager::PlayOneMethodRecord : La méthode {0} est attendue avec {1} paramètre(s). {2} transmi(s). Le nombre de paramètres obligatoire ne correspond pas", method.Name, method.GetParameters().Length, arg1.Length));
                     }

@@ -34,7 +34,7 @@ namespace Badger2018.views.usercontrols.semaine
         public double AbsoluteTop { get; set; }
 
         public TimeSpanToPixelsFrise TsToPixRef { get; private set; }
-        private IPresenterJsCtrl Presenter { get; }
+        private IPresenterJsCtrl Presenter { get; set; }
         public InfosDay InfosDay { get; internal set; }
 
         private readonly List<PeriodeG> _listPeriodes = new List<PeriodeG>();
@@ -47,7 +47,7 @@ namespace Badger2018.views.usercontrols.semaine
             Height = 26;
         }
 
-        public JourSemaineControl(IPresenterJsCtrl presenter,TimeSpanToPixelsFrise tsToPix)
+        public JourSemaineControl(IPresenterJsCtrl presenter, TimeSpanToPixelsFrise tsToPix)
         {
             InitializeComponent();
             Background = null;
@@ -94,7 +94,7 @@ namespace Badger2018.views.usercontrols.semaine
             return pG;
         }
 
-        public PeriodeG AddPeriodeGeneric(String name, TimeSpan start, TimeSpan end, Color color )
+        public PeriodeG AddPeriodeGeneric(String name, TimeSpan start, TimeSpan end, Color color)
         {
 
             // heure/pos départ
@@ -111,11 +111,12 @@ namespace Badger2018.views.usercontrols.semaine
             {
                 end = end.Add(new TimeSpan(0, 1, 0));
 
-            } else
+            }
+            else
             {
 
             }
-          
+
 
             Rectangle rect = TsToPixRef.RectTopLeftAlignFromTs(start, end);
             rect.SnapsToDevicePixels = true;
@@ -128,15 +129,15 @@ namespace Badger2018.views.usercontrols.semaine
 
             rect.Cursor = Cursors.Hand;
 
-          
+
 
 
 
             per.PerRectangle = rect;
-            
-            
-            
-                
+
+
+
+
 
             per.Name = name;
 
@@ -183,6 +184,6 @@ namespace Badger2018.views.usercontrols.semaine
 
         }
 
- 
+
     }
 }

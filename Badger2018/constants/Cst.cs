@@ -36,11 +36,11 @@ namespace Badger2018.constants
 
 
 
-        public static readonly Thickness BtnBadgerPositionAtLeft = new Thickness(39.5, 10, 0, 10);
+        public static readonly Thickness BtnBadgerPositionAtLeft = new Thickness(39.5, 10, 0, 7);
 
-        public static readonly Thickness BtnBadgerPositionAtCenter = new Thickness(218.5, 10, 0, 10);
+        public static readonly Thickness BtnBadgerPositionAtCenter = new Thickness(218.5, 10, 0, 7);
 
-        public static readonly Thickness BtnBadgerPositionAtRight = new Thickness(397.5, 10, 0, 10);
+        public static readonly Thickness BtnBadgerPositionAtRight = new Thickness(397.5, 10, 0, 7);
 
         public static readonly SolidColorBrush SCBGrey = new SolidColorBrush(Colors.Gray);
         public static readonly SolidColorBrush SCBBlack = new SolidColorBrush(Colors.Black);
@@ -48,6 +48,7 @@ namespace Badger2018.constants
         public static readonly SolidColorBrush SCBDarkGreen = new SolidColorBrush(Colors.DarkGreen);
         public static readonly SolidColorBrush SCBGreenPbar = new SolidColorBrush(Color.FromArgb(255, 6, 176, 37));
         public static readonly SolidColorBrush SCBGold = new SolidColorBrush(Colors.Gold);
+        public static readonly SolidColorBrush SCBOrange = new SolidColorBrush(Colors.Orange);
         internal static readonly int SecondeOffset = 0;
         public const string NotifEndPfMatinName = "ShowNotifEndPfMatin";
         public const string NotifEndPfApremName = "ShowNotifEndPfAprem";
@@ -70,8 +71,15 @@ namespace Badger2018.constants
 
         public const string DecryptKey = @"PUzfy'tP29VX9,_SdSJ*tvhMv.g`6-+]";
 
-
+        /// <summary>
+        /// Dossier de l'application
+        /// </summary>
         public static string ApplicationDirectory { get; set; }
+
+        public const string HelperWaveCompagnonPlayerRelPath = "WaveCompagnonPlayer.exe";
+        public const string HelperWatchDogRestartRelPath = @".\Resources\WatchDogRestart.exe";
+        public const string HelperGeckoDriverRelPath = @"geckodriver.exe";
+
 
     }
 }

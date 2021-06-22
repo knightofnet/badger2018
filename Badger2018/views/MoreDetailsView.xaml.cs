@@ -33,22 +33,39 @@ namespace Badger2018.views
         private AppOptions PrgOptions { get; set; }
         public bool IsMustLoadsModTimeView { get; set; }
 
-        public DateTime currentShowDay;
+        public DateTime CurrentShowDay { get; private set; }
 
         private Dictionary<String, List<LabelledDateTime>> _memoryDay;
 
-        public MoreDetailsView(TimesBadgerDto times, int etatBadgeage, EnumTypesJournees typesJournees, AppOptions prgOptions)
+        public MoreDetailsView(AppOptions prgOptions, DateTime? dayToShownAtInit = null)
         {
             InitializeComponent();
             btnNextDay.Visibility = Visibility.Collapsed;
 
-            currentShowDay = AppDateUtils.DtNow();
+            if (!dayToShownAtInit.HasValue)
+            {
+                CurrentShowDay = AppDateUtils.DtNow();
+            } else
+            {
+                CurrentShowDay = dayToShownAtInit.Value;
+            }
 
             _memoryDay = new Dictionary<string, List<LabelledDateTime>>(1);
 
-
             PrgOptions = prgOptions;
 
+            Loaded += OnLoadUi; 
+
+        }
+
+        private void OnLoadUi(object Sender, RoutedEventArgs args)
+        {
+            BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
+            JoursServices jServices = ServicesMgr.Instance.JoursServices;
+
+            AdaptUiToAnotherDay(CurrentShowDay, bServices, jServices);
+
+            /*
             // On initiliase la fenetre avec le jours courant
             List<LabelledDateTime> listIvlDayForDay = SetListValueForCurrentDay(times, etatBadgeage, typesJournees);
             _memoryDay.Add(times.TimeRef.ToString("d"), listIvlDayForDay);
@@ -71,11 +88,8 @@ namespace Badger2018.views
                 ref isMaxDepass);
             lblTempsTrav.Content = a.ToString(Cst.TimeSpanFormatWithH);
             Add5MinTooltip();
-
+            */
         }
-
-
-
 
         private void InitStackPanel(List<LabelledDateTime> listIvlForDay, TimesBadgerDto times, EnumTypesJournees typesJournees)
         {
@@ -268,7 +282,7 @@ namespace Badger2018.views
             DateTime? dtLastDay = null;
             try
             {
-                dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
+                dtLastDay = jServices.GetPreviousDayOf(CurrentShowDay);
                 if (!dtLastDay.HasValue)
                 {
                     return;
@@ -283,11 +297,11 @@ namespace Badger2018.views
                     btnNextDay.Visibility = Visibility.Visible;
                 }
 
-                currentShowDay = dtLastDay.Value;
+                CurrentShowDay = dtLastDay.Value;
 
                 AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
 
-                dtLastDay = jServices.GetPreviousDayOf(currentShowDay);
+                dtLastDay = jServices.GetPreviousDayOf(CurrentShowDay);
                 btnPrevDay.IsEnabled = dtLastDay.HasValue;
             }
             catch (Exception ex)
@@ -305,7 +319,7 @@ namespace Badger2018.views
             try
             {
 
-                dtLastDay = jServices.GetNextDayOf(currentShowDay);
+                dtLastDay = jServices.GetNextDayOf(CurrentShowDay);
                 if (!dtLastDay.HasValue)
                 {
                     return;
@@ -320,11 +334,11 @@ namespace Badger2018.views
                     btnNextDay.Visibility = Visibility.Visible;
                 }
 
-                currentShowDay = dtLastDay.Value;
+                CurrentShowDay = dtLastDay.Value;
 
                 AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
 
-                dtLastDay = jServices.GetNextDayOf(currentShowDay);
+                dtLastDay = jServices.GetNextDayOf(CurrentShowDay);
                 btnNextDay.IsEnabled = dtLastDay.HasValue;
             }
             catch (Exception ex)
@@ -359,7 +373,7 @@ namespace Badger2018.views
                     btnNextDay.Visibility = Visibility.Visible;
                 }
 
-                currentShowDay = dateSelected.Value;
+                CurrentShowDay = dateSelected.Value;
 
                 AdaptUiToAnotherDay(dateSelected.Value, bServices, jServices);
 
@@ -384,7 +398,7 @@ namespace Badger2018.views
             times.TimeRef = dtLastDay;
 
             // désactive le bouton si un autre jour que le jour courant.
-            btnModTimes.IsEnabled = dtLastDayStr.Equals(AppDateUtils.DtNow().ToString("d"));
+            // TODO btnModTimes.IsEnabled = dtLastDayStr.Equals(AppDateUtils.DtNow().ToString("d"));
 
             if (jServices.IsJourExistFor(dtLastDay))
             {

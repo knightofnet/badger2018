@@ -9,6 +9,7 @@ namespace Badger2018.dto
         public TimeSpan RealTimeTempsTravailleMatin { get; set; }
         public DateTime RealTimeDtNow { get; set; }
         public TimeSpan RealTimeTsNow { get; set; }
-
+        public TimeSpan RealTimeMinTpsTravRestant { get; set; }
+        public TimeSpan RealTimeMaxTpsTravRestant { get; set; }
     }
 }

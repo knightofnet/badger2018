@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Badger2018.views.usercontrols"
              mc:Ignorable="d" 
-             MaxHeight="53" MaxWidth="211" Height="51" Width="211">
-    <Grid Background="White">
+             MaxHeight="53" MaxWidth="211" Height="51" Width="211" Background="White">
+    <Grid >
         <Label Content="Type de journée :" HorizontalAlignment="Right" Margin="0,0,15.2,23.2" VerticalAlignment="Bottom" Width="196" Height="28" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
 
         <ComboBox x:Name="cboxTypeJournee" HorizontalAlignment="Left" Margin="0,28,0,0" VerticalAlignment="Top" Width="191">

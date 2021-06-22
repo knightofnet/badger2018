@@ -41,6 +41,6 @@
 
         <Label Content="C/D au moment du dernier relevé :" Margin="250,103,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="204"/>
         <TextBox x:Name="tboxLastCdSeen" HorizontalAlignment="Left" Height="23" Margin="364,134,0,0" TextWrapping="Wrap" Text="07:48" VerticalAlignment="Top" Width="66"/>
-        <DataGrid x:Name="dgPause" Height="126" Margin="31,332,34,0" VerticalAlignment="Top"/>
+        <DataGrid x:Name="dgPause" Margin="31,327,33.2,34.6"/>
     </Grid>
 </Window>

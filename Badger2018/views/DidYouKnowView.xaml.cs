@@ -8,6 +8,7 @@ using AryxDevLibrary.extensions;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AryxDevLibrary.utils.xml;
+using XmlUtils = AryxDevLibrary.utils.XmlUtils;
 
 namespace Badger2018.views
 {

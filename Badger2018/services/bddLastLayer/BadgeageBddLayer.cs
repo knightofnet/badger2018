@@ -69,8 +69,6 @@ namespace Badger2018.services.bddLastLayer
             SQLiteCommand command = null;
             string whereClause = "DATE_BADGE=@DATEBADGE";
 
-
-
             if (relationKey == null && index == -1)
             {
                 whereClause += " AND TYPE_BADGE BETWEEN 0 AND 4";
@@ -101,7 +99,7 @@ namespace Badger2018.services.bddLastLayer
 
 
             return (long)command.ExecuteScalar() >= 1;
-            ;
+
         }
 
 
@@ -259,6 +257,19 @@ namespace Badger2018.services.bddLastLayer
             }
         }
 
+        public static bool IsExistPauseWithThisRelationId(DbbAccessManager dbbManager, string relationKey)
+        {
+            SQLiteCommand command = null;
+
+            string sql = String.Format(SqlConstants.SELECT_COUNT_ALL_WHERE, TableBadgeages, "RELATION_KEY=@RELATION_KEY");
+
+            command = new SQLiteCommand(sql, dbbManager.Connection);
+
+            command.Parameters.Add(new SQLiteParameter("@RELATION_KEY", relationKey));
+
+            return (long)command.ExecuteScalar() >= 1;
+
+        }
 
         private static BadgeageEntryDto HydrateBadgeageDto(SQLiteDataReader reader)
         {
@@ -293,6 +304,7 @@ namespace Badger2018.services.bddLastLayer
             }
             return b;
         }
+
 
 
     }

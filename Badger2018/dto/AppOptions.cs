@@ -181,6 +181,7 @@ namespace Badger2018.dto
         public bool IsAutoBadgeAtStartDelayed { get; internal set; }
 
         public bool IsPreloadFF { get; internal set; }
+        public int CptCtrlStateShowned { get; set; }
 
         public void ResetSpecOption()
         {
@@ -189,6 +190,11 @@ namespace Badger2018.dto
             LastBadgeDelay = 0;
             DeltaAutoBadgeageMinute = 0;
         }
+
+
+
+
+
 
 
     }

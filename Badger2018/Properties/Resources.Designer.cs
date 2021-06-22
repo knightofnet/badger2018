@@ -113,7 +113,7 @@ namespace Badger2018.Properties {
         ///INSERT INTO `TYBADGEAGES` VALUES (3,&apos;PLAGE_TRAV_APREM_START&apos;);
         ///INSERT INTO `TYBADGEAGES` VALUES (4,&apos;PLAGE_TRAV_APREM_END&apos;);
         ///INSERT INTO `TYBADGEAGES` VALUES (10,&apos;PAUSE_START&apos;);
-        ///INSERT INTO `TYBADGEAGES` VALUES (11,&apos;PA [le reste de la chaîne a été tronqué]&quot;;.
+        ///INSERT INTO `TYBADGEAGES` VA [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string dbbCreate {
             get {
@@ -395,7 +395,7 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Tango Tigre.
+        ///   Recherche une chaîne localisée semblable à Aluminium Athènes.
         /// </summary>
         internal static string versionName {
             get {

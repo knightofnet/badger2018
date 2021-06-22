@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Threading;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
-using AryxDevLibrary4.utils.logger;
 using Badger2018.business;
 using Badger2018.business.dbb;
 using Badger2018.constants;
@@ -18,6 +17,7 @@ using Badger2018.Properties;
 using Badger2018.services;
 using Badger2018.utils;
 using Badger2018.views;
+using Badger2018.views.usercontrols;
 using BadgerCommonLibrary.business;
 using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.utils;
@@ -33,7 +33,7 @@ namespace Badger2018
     /// </summary>
     public partial class App : Application
     {
-        private static Logger _logger = new Logger(CommonCst.AppLogFile, CommonCst.ConsoleLogLvl, CommonCst.FileLogLvl, "1 Mo");
+        private static Logger _logger = new Logger(CommonCst.AppLogFile, CommonCst.ConsoleLogLvl, CommonCst.FileLogLvl, "1 Mo", CommonCst.MainLogName);
 
 
         private void App_OnStartup(object sender, StartupEventArgs e)
@@ -251,8 +251,15 @@ namespace Badger2018
         private void ConvertsXmlPointageToDEbb()
         {
 
-            XmlToBddPointageConverter converter = new XmlToBddPointageConverter(Cst.PointagesDir);
-            converter.Convert();
+            try
+            {
+                XmlToBddPointageConverter converter = new XmlToBddPointageConverter(Cst.PointagesDir);
+                converter.Convert();
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                ExceptionHandlingUtils.LogAndHideException(ex);
+            }
 
             ServicesMgr.Instance.BadgeagesServices.RemoveDuplicatesBadgeages();
         }
@@ -298,6 +305,8 @@ namespace Badger2018
                 _logger = new Logger(_logger.FileLog.FullName, Logger.LogLvl.DEBUG, Logger.LogLvl.DEBUG);
             }
 
+            CheckAppHelper();
+
             if (argsDto.ExportConfFilePath != null)
             {
                 _logger.Info("Exportation de la configuration");
@@ -339,6 +348,37 @@ namespace Badger2018
                 Environment.Exit(EnumExitCodes.M_OK_IMPORT_EXPORT_OK.ExitCodeInt);
             }
 
+            if (prgOptions.CptCtrlStateShowned > (int) CompteurControl.CompteurState.TempsCdRealTime)
+            {
+                prgOptions.CptCtrlStateShowned = (int) CompteurControl.CompteurState.TempsTravailDuJour;
+                OptionManager.SaveOptions(prgOptions);
+                _logger.Debug("RaZ de l'état du CptCtrl");
+            }
+
+        }
+
+        private static void CheckAppHelper()
+        {
+            if (!File.Exists(Cst.HelperWaveCompagnonPlayerRelPath))
+            {
+                MessageBox.Show(String.Format("L'application auxiliaire {0} n'est pas disponible. Impossible de continuer.",
+                    Cst.HelperWaveCompagnonPlayerRelPath), "Badger2018", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception(String.Format("{0} n'est pas présent dans le dossier", Cst.HelperWaveCompagnonPlayerRelPath));
+            }
+
+            if (!File.Exists(Cst.HelperWatchDogRestartRelPath))
+            {
+                MessageBox.Show(String.Format("L'application auxiliaire {0} n'est pas disponible. Impossible de continuer.",
+                    Cst.HelperWatchDogRestartRelPath), "Badger2018", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception(String.Format("{0} n'est pas présent dans le dossier", Cst.HelperWatchDogRestartRelPath));
+            }
+
+            if (!File.Exists(Cst.HelperGeckoDriverRelPath))
+            {
+                MessageBox.Show(String.Format("L'application auxiliaire {0} n'est pas disponible. Impossible de continuer.",
+                    Cst.HelperGeckoDriverRelPath), "Badger2018", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception(String.Format("{0} n'est pas présent dans le dossier", Cst.HelperGeckoDriverRelPath));
+            }
         }
 
         private static AppArgsDto LoadArgs(StartupEventArgs e, AppArgsDto argsDto)

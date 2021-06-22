@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static Badger2018.views.usercontrols.semaine.JourSemaineControl;
+
 
 namespace Badger2018.views.usercontrols.semaine
 {
@@ -30,10 +30,10 @@ namespace Badger2018.views.usercontrols.semaine
             frame.NavigationUIVisibility = NavigationUIVisibility.Hidden;
         }
 
-        public void LoadsFromPeriodeG(PeriodeG pG, AppOptions appOptions)
+        public void LoadsFromPeriodeG(JourSemaineControl.PeriodeG pG, AppOptions appOptions)
         {
 
-            switch(pG.TypePeriode)
+            switch (pG.TypePeriode)
             {
                 case 0:
                     HoverPeriodePage p = new HoverPeriodePage();

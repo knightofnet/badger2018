@@ -12,6 +12,7 @@ using Badger2018.dto;
 using Badger2018.Properties;
 using BadgerCommonLibrary.utils;
 using ExceptionHandlingUtils = BadgerCommonLibrary.utils.ExceptionHandlingUtils;
+using XmlUtils = AryxDevLibrary.utils.XmlUtils;
 
 namespace Badger2018.business
 {

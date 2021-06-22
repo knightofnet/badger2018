@@ -80,6 +80,9 @@ namespace Badger2018.utils
                 fOpt.SetPreference("capability.policy.PolitiqueNationale.sites", "an.cnav");
                 fOpt.SetPreference("network.automatic-ntlm-auth.trusted-uris", "an.cnav,cnav.fr,cnavts.fr");
                 fOpt.SetPreference("network.negotiate-auth.trusted-uris", "an.cnav,cnav.fr,cnavts.fr");
+                fOpt.SetPreference("network.auth.use-sspi", true);
+                fOpt.SetPreference("network.automatic-ntlm-auth.allow-proxies", true);
+                fOpt.SetPreference("network.automatic-ntlm-auth.trusted-uris", "an.cnav,cnav.fr,cnavts.fr,50.101.93.187");
 
                 fOpt.SetPreference("app.update.auto", false);
                 fOpt.SetPreference("app.update.enabled", false);

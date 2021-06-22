@@ -72,8 +72,8 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions IsRemoveLegacyShorcutFirefox = new EnumAppOptions("IsRemoveLegacyShorcutFirefox", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsLastBadgeIsAutoShutdown = new EnumAppOptions("IsLastBadgeIsAutoShutdown", typeof(bool), "False", false);
 
-        public static readonly EnumAppOptions Notif1Obj = new EnumAppOptions("Notif1Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Un message à faire passer ?", false);
-        public static readonly EnumAppOptions Notif2Obj = new EnumAppOptions("Notif2Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu'il n'est pas l'heure de rentrer ?", false);
+        //public static readonly EnumAppOptions Notif1Obj = new EnumAppOptions("Notif1Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Un message à faire passer ?", false);
+        // public static readonly EnumAppOptions Notif2Obj = new EnumAppOptions("Notif2Obj", typeof(CustomNotificationDto), "False#HEURE_PERSO#00:00:00#00:00:00#0#Est-ce qu'il n'est pas l'heure de rentrer ?", false);
 
         public static readonly EnumAppOptions LastCdSeen = new EnumAppOptions("LastCdSeen", typeof(TimeSpan), "00:00:00", false);
         public static readonly EnumAppOptions LastCdMondaySeen = new EnumAppOptions("LastCdMondaySeen", typeof(TimeSpan), "00:00:00", false);
@@ -85,6 +85,7 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions ShowOnScreenProgressBar = new EnumAppOptions("ShowOnScreenProgressBar", typeof(bool), "False", false);
 
         public static readonly EnumAppOptions IsPreloadFF = new EnumAppOptions("IsPreloadFF", typeof(bool), "False", false);
+        public static readonly EnumAppOptions CptCtrlStateShowned = new EnumAppOptions("CptCtrlStateShowned", typeof(int), "0", false);
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -142,8 +143,8 @@ namespace Badger2018.constants
                 yield return TypeBadgeageBtnM;
                 yield return IsRemoveLegacyShorcutFirefox;
 
-                yield return Notif1Obj;
-                yield return Notif2Obj;
+                //yield return Notif1Obj;
+                //yield return Notif2Obj;
 
                 yield return LastCdSeen;
                 yield return LastCdMondaySeen;
@@ -155,6 +156,7 @@ namespace Badger2018.constants
                 yield return ShowOnScreenProgressBar;
 
                 yield return IsPreloadFF;
+                yield return CptCtrlStateShowned;
 
 
 

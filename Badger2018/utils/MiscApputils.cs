@@ -89,11 +89,12 @@ namespace Badger2018.utils
             {
                 Directory.CreateDirectory(Cst.PointagesDirName);
 
-                foreach (String f in Directory.GetFiles(".").Where(r => r.Contains("pointage-201")))
-                {
-                    File.Move(f, Cst.PointagesDir + f);
-                    _logger.Debug("Déplacement de {0} vers {1} réussi.", f, Cst.PointagesDirName);
-                }
+
+            }
+            foreach (String f in Directory.GetFiles(".").Where(r => r.Contains("pointage-201")))
+            {
+                File.Move(f, Cst.PointagesDir + f);
+                _logger.Debug("Déplacement de {0} vers {1} réussi.", f, Cst.PointagesDirName);
             }
 
             if (!Directory.Exists(Cst.ScreenshotDirName))
@@ -105,15 +106,14 @@ namespace Badger2018.utils
             {
                 Directory.CreateDirectory(Cst.LogArchiveDirName);
 
-                foreach (String f in Directory.GetFiles(".").Where(r => r.Contains("log.log.2")))
-                {
-                    File.Move(f, Cst.LogArchiveDir + f);
-                    _logger.Debug("Déplacement de {0} vers {1} réussi.", f, Cst.LogArchiveDirName);
-                }
             }
+            foreach (String f in Directory.GetFiles(".").Where(r => r.Contains("log.log.2")))
+            {
+                File.Move(f, Cst.LogArchiveDir + f);
+                _logger.Debug("Déplacement de {0} vers {1} réussi.", f, Cst.LogArchiveDirName);
+            }
+
         }
-
-
 
         public static Task Delay(int milliseconds)
         {
@@ -149,12 +149,17 @@ namespace Badger2018.utils
             _logger.Debug("FIN - RecDelayAction");
         }
 
-        public static string TimeSpanShortStrFormat(TimeSpan ts)
+        public static string TimeSpanShortStrFormat(TimeSpan ts, bool showSeconds = false)
         {
             if (ts.Hours > 0 || ts.Hours <= -1)
             {
 
                 return String.Format("{0}{1}", ts.TotalSeconds < 0 ? "-" : "", ts.ToString(Cst.TimeSpanFormatWithH));
+            }
+
+            if (showSeconds && ts.TotalSeconds < 60)
+            {
+                return String.Format("{0}s", ts.TotalSeconds.ToString("##"));
             }
 
             return String.Format("{0}min", ts.Minutes);
@@ -200,7 +205,7 @@ namespace Badger2018.utils
             c.R = color.R;
             c.G = color.G;
             c.B = color.B;
-            c.A = Convert.ToByte(v * 255 );
+            c.A = Convert.ToByte(v * 255);
 
             return c;
         }

@@ -17,14 +17,15 @@ using Badger2018.dto.bdd;
 using Badger2018.services;
 using Badger2018.utils;
 using BadgerCommonLibrary.utils;
-using static Badger2018.views.usercontrols.semaine.JourSemaineControl;
+
+
 
 namespace Badger2018.views
 {
     /// <summary>
     /// Logique d'interaction pour SemaineView.xaml
     /// </summary>
-    public partial class SemaineView : Window, IPresenterJsCtrl
+    public partial class SemaineView : Window, JourSemaineControl.IPresenterJsCtrl
     {
         private DateTime currentShownedDateTime;
 
@@ -73,12 +74,16 @@ namespace Badger2018.views
             MenuItem tglPfMenuItem = new MenuItem();
             tglPfMenuItem.Header = "Afficher les plages fixes";
             tglPfMenuItem.IsChecked = true;
-            tglPfMenuItem.Click += (s,a) => {
-                if (tglPfMenuItem.IsChecked == true) {
+            tglPfMenuItem.Click += (s, a) =>
+            {
+                if (tglPfMenuItem.IsChecked == true)
+                {
                     rectWeekPfMatin.Visibility = Visibility.Collapsed;
                     rectWeekPfAprem.Visibility = Visibility.Collapsed;
 
-                } else {
+                }
+                else
+                {
                     rectWeekPfMatin.Visibility = Visibility.Visible;
                     rectWeekPfAprem.Visibility = Visibility.Visible;
                 }
@@ -90,7 +95,8 @@ namespace Badger2018.views
             MenuItem tglHmMenuItem = new MenuItem();
             tglHmMenuItem.Header = "Afficher les horaires moyens";
             tglHmMenuItem.IsChecked = true;
-            tglHmMenuItem.Click += (s, a) => {
+            tglHmMenuItem.Click += (s, a) =>
+            {
                 if (tglHmMenuItem.IsChecked == true)
                 {
                     lineMoyMat.Visibility = Visibility.Collapsed;
@@ -124,7 +130,8 @@ namespace Badger2018.views
                 lineDtNow.Fill = new SolidColorBrush(Colors.Green);
                 lineDtNow.Margin = new Thickness(lineDtNow.Margin.Left, 23, lineDtNow.Margin.Right, lineDtNow.Margin.Bottom);
                 weekGrid.Children.Insert(weekGrid.Children.IndexOf(dayGrid), lineDtNow);
-            } else
+            }
+            else
             {
                 double left = _tsToPixRef.CalcDateToPixel(AppDateUtils.DtNow().TimeOfDay);
                 lineDtNow.Margin = new Thickness(left, 23, lineDtNow.Margin.Right, lineDtNow.Margin.Bottom);
@@ -148,7 +155,7 @@ namespace Badger2018.views
                 DateTime currentDate = dateMonday.AddDays(i);
                 JourEntryDto jourData = jServices.GetJourData(currentDate);
                 InfosDay infoDay = new InfosDay();
-                
+
                 infoDay.EtatBadger = jourData.EtatBadger;
                 infoDay.TypesJournees = jourData.TypeJour;
 
@@ -157,13 +164,14 @@ namespace Badger2018.views
                 if (!joursByDate.ContainsKey(currentDate))
                 {
                     joursByDate.Add(currentDate, CreateJourSemaineControl(currentDate));
-                    
+
                     isNewDrawing = true;
-                } else
-                {
-                    
                 }
-               
+                else
+                {
+
+                }
+
                 JourSemaineControl jrCtrl = joursByDate[currentDate];
                 jrCtrl.InfosDay = infoDay;
                 dayGrid.Children.Add(jrCtrl);
@@ -176,7 +184,7 @@ namespace Badger2018.views
                     opacityFactor = 1;
                     jrCtrl.Background = new SolidColorBrush(MiscAppUtils.Opacify(0.1, Colors.Black));
                 }
-                             
+
                 jrCtrl.Margin = new Thickness(jrCtrl.Margin.Left, i * 50 + 20, jrCtrl.Margin.Right, jrCtrl.Margin.Bottom);
                 jrCtrl.AbsoluteTop = i * 50 + 20;
 
@@ -191,8 +199,8 @@ namespace Badger2018.views
 
                 if (!jourData.IsHydrated)
                 {
-                    PeriodeG pGm = jrCtrl.AddEmptyPeriode("journéeNonTravM", timesMoy.PlageTravMatin.Start.TimeOfDay, timesMoy.PlageTravMatin.EndOrDft.TimeOfDay);
-                    PeriodeG pGa = jrCtrl.AddEmptyPeriode("journéeNonTravA", timesMoy.PlageTravAprem.Start.TimeOfDay, timesMoy.PlageTravAprem.EndOrDft.TimeOfDay);
+                    JourSemaineControl.PeriodeG pGm = jrCtrl.AddEmptyPeriode("journéeNonTravM", timesMoy.PlageTravMatin.Start.TimeOfDay, timesMoy.PlageTravMatin.EndOrDft.TimeOfDay);
+                    JourSemaineControl.PeriodeG pGa = jrCtrl.AddEmptyPeriode("journéeNonTravA", timesMoy.PlageTravAprem.Start.TimeOfDay, timesMoy.PlageTravAprem.EndOrDft.TimeOfDay);
 
                     jrCtrl.DrawPeriodes();
                     continue;
@@ -214,30 +222,31 @@ namespace Badger2018.views
 
                 if (jourData.EtatBadger == 0)
                 {
-                    PeriodeG p = jrCtrl.AddPeriode(String.Format(genericLblPer, "1er badgeage"), times.PlageTravMatin.Start.TimeOfDay, times.PlageTravMatin.Start.AddMinutes(1).TimeOfDay, MiscAppUtils.Opacify(opacityFactor, Colors.DodgerBlue));
+                    JourSemaineControl.PeriodeG p = jrCtrl.AddPeriode(String.Format(genericLblPer, "1er badgeage"), times.PlageTravMatin.Start.TimeOfDay, times.PlageTravMatin.Start.AddMinutes(1).TimeOfDay, MiscAppUtils.Opacify(opacityFactor, Colors.DodgerBlue));
                     p.TypePeriode = 1;
                 }
-                else if (jourData.EtatBadger >= 1 )
+                else if (jourData.EtatBadger >= 1)
                 {
                     String matineLblPer = String.Format(genericLblPer, "Matinée");
 
                     if (jourData.TypeJour == EnumTypesJournees.Complete)
                     {
                         jrCtrl.AddPeriode(matineLblPer, times.PlageTravMatin.Start.TimeOfDay, times.PlageTravMatin.EndOrDft.TimeOfDay, MiscAppUtils.Opacify(opacityFactor, Colors.DodgerBlue));
-                    } else if (jourData.TypeJour == EnumTypesJournees.Matin)
+                    }
+                    else if (jourData.TypeJour == EnumTypesJournees.Matin)
                     {
                         jrCtrl.AddPeriode(matineLblPer, times.PlageTravMatin.Start.TimeOfDay, times.PlageTravAprem.EndOrDft.TimeOfDay, MiscAppUtils.Opacify(opacityFactor, Colors.DodgerBlue));
                     }
                     else if (jourData.TypeJour == EnumTypesJournees.ApresMidi)
                     {
-                        PeriodeG pG = jrCtrl.AddEmptyPeriode("1emePerFictive", timesMoy.PlageTravMatin.Start.TimeOfDay, timesMoy.PlageTravMatin.EndOrDft.TimeOfDay);
-  
+                        JourSemaineControl.PeriodeG pG = jrCtrl.AddEmptyPeriode("1emePerFictive", timesMoy.PlageTravMatin.Start.TimeOfDay, timesMoy.PlageTravMatin.EndOrDft.TimeOfDay);
+
                     }
                 }
 
                 if (jourData.EtatBadger == 2)
                 {
-                    PeriodeG p = jrCtrl.AddPeriode("2emB", times.PlageTravAprem.Start.TimeOfDay, times.PlageTravAprem.Start.AddMinutes(1).TimeOfDay, MiscAppUtils.Opacify(opacityFactor, Colors.Goldenrod));
+                    JourSemaineControl.PeriodeG p = jrCtrl.AddPeriode("2emB", times.PlageTravAprem.Start.TimeOfDay, times.PlageTravAprem.Start.AddMinutes(1).TimeOfDay, MiscAppUtils.Opacify(opacityFactor, Colors.Goldenrod));
                     p.TypePeriode = 1;
                 }
                 else if (jourData.EtatBadger >= 3)
@@ -254,7 +263,7 @@ namespace Badger2018.views
                     }
                     else if (jourData.TypeJour == EnumTypesJournees.Matin)
                     {
-                        PeriodeG pG = jrCtrl.AddEmptyPeriode("1emePerFictive", timesMoy.PlageTravAprem.Start.TimeOfDay, timesMoy.PlageTravAprem.EndOrDft.TimeOfDay);
+                        JourSemaineControl.PeriodeG pG = jrCtrl.AddEmptyPeriode("1emePerFictive", timesMoy.PlageTravAprem.Start.TimeOfDay, timesMoy.PlageTravAprem.EndOrDft.TimeOfDay);
                     }
 
 
@@ -273,7 +282,7 @@ namespace Badger2018.views
                 if (jourData.EtatBadger >= 0)
                 {
                     DateTime endtheo = TimesUtils.GetDateTimeEndTravTheorique(times.PlageTravMatin.Start, _prgOptionsRef, jourData.TypeJour);
-                    PeriodeG p = jrCtrl.AddPeriode("Fin théorique de la journée", endtheo.TimeOfDay, endtheo.AddMinutes(1).TimeOfDay, Colors.Red);
+                    JourSemaineControl.PeriodeG p = jrCtrl.AddPeriode("Fin théorique de la journée", endtheo.TimeOfDay, endtheo.AddMinutes(1).TimeOfDay, Colors.Red);
                     p.TypePeriode = 1;
 
 
@@ -281,7 +290,7 @@ namespace Badger2018.views
 
 
                 jrCtrl.DrawPeriodes();
-              
+
             }
 
         }
@@ -352,7 +361,7 @@ namespace Badger2018.views
             dayGrid.Children.Clear();
         }
 
-        public void MouseEnterZone(PeriodeG periodeG, double AbsoluteTop)
+        public void MouseEnterZone(JourSemaineControl.PeriodeG periodeG, double AbsoluteTop)
         {
             hoverInfo.Visibility = Visibility.Visible;
 
@@ -363,7 +372,7 @@ namespace Badger2018.views
                 left = weekGrid.Margin.Left + dayGrid.Margin.Left + periodeG.PerRectangle.Margin.Left - 10 - hoverInfo.Width;
             }
 
-            double top = periodeG.PerRectangle.Margin.Top +  weekGrid.Margin.Top + dayGrid.Margin.Top + AbsoluteTop;
+            double top = periodeG.PerRectangle.Margin.Top + weekGrid.Margin.Top + dayGrid.Margin.Top + AbsoluteTop;
 
             if (top + hoverInfo.Height > Height)
             {
@@ -371,11 +380,11 @@ namespace Badger2018.views
             }
 
 
-            hoverInfo.Margin = new Thickness( left, top, 0, 0);
+            hoverInfo.Margin = new Thickness(left, top, 0, 0);
             hoverInfo.LoadsFromPeriodeG(periodeG, _prgOptionsRef);
         }
 
-        public void MouseLeaveZone(PeriodeG periodeG)
+        public void MouseLeaveZone(JourSemaineControl.PeriodeG periodeG)
         {
             hoverInfo.Visibility = Visibility.Collapsed;
         }

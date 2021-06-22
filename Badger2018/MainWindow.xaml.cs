@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
-using AryxDevLibrary.utils;
+﻿using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using AryxDevViewLibrary.controls.Simplifier;
 using AryxDevViewLibrary.utils;
@@ -26,13 +12,26 @@ using Badger2018.utils;
 using Badger2018.views;
 using Badger2018.views.usercontrols;
 using BadgerCommonLibrary.business;
-using BadgerCommonLibrary.constants;
 using BadgerCommonLibrary.dto;
 using BadgerCommonLibrary.utils;
 using BadgerPluginExtender;
 using BadgerPluginExtender.dto;
 using BadgerPluginExtender.interfaces;
 using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
 using ContextMenu = System.Windows.Controls.ContextMenu;
@@ -65,10 +64,7 @@ namespace Badger2018
         public PluginManager PluginMgr;
 
         public BadgerWorker BadgerWorker { get; private set; }
-
-
         public NoticationsManager NotifManager { get; private set; }
-
         public TimesBadgerDto Times { get; private set; }
 
         public CoreAudioCtrlerFactory CoreAudioFactory = new CoreAudioCtrlerFactory();
@@ -143,7 +139,7 @@ namespace Badger2018
         {
             _logger.Debug("Chargement de l'écran principal");
 # if DEBUG
-            AppDateUtils.ForceDtNow(new DateTime(2020, 09, 03, 15,28, 0));
+            AppDateUtils.ForceDtNow(new DateTime(2021, 01, 03, 16, 00, 0));
 
             //SetDarkTheme();
 # endif
@@ -157,6 +153,10 @@ namespace Badger2018
             //imgOptions.Source = MiscAppUtils.DoGetImageSourceFromResource(GetType().Assembly.GetName().Name, "iconSetting.png");
             lblVersion.Content = String.Format(lblVersion.Content.ToString(), Assembly.GetExecutingAssembly().GetName().Version, Properties.Resources.versionName);
             pbarTime.IsIndeterminate = true;
+
+            pbarBtnBadger.IsIndeterminate = true;
+            pbarBtnBadger.Color = Cst.SCBGold;
+            pbarBtnBadger.BackgroundColor = null;
 
             if (prgOptions.ShowOnScreenProgressBar)
             {
@@ -187,18 +187,18 @@ namespace Badger2018
              */
             NotifManager = new NoticationsManager(_notifyIcon);
             NotifManager.PluginMgrRef = PluginMgr;
-            NotifManager.AfterShowNotif += delegate(NotificationDto n)
+            NotifManager.AfterShowNotif += delegate (NotificationDto n)
             {
                 PushNewInfo(n.Message);
             };
             // evt lors du changement d'état du badgeage
-            OnEtatBadgerChange += delegate(int a)
+            OnEtatBadgerChange += delegate (int a)
             {
                 NotifManager.EtatBadger = a;
 
             };
             // evt lors du changement de type de journée
-            OnTypeJourneeChange += delegate(EnumTypesJournees a)
+            OnTypeJourneeChange += delegate (EnumTypesJournees a)
             {
                 NotifManager.TypeJournee = a;
             };
@@ -257,9 +257,11 @@ namespace Badger2018
 
             Title = Assembly.GetExecutingAssembly().GetName().Name;
 
-           
+
             PrgSwitch.PbarMainTimerActif = true;
             PrgSwitch.IsCompteHeureTravActif = true;
+
+
 
             InitNotifyIcon();
             Closing += OnClosing;
@@ -283,7 +285,7 @@ namespace Badger2018
             {
                 if (args.Key == Key.LeftCtrl)
                 {
-                    if (!FfDriverSingleton.Instance.IsLoaded()) 
+                    if (!FfDriverSingleton.Instance.IsLoaded())
                         imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
 
                 }
@@ -352,20 +354,20 @@ namespace Badger2018
 
                 else if (
 #if DEBUG
-                    args.Key == Key.F12 ||
+args.Key == Key.F12 ||
 #endif
-                    KonamiCodeListener.IsCompletedBy(args.Key))
-                    {
-                        DebugCommandView d = new DebugCommandView();
-                        d.Show();
-                    }
+ KonamiCodeListener.IsCompletedBy(args.Key))
+                {
+                    DebugCommandView d = new DebugCommandView(this);
+                    d.Show();
+                }
 
 
             };
 
 
             #endregion
-                    
+
 
             EtatBadger = -1;
             TypeJournee = EnumTypesJournees.Complete;
@@ -381,7 +383,7 @@ namespace Badger2018
                 _logger.Info("Nouvelle session");
 
                 Times.PlageTravMatin.Start = AppDateUtils.DtNow().AtSec(Cst.SecondeOffset);
-                Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
+                SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
 
                 lblStartTime.Foreground = Cst.SCBGrey;
 
@@ -413,7 +415,8 @@ namespace Badger2018
                         PushNewInfo("Badgeage automatique réalisé. Fin de la matinée à " +
                                     tsfinMat.ToString(Cst.TimeSpanFormat));
                         PrgOptions.IsAutoBadgeAtStartDelayed = false;
-                    } else
+                    }
+                    else
                     {
                         PrgOptions.IsAutoBadgeAtStartDelayed = true;
                         _logger.Info("Badgeage automatique du matin - en attente");
@@ -476,7 +479,9 @@ namespace Badger2018
                     _spv.Show();
                 }
 
-               
+                FixLastDay();
+
+
             };
 
         }
@@ -487,7 +492,7 @@ namespace Badger2018
         {
             Background = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#121212"));
 
-            for (int i = 0; i< VisualTreeHelper.GetChildrenCount(this); i++)
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(this); i++)
             {
                 DependencyObject child = VisualTreeHelper.GetChild(this, i);
 
@@ -505,7 +510,7 @@ namespace Badger2018
             }
         }
 
-        private void ArchiveDatas()
+        internal void ArchiveDatas()
         {
             _logger.Info("ArchiveDatas");
 
@@ -607,7 +612,7 @@ namespace Badger2018
             ctrlCompteur.IsEnabledCtrl = true;
             ctrlCompteur.UpdateInfos();
 
-
+            pbarColSecond.Width = new GridLength(0, GridUnitType.Star);
         }
 
 
@@ -678,33 +683,32 @@ namespace Badger2018
 
                 if (EtatBadger < 2)
                 {
+                    SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, Times.GetTpsPause());
 
-                    Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
-                        PrgOptions, EnumTypesJournees.Complete)
-                                            + Times.GetTpsPause();
                 }
                 else
                 {
-                    Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
-                        PrgOptions, EnumTypesJournees.Complete)
-                                            + Times.GetTpsPause();
+                    TimeSpan tmpEndMore = Times.GetTpsPause();
+
                     TimeSpan tmpsPause = Times.PlageTravAprem.Start - Times.PlageTravMatin.EndOrDft;
                     var diffPause = tmpsPause - PrgOptions.TempsMinPause;
 
                     if (diffPause.TotalSeconds > 0)
                     {
-                        Times.EndTheoDateTime += diffPause;
+                        tmpEndMore += diffPause;
                     }
 
                     if (PrgOptions.IsStopCptAtMaxDemieJournee && Times.GetTpsTravMatin().CompareTo(PrgOptions.TempsMaxDemieJournee) > 0)
                     {
-                        Times.EndTheoDateTime += (Times.GetTpsTravMatin() - PrgOptions.TempsMaxDemieJournee);
+                        tmpEndMore += (Times.GetTpsTravMatin() - PrgOptions.TempsMaxDemieJournee);
                     }
+
+                    SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, tmpEndMore);
 
                 }
 
                 lblEndTime.ContentShortTime(Times.EndTheoDateTime);
-                lblEndTime.Content += "*";
+                lblEndTime.Content += Times.IsTherePauseAprem() || Times.IsTherePauseMatin() ? "*" : "";
 
                 ClockUpdTimerOnOnTick(null, null);
             }
@@ -898,8 +902,19 @@ namespace Badger2018
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (!btnBadger.IsEnabled)
+            {
+                StopTimers();
+                btnBadger.IsEnabled = true;
+                return;
+            }
+
+
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
+
+
+
                 PrgSwitch.IsRealClose = true;
 
                 if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
@@ -907,6 +922,7 @@ namespace Badger2018
                     RestartApp();
                     return;
                 }
+
             }
             else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
             {
@@ -932,10 +948,10 @@ namespace Badger2018
 
                 int origDelay = PrgOptions.LastBadgeDelay;
                 PrgOptions.LastBadgeDelay = 0;
-                
 
                 try
                 {
+                    PrgSwitch.IsInBadgeWork = true;
                     BadgerWorker.BadgeAction(PrgOptions.Uri, PrgOptions.UriParam, PrgOptions.UriVerif, time =>
                     {
 
@@ -959,10 +975,24 @@ namespace Badger2018
                             btnBadgerM.Content = "Badger et reprendre";
                             PrgSwitch.PauseCurrentState = EnumStatePause.IN_PROGRESS;
 
-
-
                             _mainTimerManager.Pause();
 
+                            if (PrgOptions.IsPreloadFF)
+                            {
+                                if (!File.Exists(PrgOptions.FfExePath))
+                                {
+                                    NotifManager.NotifyNow("Firefox n'existe pas à cette adrese : " + PrgOptions.FfExePath,
+                                        "Erreur");
+                                    PrgSwitch.IsFfNormalyLoaded = false;
+                                }
+                                else
+                                {
+                                    FfDriverSingleton.Instance.Load(PrgOptions);
+                                    PrgSwitch.IsFfNormalyLoaded = true;
+                                }
+                            }
+
+                          
                         }
                         else
                         {
@@ -975,7 +1005,9 @@ namespace Badger2018
 
                             btnBadger.IsEnabled = true;
 
+
                             PrgSwitch.PauseCurrentState = EnumStatePause.HAVE_PAUSES;
+
                             _mainTimerManager.Resume();
                         }
 
@@ -1010,11 +1042,7 @@ namespace Badger2018
                 {
                     Times.PlageTravMatin.Start = DateTime.Parse(p.B0).AtSec(Cst.SecondeOffset);
 
-                    Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
-                        PrgOptions, EnumTypesJournees.Complete)
-                                            + Times.GetTpsPause();
-
-
+                    SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, Times.GetTpsPause());
 
                 }
                 if (EtatBadger >= 1)
@@ -1030,7 +1058,7 @@ namespace Badger2018
                 {
                     Times.PlageTravAprem.End = DateTime.Parse(p.B3).AtSec(Cst.SecondeOffset);
                     Times.EndTheoDateTime = Times.PlageTravAprem.End.Value;
-
+                    Times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(Times.EndTheoDateTime, PrgOptions, TypeJournee);
 
                 }
 
@@ -1086,7 +1114,7 @@ namespace Badger2018
 
                     Times.EndTheoDateTime = Times.EndTheoDateTime
                                                    + Times.GetTpsPause();
-
+                    Times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(Times.EndTheoDateTime, PrgOptions, TypeJournee);
 
                     lblEndTime.ContentShortTime(Times.EndTheoDateTime);
                     lblEndTime.Content += "*";
@@ -1127,53 +1155,62 @@ namespace Badger2018
 
                 if (tpsTravRestant.TotalSeconds >= 0)
                 {
-
+                    pbarColSecond.Width = new GridLength(0);
                     pbarTime.IsIndeterminate = false;
+                    pbarBtnBadger.IsIndeterminate = false;
                     pbarTime.Value = 100 * diff.TotalSeconds / diffTotal.TotalSeconds;
-                } else
-                {
-                    if (finHeureReglTimer == null || !finHeureReglTimer.IsEnabled)
+
+                    double tR = 0;
+                    double tM = 0;
+                    double pbV = 0;
+                    if (EtatBadger == 0)
                     {
-                        TimeSpan maxTpsAutorise = (PrgOptions.TempsMaxJournee - (PrgOptions.TempsDemieJournee + PrgOptions.TempsDemieJournee));
-                        TimeSpan tsFinJourneeReglementaire = Times.EndTheoDateTime.TimeOfDay + maxTpsAutorise;
-
-                        finHeureReglTimer = new DispatcherTimer();
-                        finHeureReglTimer.Interval = new TimeSpan(0, 0, 5);
-                        finHeureReglTimer.Tick += (senderO, args) =>
-                        {
-                            TimeSpan remainingTimer = tsFinJourneeReglementaire - RealTimes.RealTimeTsNow;
-                            if (remainingTimer < TimeSpan.Zero)
-                            {
-                                //
-                                PrgSwitch.PbarMainTimerActif = false;
-                                pbarTime.IsIndeterminate = true;
-                                pbarTime.ToolTip = String.Format("Fin du temps depuis {0}. Avez-vous pensé à badger ?", tsFinJourneeReglementaire.ToStrSignedhhmm());
-                                pbarTime.Foreground = Cst.SCBDarkRed;
-
-                            }
-                            else if (remainingTimer > maxTpsAutorise)
-                            {
-                                pbarTime.IsIndeterminate = false;                                
-                                pbarTime.Foreground = Cst.SCBGreenPbar;
-                                pbarTime.ToolTip = null;
-                                PrgSwitch.PbarMainTimerActif = true;
-                                btnBadgerM.IsEnabled = true;
-
-                                finHeureReglTimer.Stop();
-                            }
-                            else
-                            {
-                                pbarTime.IsIndeterminate = false;
-                                double percentRemain = 100 * remainingTimer.TotalSeconds / maxTpsAutorise.TotalSeconds;
-                                ChangePBarValue(percentRemain);
-                                pbarTime.Foreground = percentRemain <= 50 ? (percentRemain <= 10 ? Cst.SCBDarkRed : Cst.SCBGold) : Cst.SCBGreenPbar;
-                                pbarTime.ToolTip = String.Format("Travail au-dela du temps hebdomadaire : fin de l'accumulation du temps supplémentaire à {0}.", tsFinJourneeReglementaire.ToStrSignedhhmm());
-                                PrgSwitch.PbarMainTimerActif = false;
-                                btnBadgerM.IsEnabled = false;
-                            }
-                        };
-                        finHeureReglTimer.Start();
+                        tR = (PrgOptions.PlageFixeMatinFin - RealTimes.RealTimeTsNow).TotalSeconds;
+                        tM = (PrgOptions.PlageFixeMatinFin - PrgOptions.PlageFixeMatinStart).TotalSeconds;
+                        pbV = 100 * (1 - tR / tM);
                     }
+                    else if (EtatBadger == 2)
+                    {
+                        tR = (PrgOptions.PlageFixeApremFin - RealTimes.RealTimeTsNow).TotalSeconds;
+                        tM = (PrgOptions.PlageFixeApremFin - PrgOptions.PlageFixeApremStart).TotalSeconds;
+                        pbV = 100 * (1 - tR / tM);
+                    }
+
+
+                    pbarBtnBadger.Value = pbV;
+                    pbarBtnBadger.Color = null;
+
+                }
+                else if (EtatBadger >= 0)
+                {
+                    pbarTime.Value = 100;
+                    pbarTimeExtension.IsIndeterminate = false;
+                    pbarColSecond.Width = new GridLength(1, GridUnitType.Star);
+
+                    TimeSpan maxTpsAutorise = (PrgOptions.TempsMaxJournee - (PrgOptions.TempsDemieJournee + PrgOptions.TempsDemieJournee));
+                    TimeSpan tsFinJourneeReglementaire = Times.EndTheoDateTime.TimeOfDay + maxTpsAutorise;
+                    TimeSpan tpsMaxTravRestant = tsFinJourneeReglementaire - RealTimes.RealTimeTsNow;
+                    if (tpsMaxTravRestant.TotalSeconds >= 0)
+                    {
+                        double percent = 100 - (100 * tpsMaxTravRestant.TotalSeconds / maxTpsAutorise.TotalSeconds);
+                        pbarTimeExtension.Value = percent;
+                        pbarTimeExtension.Foreground = percent >= 50
+                            ? (percent >= 10 ? Cst.SCBDarkRed : Cst.SCBOrange)
+                            : Cst.SCBGold;
+                        pbarTimeExtension.ToolTip =
+                            String.Format(
+                                "Travail au-dela du temps hebdomadaire : fin de l'accumulation du temps supplémentaire à {0}.",
+                                tsFinJourneeReglementaire.ToStrSignedhhmm());
+                    }
+                    else
+                    {
+                        pbarTimeExtension.Value = 100;
+                        pbarTimeExtension.IsIndeterminate = true;
+                        pbarTimeExtension.ToolTip = String.Format("Fin du temps depuis {0}. Avez-vous pensé à badger ?", tsFinJourneeReglementaire.ToStrSignedhhmm());
+
+                    }
+
+
                 }
             }
 
@@ -1196,13 +1233,13 @@ namespace Badger2018
                && !PrgSwitch.IsTimerStoppedByMaxTime)
             {
                 PrgSwitch.PbarMainTimerActif = false;
-                pbarTime.IsIndeterminate = true;
+                pbarTimeExtension.IsIndeterminate = true;
 
                 PrgSwitch.IsTimerStoppedByMaxTime = true;
             }
 
 
-            if (PrgOptions.IsAutoBadgeAtStartDelayed && PrgOptions.IsAutoBadgeAtStart && RealTimes.RealTimeTsNow >= new TimeSpan(6,45,0) && EtatBadger == -1)
+            if (PrgOptions.IsAutoBadgeAtStartDelayed && PrgOptions.IsAutoBadgeAtStart && RealTimes.RealTimeTsNow >= new TimeSpan(6, 45, 0) && EtatBadger == -1)
             {
                 PrgOptions.IsAutoBadgeAtStartDelayed = false;
 
@@ -1214,29 +1251,27 @@ namespace Badger2018
 
             // ***************
             // On précharge FF si les conditions de temps, ou d'instance sont réunis.
-            if (PrgOptions.IsPreloadFF) {
-                bool isOkToStartPreloadedFf = false;
+            if (PrgOptions.IsPreloadFF)
+            {
+                bool isOkToStartPreloadedFf = PrgSwitch.IsFfForcedLoaded;
 
-                if (PrgSwitch.IsFfForcedLoaded)
-                {
-                    isOkToStartPreloadedFf = true;
-                }
 
-                if (EtatBadger == 0 
+
+                if (EtatBadger == EnumBadgeageType.PLAGE_TRAV_MATIN_START.Index
                     && TypeJournee == EnumTypesJournees.Complete
                     && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeMatinFin)
                 {
                     isOkToStartPreloadedFf = true;
                 }
 
-                if (EtatBadger == 1
+                if (EtatBadger == EnumBadgeageType.PLAGE_TRAV_MATIN_END.Index
                     && TypeJournee == EnumTypesJournees.Complete
                     && RealTimes.RealTimeTsNow >= (PrgOptions.PlageFixeMatinFin + PrgOptions.TempsMinPause))
                 {
                     isOkToStartPreloadedFf = true;
                 }
 
-                if (EtatBadger == 2
+                if (EtatBadger == EnumBadgeageType.PLAGE_TRAV_APREM_START.Index
                     && (TypeJournee == EnumTypesJournees.Complete || EnumTypesJournees.IsDemiJournee(TypeJournee))
                     && (
                         (TypeJournee == EnumTypesJournees.Complete && RealTimes.RealTimeTsNow >= PrgOptions.PlageFixeApremFin)
@@ -1250,9 +1285,19 @@ namespace Badger2018
 
                 if (isOkToStartPreloadedFf)
                 {
-                    FfDriverSingleton.Instance.Load(PrgOptions);
-                    PrgSwitch.IsFfNormalyLoaded = true;
-                } else
+                    if (!File.Exists(PrgOptions.FfExePath))
+                    {
+                        NotifManager.NotifyNow("Firefox n'existe pas à cette adrese : " + PrgOptions.FfExePath,
+                            "Erreur");
+                        PrgSwitch.IsFfNormalyLoaded = false;
+                    }
+                    else
+                    {
+                        FfDriverSingleton.Instance.Load(PrgOptions);
+                        PrgSwitch.IsFfNormalyLoaded = true;
+                    }
+                }
+                else
                 {
                     if (!PrgSwitch.IsInBadgeWork)
                     {
@@ -1260,15 +1305,16 @@ namespace Badger2018
                     }
                     PrgSwitch.IsFfNormalyLoaded = false;
                 }
-                
+
             }
 
             // On adapte l'interface (l'icone d'instance de Ff préchargée)
-            if (PrgSwitch.IsFfNormalyLoaded 
+            if (PrgSwitch.IsFfNormalyLoaded
                 && FfDriverSingleton.Instance.IsLoaded())
             {
                 imgBtnFirefoxLoaded.Visibility = Visibility.Visible;
-            } else
+            }
+            else
             {
                 imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
                 PrgSwitch.IsFfNormalyLoaded = false;
@@ -1372,9 +1418,16 @@ namespace Badger2018
 
         private bool UpdRealTimes()
         {
+            // Maj la date Time courante
             RealTimes.RealTimeDtNow = AppDateUtils.DtNow();
+
+            // Maj l'heure courante
             RealTimes.RealTimeTsNow = RealTimes.RealTimeDtNow.TimeOfDay;
+
+
             bool isMaxDepass = false;
+
+            // Maj le temps travaille
             RealTimes.RealTimeTempsTravaille = TimesUtils.GetTempsTravaille(RealTimes.RealTimeDtNow, EtatBadger, Times, PrgOptions, TypeJournee, true, ref isMaxDepass);
             if (TypeJournee == EnumTypesJournees.Complete)
             {
@@ -1391,6 +1444,19 @@ namespace Badger2018
             {
                 RealTimes.RealTimeTempsTravailleMatin = RealTimes.RealTimeTempsTravaille;
             }
+
+            /**
+             *             DateTime timeEndTheoRaw = TimesUtils.GetDateTimeEndTravTheoriqueBis(start, prgOptions, typeJournee);
+            timeEndTheoRaw += endDelta.GetValueOrDefault();
+            times.EndRawDateTime = timeEndTheoRaw;
+            times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(timeEndTheoRaw, prgOptions, typeJournee);
+            times.EndTheoDateTime = TimesUtils.ClassicTransform(timeEndTheoRaw, prgOptions);
+             * */
+
+            RealTimes.RealTimeMinTpsTravRestant = Times.EndTheoDateTime.TimeOfDay - RealTimes.RealTimeTsNow;
+            RealTimes.RealTimeMaxTpsTravRestant = Times.MaxTimeForOneDay.TimeOfDay - RealTimes.RealTimeTsNow;
+
+
             return isMaxDepass;
         }
 
@@ -1669,20 +1735,24 @@ namespace Badger2018
                     }
 
                     lblEndTime.ContentShortTime(Times.EndTheoDateTime);
+                    lblEndTime.Content += Times.IsTherePauseAprem() || Times.IsTherePauseMatin() ? "*" : "";
                 }
 
 
                 if (PrgOptions.ShowOnScreenProgressBar)
                 {
-                    if (_spv == null) { 
+                    if (_spv == null)
+                    {
                         _spv = new ScreenProgressBarView();
                         _spv.PairWithProgressBar(pbarTime);
                         _spv.Show();
-                    } else
+                    }
+                    else
                     {
                         _spv.Visibility = Visibility.Visible;
                     }
-                } else
+                }
+                else
                 {
                     if (_spv != null)
                     {
@@ -1692,7 +1762,7 @@ namespace Badger2018
 
                 if (!PrgOptions.IsPreloadFF)
                 {
-                    FfDriverSingleton.Instance.Quit() ;
+                    FfDriverSingleton.Instance.Quit();
                 }
 
             }
@@ -1771,21 +1841,21 @@ namespace Badger2018
 
             _nIconOpenOptionItem = new ToolStripMenuItem("O&ptions...");
             _nIconOpenOptionItem.ToolTipText = "Raccourci : touche F2";
-            _nIconOpenOptionItem.Click += delegate(object sender, EventArgs args)
+            _nIconOpenOptionItem.Click += delegate (object sender, EventArgs args)
             {
                 btnOptions_Click(null, null);
             };
 
             _nIconOpenTipsItem = new ToolStripMenuItem("Afficher &les astuces...");
             _nIconOpenTipsItem.ToolTipText = "Raccourci : touche F4";
-            _nIconOpenTipsItem.Click += delegate(object sender, EventArgs args)
+            _nIconOpenTipsItem.Click += delegate (object sender, EventArgs args)
             {
                 LoadsDidYouKnow();
             };
 
             _nIconShowNotificationItem = new ToolStripMenuItem("&Afficher les notifications");
             _nIconShowNotificationItem.Checked = PrgOptions.IsGlobalShowNotifications;
-            _nIconShowNotificationItem.Click += delegate(object sender, EventArgs args)
+            _nIconShowNotificationItem.Click += delegate (object sender, EventArgs args)
             {
                 PrgOptions.IsGlobalShowNotifications = !PrgOptions.IsGlobalShowNotifications;
                 _nIconShowNotificationItem.Checked = PrgOptions.IsGlobalShowNotifications;
@@ -1796,7 +1866,7 @@ namespace Badger2018
 
             _nIconRestoreItem = new ToolStripMenuItem("&Ouvrir");
             _nIconRestoreItem.Font = new Font(_nIconRestoreItem.Font, _nIconRestoreItem.Font.Style | System.Drawing.FontStyle.Bold);
-            _nIconRestoreItem.Click += delegate(object sender, EventArgs args)
+            _nIconRestoreItem.Click += delegate (object sender, EventArgs args)
             {
                 this.WindowState = WindowState.Normal;
                 this.Activate();
@@ -1834,7 +1904,7 @@ namespace Badger2018
                 }
             };
 
-            _notifyIcon.DoubleClick += delegate(object sender, EventArgs args)
+            _notifyIcon.DoubleClick += delegate (object sender, EventArgs args)
             {
                 RestoreWindow();
                 this.Activate();
@@ -1882,7 +1952,7 @@ namespace Badger2018
 
         private void AdaptUiForStateM1()
         {
-            btnBadger.Margin = Cst.BtnBadgerPositionAtLeft;
+            gridBtnBadger.Margin = Cst.BtnBadgerPositionAtLeft;
             btnBadger.ToolTip = "Cliquer pour badger le début de la matinée";
             btnBadger.Visibility = Visibility.Visible;
 
@@ -1891,7 +1961,7 @@ namespace Badger2018
 
             ctrlTyJournee.IsEnabledChange = true;
 
-            Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
+            SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
 
             lblHmidiS.Visibility = Visibility.Hidden;
             lblHmidiE.Visibility = Visibility.Hidden;
@@ -1915,22 +1985,18 @@ namespace Badger2018
         {
             // Etat de l'UI lorsque l'heure d'arrivé est placée.
 
-            if (TypeJournee == EnumTypesJournees.Complete)
-            {
-                btnBadger.Margin = Cst.BtnBadgerPositionAtLeft;
-            }
-            else
-            {
-                btnBadger.Margin = Cst.BtnBadgerPositionAtCenter;
-            }
+            gridBtnBadger.Margin = TypeJournee == EnumTypesJournees.Complete ? Cst.BtnBadgerPositionAtLeft : Cst.BtnBadgerPositionAtCenter;
             btnBadger.ToolTip = "Cliquer pour badger la fin de la matinée";
             btnBadger.Visibility = Visibility.Visible;
 
+            btnBadgerM.IsEnabled = true;
 
-            Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
+            SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
 
             lblStartTime.ContentShortTime(Times.PlageTravMatin.Start);
             lblEndTime.ContentShortTime(Times.EndTheoDateTime);
+            lblEndTime.Content += Times.IsTherePauseAprem() || Times.IsTherePauseMatin() ? "*" : "";
+
             lblHmidiS.Visibility = Visibility.Hidden;
             lblHmidiE.Visibility = Visibility.Hidden;
             lblTpsTravMatin.Visibility = Visibility.Hidden;
@@ -1966,6 +2032,15 @@ namespace Badger2018
 
         }
 
+        private static void SetTimesEndTheoAndMaxForOneDay(TimesBadgerDto times, DateTime start, AppOptions prgOptions, EnumTypesJournees typeJournee, TimeSpan? endDelta = null)
+        {
+            DateTime timeEndTheoRaw = TimesUtils.GetDateTimeEndTravTheoriqueBis(start, prgOptions, typeJournee);
+            timeEndTheoRaw += endDelta.GetValueOrDefault();
+            times.EndRawDateTime = timeEndTheoRaw;
+            times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(timeEndTheoRaw, prgOptions, typeJournee);
+            times.EndTheoDateTime = TimesUtils.ClassicTransform(timeEndTheoRaw, prgOptions, typeJournee);
+        }
+
         private void AdaptUiForState1()
         {
 
@@ -1975,6 +2050,8 @@ namespace Badger2018
             PrgSwitch.PbarMainTimerActif = true;
             pbarTime.IsIndeterminate = false;
             PrgSwitch.IsTimerStoppedByMaxTime = false;
+
+            SetBtnBadgerEnabled(true);
 
             lblTpsTravMatin.Visibility = Visibility.Visible;
             lblTpsTravMatin.ContentShortTime(PrgOptions.IsStopCptAtMaxDemieJournee ?
@@ -1988,7 +2065,7 @@ namespace Badger2018
             }
 
 
-            btnBadger.Margin = Cst.BtnBadgerPositionAtCenter;
+            gridBtnBadger.Margin = Cst.BtnBadgerPositionAtCenter;
             btnBadger.ToolTip = "Cliquer pour badger le début de l'après-midi";
             btnBadger.Visibility = Visibility.Visible;
 
@@ -2077,23 +2154,22 @@ namespace Badger2018
             PrgSwitch.IsTimerStoppedByMaxTime = false;
             NotifManager.SetNotifShow(Cst.NotifTpsMaxJournee, false);
 
-            // On MaJ l'heure finale theorique de fin, en prenant en compte le temps de pause (pour une journée de complete).
-            Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
+            SetBtnBadgerEnabled(true);
+
+            TimeSpan timeEndMore = TimeSpan.Zero;
             if (TypeJournee == EnumTypesJournees.Complete)
             {
-
                 var diffPause = tmpsPause.Value - PrgOptions.TempsMinPause;
 
                 if (diffPause.TotalSeconds > 0)
                 {
-                    Times.EndTheoDateTime += diffPause;
+                    timeEndMore = diffPause;
                 }
 
                 if (PrgOptions.IsStopCptAtMaxDemieJournee && Times.GetTpsTravMatin().CompareTo(PrgOptions.TempsMaxDemieJournee) > 0)
                 {
-                    Times.EndTheoDateTime += (Times.GetTpsTravMatin() - PrgOptions.TempsMaxDemieJournee);
+                    timeEndMore += (Times.GetTpsTravMatin() - PrgOptions.TempsMaxDemieJournee);
                 }
-
 
                 btnBadger.ToolTip = "Cliquer pour badger la fin de l'après-midi";
 
@@ -2102,6 +2178,9 @@ namespace Badger2018
             {
                 btnBadger.ToolTip = "Cliquer pour badger la fin de la demie-journée";
             }
+
+            // On MaJ l'heure finale theorique de fin, en prenant en compte le temps de pause (pour une journée de complete).
+            SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, timeEndMore);
 
             if (PrgSwitch.IsBetaUser)
             {
@@ -2118,8 +2197,9 @@ namespace Badger2018
             }
 
             lblEndTime.ContentShortTime(Times.EndTheoDateTime);
+            lblEndTime.Content += Times.IsTherePauseAprem() || Times.IsTherePauseMatin() ? "*" : "";
 
-            btnBadger.Margin = Cst.BtnBadgerPositionAtRight;
+            gridBtnBadger.Margin = Cst.BtnBadgerPositionAtRight;
             btnBadger.Visibility = Visibility.Visible;
 
             btnBadgerM.IsEnabled = true;
@@ -2190,6 +2270,7 @@ namespace Badger2018
             }
 
             lblEndTime.ContentShortTime(Times.PlageTravAprem.End.Value);
+            lblEndTime.Content += Times.IsTherePauseAprem() || Times.IsTherePauseMatin() ? "*" : "";
             lblFinStr.Content = "Fin à";
 
             TimeSpan tempSuppl = RealTimes.RealTimeTempsTravaille - TimesUtils.GetTpsTravTheoriqueOneDay(PrgOptions, TypeJournee);
@@ -2236,7 +2317,7 @@ namespace Badger2018
                     "Badgeage automatique au démarrage désactivé." + Environment.NewLine +
                     "Cliquez pour l'activer.");
                 _imgBoolAutoBadgeAtStart.ChangeValue(PrgOptions.IsAutoBadgeAtStart);
-                PrgOptions.OnAutoBadgeAtStartChange += delegate(bool b)
+                PrgOptions.OnAutoBadgeAtStartChange += delegate (bool b)
                 {
                     _imgBoolAutoBadgeAtStart.ChangeValue(PrgOptions.IsAutoBadgeAtStart);
                     if (IsFullyLoaded)
@@ -2254,7 +2335,7 @@ namespace Badger2018
                     "Notifications désactivées." + Environment.NewLine +
                     "Cliquez pour les activer.");
                 _imgBoolShowGlobalNotification.ChangeValue(PrgOptions.IsGlobalShowNotifications);
-                PrgOptions.OnGlobalShowNotificationsChange += delegate(bool b)
+                PrgOptions.OnGlobalShowNotificationsChange += delegate (bool b)
                 {
                     _imgBoolShowGlobalNotification.ChangeValue(PrgOptions.IsGlobalShowNotifications);
                     if (IsFullyLoaded)
@@ -2276,7 +2357,7 @@ namespace Badger2018
                 imgBtnPauseReport.Visibility = PrgSwitch.PauseCurrentState == EnumStatePause.NONE
                     ? Visibility.Collapsed
                     : Visibility.Visible;
-                PrgSwitch.OnPauseCurrentStateChange += delegate(EnumStatePause b)
+                PrgSwitch.OnPauseCurrentStateChange += delegate (EnumStatePause b)
                 {
                     _imgBoolPauseReport.ChangeValue(b.BoolState);
                     imgBtnPauseReport.Visibility = b == EnumStatePause.NONE
@@ -2357,7 +2438,7 @@ namespace Badger2018
                         "Badgeage automatique de le pause du midi désactivé." + Environment.NewLine +
                         "Cliquez pour l'activer.");
                     _imgBoolAutoBadgeMeridienne.ChangeValue(PrgOptions.IsAutoBadgeMeridienne);
-                    PrgOptions.OnAutoBadgeMeridienneChange += delegate(bool b)
+                    PrgOptions.OnAutoBadgeMeridienneChange += delegate (bool b)
                     {
                         _imgBoolAutoBadgeMeridienne.ChangeValue(PrgOptions.IsAutoBadgeMeridienne);
                         if (IsFullyLoaded)
@@ -2612,7 +2693,7 @@ namespace Badger2018
 
 
             notifName = Cst.NotifTpsMaxJournee;
-            Action<NotificationDto> afterShowAction = delegate(NotificationDto dto)
+            Action<NotificationDto> afterShowAction = delegate (NotificationDto dto)
             {
                 ctrlCompteur.SetFontColor(Cst.SCBDarkRed);
                 ctrlCompteur.SetToolTip(dto.Message);
@@ -2717,7 +2798,7 @@ namespace Badger2018
 
                 }
 
-                Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
+                SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
 
                 if (EtatBadger < 3)
                 {
@@ -2754,9 +2835,12 @@ namespace Badger2018
                 }
 
 
+
                 EtatBadger = OldEtatBadger;
 
-                Times.EndTheoDateTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
+
+
+                SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee);
 
                 AdaptUiLowerThanState();
             }
@@ -2797,6 +2881,11 @@ namespace Badger2018
             pbarTime.Value = d;
         }
 
+        public void ChangeBtnBadgerValue(double d)
+        {
+            pbarBtnBadger.Value = d;
+        }
+
         public void PushNewInfo(String str)
         {
             if (StringUtils.IsNullOrWhiteSpace(str))
@@ -2834,51 +2923,66 @@ namespace Badger2018
         {
             bool isReloadView = true;
 
+            DateTime dt = AppDateUtils.DtNow();
+
             while (isReloadView)
             {
-                var mDetailsView = new MoreDetailsView(Times, EtatBadger, TypeJournee, PrgOptions);
+                var mDetailsView = new MoreDetailsView(PrgOptions, dt);
                 mDetailsView.ShowDialog();
 
                 isReloadView = mDetailsView.IsMustLoadsModTimeView;
 
                 if (isReloadView)
                 {
-                    LoadModTimeView();
+                    LoadModTimeView(mDetailsView.CurrentShowDay);
+                    dt = mDetailsView.CurrentShowDay;
                 }
             }
         }
 
-        private void LoadModTimeView()
+        private void LoadModTimeView(DateTime dayToMod)
         {
-            ModTimeView m = new ModTimeView(Times, TypeJournee, EtatBadger, PrgOptions.UrlMesPointages, PrgOptions);
+            bool isCurrentDay = dayToMod.Date == AppDateUtils.DtNow().Date;
+
+            ModTimeView m = new ModTimeView(dayToMod, PrgOptions.UrlMesPointages, PrgOptions);
+
+          
+            m.SetCurrentDay(dayToMod.Date, Times, TypeJournee, EtatBadger, isCurrentDay);
+                       
             m.ShowDialog();
-            
+
 
             if (m.HasChanged)
             {
-                TypeJournee = m.TypeJournee;
-                EtatBadger = m.EtatBadger;
-                OldEtatBadger = m.EtatBadger;
+                if (isCurrentDay)
+                {
+                    TypeJournee = m.TypeJournee;
+                    EtatBadger = m.EtatBadger;
+                    OldEtatBadger = m.EtatBadger;
 
 
 
-                AdaptUiLowerThanState();
+                    AdaptUiLowerThanState();
 
-                ctrlTyJournee.TypeJournee = TypeJournee;
+                    ctrlTyJournee.TypeJournee = TypeJournee;
 
-                ChangeTypeJournee();
+                    ChangeTypeJournee();
 
-                ClockUpdTimerOnOnTick(null, null);
-
-                
-                PointageSaverObj.SaveCurrentDayTimes();
+                    ClockUpdTimerOnOnTick(null, null);
 
 
-                PrgSwitch.IsMoreThanTpsTheo = false;
-                PrgSwitch.IsTimerStoppedByMaxTime = false;
-                PrgSwitch.PbarMainTimerActif = true;
+                    PointageSaverObj.SaveCurrentDayTimes();
 
-                StopTimers();
+
+                    PrgSwitch.IsMoreThanTpsTheo = false;
+                    PrgSwitch.IsTimerStoppedByMaxTime = false;
+                    PrgSwitch.PbarMainTimerActif = true;
+
+                    StopTimers();
+                } else
+                {
+                    PointageSaverObj.SaveAnotherDayTime(dayToMod, m.Times, m.TypeJournee, m.EtatBadger);
+                }
             }
         }
 
@@ -2973,13 +3077,22 @@ namespace Badger2018
                     PrgSwitch.IsFfForcedLoaded = false;
                     imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
                 }
-            } else
+            }
+            else
             {
+                if (!File.Exists(PrgOptions.FfExePath))
+                {
+                    NotifManager.NotifyNow("Firefox n'existe pas à cette adrese : " + PrgOptions.FfExePath,
+                        "Erreur");
+
+                    return;
+                }
+
                 FfDriverSingleton.Instance.Load(PrgOptions);
                 PrgSwitch.IsFfForcedLoaded = true;
                 imgBtnFirefoxLoaded.Visibility = Visibility.Visible;
             }
-                    
+
         }
 
 
@@ -2988,6 +3101,11 @@ namespace Badger2018
 
 
 
+        }
+
+        private void FixLastDay()
+        {
+            
         }
 
         internal void StopTimers()
@@ -3010,6 +3128,10 @@ namespace Badger2018
             PrgSwitch.IsInBadgeWork = false;
         }
 
+        public void Tick()
+        {
+            ClockUpdTimerOnOnTick(null, null);
+        }
 
 
         private void RestartApp()
@@ -3056,6 +3178,14 @@ namespace Badger2018
             MiscAppUtils.ShowNotificationBaloon(_notifyIcon, title, content, null, timeoutInMs, null, PrgOptions.IsUseAlternateNotification);
         }
 
+        public Dictionary<String, String> ExtGetLicenceInfo()
+        {
+            return LicenceApp.ToDictionnary();
+        }
+
+
+
+
         public MethodRecordWithInstance[] GetMethodToPresents()
         {
             List<MethodRecordWithInstance> l = new List<MethodRecordWithInstance>();
@@ -3092,11 +3222,17 @@ namespace Badger2018
             m.Dispatcher = Dispatcher.CurrentDispatcher;
             l.Add(m);
 
-
+            m = new MethodRecordWithInstance();
+            m.Instance = this;
+            m.TargetHookName = "ExtGetLicenceInfo";
+            m.MethodResponder = "ExtGetLicenceInfo";
+            l.Add(m);
 
 
             return l.ToArray();
         }
+
+
 
 
 

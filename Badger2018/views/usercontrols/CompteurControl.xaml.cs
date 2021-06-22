@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
@@ -15,6 +16,7 @@ namespace Badger2018.views.usercontrols
     public partial class CompteurControl : UserControl
     {
         private CompteurState _currentState;
+        private MainWindow _pwinRef;
 
         public enum CompteurState
         {
@@ -37,7 +39,13 @@ namespace Badger2018.views.usercontrols
             set
             {
                 _currentState = value;
+                if (PwinRef != null)
+                {
+                    PwinRef.PrgOptions.CptCtrlStateShowned = (int)_currentState;
+                    // OptionManager.SaveOptions(PwinRef.PrgOptions);
+                }
                 OnChangeCurrentState(value);
+
 
             }
         }
@@ -48,11 +56,20 @@ namespace Badger2018.views.usercontrols
 
         //public TimesBadgerDto TimesRef { get; set; }
         //public AppOptions OptionsRef { get; set; }
-       // public AppSwitchs PrgSwitchRef { get; set; }
+        // public AppSwitchs PrgSwitchRef { get; set; }
         //public RealTimesObj RealTimesRef { get; set; }
-       // public EnumTypesJournees TyJourneeRef { get; set; }
+        // public EnumTypesJournees TyJourneeRef { get; set; }
 
-        public MainWindow PwinRef { get; set; }
+        public MainWindow PwinRef
+        {
+            get { return _pwinRef; }
+            set
+            {
+                _pwinRef = value;
+                CurrentState = (CompteurState)value.PrgOptions.CptCtrlStateShowned;
+                UpdateInfos();
+            }
+        }
 
         public CompteurControl()
         {
@@ -65,6 +82,8 @@ namespace Badger2018.views.usercontrols
             lblTpsTravReelSuppl.MouseDoubleClick += OnMouseDblClick;
 
             //  AdaptUiAtState(CurrentState);
+
+
         }
 
         private void OnMouseDblClick(object sender, MouseButtonEventArgs e)
@@ -196,7 +215,7 @@ namespace Badger2018.views.usercontrols
         {
             SolidColorBrush colFont = Cst.SCBBlack;
 
-            TimeSpan tpsTravRestant = PwinRef.Times.EndTheoDateTime - PwinRef.RealTimes.RealTimeDtNow;
+            //TimeSpan tpsTravRestant = PwinRef.Times.EndTheoDateTime - PwinRef.RealTimes.RealTimeDtNow;
 
             // Tps trav pour une journée ou une demie-journée.
             TimeSpan tTravTheo = TimesUtils.GetTpsTravTheoriqueOneDay(PwinRef.PrgOptions, PwinRef.TypeJournee);
@@ -233,7 +252,7 @@ namespace Badger2018.views.usercontrols
 
             lblTpsTravReelLbl.Content = lblTpsTrav;
             lblTpsTravReel.Content = strTpsTrav;
-             lblTpsTravReel.ToolTip = null;
+            lblTpsTravReel.ToolTip = null;
 
 
 
@@ -274,22 +293,30 @@ namespace Badger2018.views.usercontrols
         {
             TimeSpan tpsTravRestant = PwinRef.Times.EndTheoDateTime - PwinRef.RealTimes.RealTimeDtNow;
 
-            // Tps trav pour une journée ou une demie-journée.
-            TimeSpan tTravTheo = TimesUtils.GetTpsTravTheoriqueOneDay(PwinRef.PrgOptions, PwinRef.TypeJournee);
+            String lblTpsTrav = "Temps restant pour la journée :";
+            lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
+            if (tpsTravRestant.TotalSeconds < 0)
+            {
+                DateTime endRaw = PwinRef.Times.EndRawDateTime -
+                                  (PwinRef.PrgOptions.IsAdd5minCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero);
+                tpsTravRestant = PwinRef.RealTimes.RealTimeDtNow - endRaw;
+                lblTpsTrav = "Temps supplémentaire pour la journée :";
+                TimeSpan tpsRestant = PwinRef.Times.MaxTimeForOneDay - PwinRef.RealTimes.RealTimeDtNow;
+                var supplLblTpsTrav = String.Format(" ({0})", MiscAppUtils.TimeSpanShortStrFormat(tpsRestant.Negate()));
+                lblTpsTravReelSuppl.Content = supplLblTpsTrav;
+                if (tpsRestant.TotalSeconds > 0)
+                {
+                    lblTpsTravReelSuppl.Visibility = Visibility.Visible;
+                }
 
+            }
 
-
-            String lblTpsTrav = PwinRef.RealTimes.RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0
-                ? "Temps supplémentaire pour la journée :"
-                : "Temps restant pour la journée :";
-            String strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(tpsTravRestant.TotalSeconds < 0 ? tpsTravRestant.Negate() : tpsTravRestant);
-
-
+            String strTpsTrav = MiscAppUtils.TimeSpanShortStrFormat(tpsTravRestant);
 
             lblTpsTravReelLbl.Content = lblTpsTrav;
             lblTpsTravReel.Content = strTpsTrav;
             lblTpsTravReel.ToolTip = null;
-            lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
+
 
             lblTpsTravReel.Foreground = Cst.SCBBlack;
 
@@ -298,13 +325,13 @@ namespace Badger2018.views.usercontrols
 
         private void UpdateInfosTempsCdRealTime()
         {
-
+            /*
             if (!PwinRef.PrgSwitch.PbarMainTimerActif)
             {
                 return;
-            }
+            }*/
 
-            TimeSpan tpsTravRestant = PwinRef.Times.EndTheoDateTime - PwinRef.RealTimes.RealTimeDtNow;
+            TimeSpan tpsTravRestant = PwinRef.RealTimes.RealTimeMinTpsTravRestant;
             TimeSpan tpsCdReal = PwinRef.PrgOptions.LastCdSeen.Subtract(tpsTravRestant);
 
 
@@ -313,7 +340,8 @@ namespace Badger2018.views.usercontrols
             {
                 colFont = Cst.SCBDarkRed;
                 tpsCdReal = PwinRef.PrgOptions.CompteurCDMaxAbs;
-            } else if (tpsCdReal.TotalMinutes > 0)
+            }
+            else if (tpsCdReal.TotalMinutes > 0)
             {
                 colFont = Cst.SCBDarkGreen;
             }
@@ -337,35 +365,6 @@ namespace Badger2018.views.usercontrols
 
 
 
-            /*
-
-            if (RealTimesRef.RealTimeTsNow.CompareTo(OptionsRef.PlageFixeApremFin) >= 0)
-            {
-                lblTpsTravReelSuppl.Visibility = Visibility.Visible;
-
-
-                string tplTpsReelSuppl = "({0})";
-                if (RealTimesRef.RealTimeTempsTravaille.CompareTo(tTravTheo) >= 0)
-                {
-                    tplTpsReelSuppl = "(+{0})";
-
-                    if (!PrgSwitchRef.IsMoreThanTpsTheo && RealTimesRef.RealTimeTempsTravaille.CompareTo(OptionsRef.TempsMaxJournee) < 0)
-                    {
-                        PrgSwitchRef.IsMoreThanTpsTheo = true;
-                        lblTpsTravReel.Foreground = Cst.SCBDarkGreen;
-
-                    }
-                    else if (RealTimesRef.RealTimeTempsTravaille.CompareTo(OptionsRef.TempsMaxJournee) >= 0)
-                    {
-                        PrgSwitchRef.IsMoreThanTpsTheo = false;
-                        lblTpsTravReel.Foreground = Cst.SCBDarkRed;
-                    }
-                }
-                lblTpsTravReelSuppl.Content = String.Format(tplTpsReelSuppl, MiscAppUtils.TimeSpanShortStrFormat((RealTimesRef.RealTimeTempsTravaille - tTravTheo)));
-
-
-            }
-             * */
         }
 
 

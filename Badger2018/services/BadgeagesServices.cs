@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.RightsManagement;
 using AryxDevLibrary.utils.logger;
 using Badger2018.business.dbb;
 using Badger2018.constants;
@@ -16,6 +17,25 @@ namespace Badger2018.services
     {
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
+        public bool IsExistPauseWithThisRelationId(String relationKey)
+        {
+            _logger.Debug("IsExistPauseWithThisRelationId (relationKey: {0})", relationKey);
+
+            bool isExist = false;
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+            try
+            {
+                isExist = BadgeageBddLayer.IsExistPauseWithThisRelationId(dbb, relationKey);
+            }
+            catch (Exception ex)
+            {
+                isExist = false;
+            }
+
+            _logger.Debug("IsExistPauseWithThisRelationId (...)");
+            return isExist;
+        }
+
         public void AddBadgeageForToday(int typeBadgeage, DateTime dtTimeHeureBadgeage, String relationKey = null, TimeSpan? cdToSave = null)
         {
             _logger.Debug("AddBadgeageForToday (typeBadgeage: {0}, dtTimeHeureBadgeage: {1}, relationKey: {2})", typeBadgeage, dtTimeHeureBadgeage, relationKey);
@@ -28,14 +48,14 @@ namespace Badger2018.services
             _logger.Debug("FIN - AddBadgeageForToday(...)");
         }
 
-        public void AddBadgeage(int typeBadgeage, DateTime date, String relationKey = null)
+        public void AddBadgeage(int typeBadgeage, DateTime date, String relationKey = null, TimeSpan? cdToSave = null)
         {
             _logger.Debug("AddBadgeage (typeBadgeage: {0}, dtTimeHeureBadgeage: {1}, relationKey: {2})", typeBadgeage, date, relationKey);
 
             DbbAccessManager dbb = DbbAccessManager.Instance;
 
 
-            BadgeageBddLayer.InsertNewBadgeage(dbb, typeBadgeage, date, relationKey);
+            BadgeageBddLayer.InsertNewBadgeage(dbb, typeBadgeage, date, relationKey, cdToSave);
             _logger.Debug("FIN - AddBadgeage(...)");
 
         }
