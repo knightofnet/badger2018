@@ -208,12 +208,21 @@ namespace Badger2018.business
                 int pInt = args.ProgressPercentage;
                 if (progress != null)
                 {
-                    progress.ValidStep(pInt - 1);
-                    progress.EnterStep(pInt);
-                    if (pInt == 3)
-                    {
-                        progress.ToogleBtnCancel();
-                    }
+                
+                    progress.Dispatcher.BeginInvoke(DispatcherPriority.Send,
+                        new Action(() =>
+                        {
+                            progress.ValidStep(pInt - 1);
+                            progress.EnterStep(pInt);
+                            if (pInt == 3)
+                            {
+                                progress.ToogleBtnCancel();
+                            }
+
+                        })
+                    );
+
+
                 }
 
             };

@@ -110,6 +110,10 @@ namespace Badger2018.views
             AsyncLoadListOfSoundDevices();
 
 
+            for (int i = 0; i < 11; i++)
+            {
+                cboxWaitBeforeClick.Items.Add(i);
+            }
 
 
             for (int i = 0; i < 6; i++)
@@ -200,6 +204,8 @@ namespace Badger2018.views
 
             cboxBlockShutdown.IsChecked = opt.TemptBlockShutdown;
             cboxAutoBadgeAtStart.IsChecked = opt.IsAutoBadgeAtStart;
+
+            cboxWaitBeforeClick.SelectedItem = opt.WaitBeforeClickBadger;
 
             cboxActionButtonClose.SelectedItem = opt.ActionButtonClose.Libelle;
             cboxBtnManuelBadgeIsWithHotKeys.IsChecked = opt.IsBtnManuelBadgeIsWithHotKeys;
@@ -596,6 +602,14 @@ namespace Badger2018.views
             {
                 HasChangeOption = true;
                 NewOptions.UriVerif = tboxIdFormStr;
+            }
+
+            // WaitBeforeClick
+            int selValueD = (int)cboxWaitBeforeClick.SelectedItem;
+            if (selValueD != OrigOptions.WaitBeforeClickBadger)
+            {
+                HasChangeOption = true;
+                NewOptions.WaitBeforeClickBadger = selValueD ;
             }
 
             return false;

@@ -86,6 +86,7 @@ namespace Badger2018.constants
 
         public static readonly EnumAppOptions IsPreloadFF = new EnumAppOptions("IsPreloadFF", typeof(bool), "False", false);
         public static readonly EnumAppOptions CptCtrlStateShowned = new EnumAppOptions("CptCtrlStateShowned", typeof(int), "0", false);
+        public static readonly EnumAppOptions WaitBeforeClickBadger = new EnumAppOptions("WaitBeforeClickBadger", typeof(int), "0", false);
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -157,6 +158,8 @@ namespace Badger2018.constants
 
                 yield return IsPreloadFF;
                 yield return CptCtrlStateShowned;
+
+                yield return WaitBeforeClickBadger;
 
 
 

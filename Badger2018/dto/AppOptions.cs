@@ -182,6 +182,7 @@ namespace Badger2018.dto
 
         public bool IsPreloadFF { get; internal set; }
         public int CptCtrlStateShowned { get; set; }
+        public int WaitBeforeClickBadger { get; set; }
 
         public void ResetSpecOption()
         {

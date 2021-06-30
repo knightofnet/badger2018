@@ -135,6 +135,11 @@
                     <Image HorizontalAlignment="Left" Height="23" Margin="205,281,0,0" VerticalAlignment="Top" Width="23" Source="/Badger2018;component/Resources/font-awesome_4-7-0_external-link_23_0_3498db_none.png" Cursor="Hand" ToolTip="Tester" MouseUp="Image_MouseUp"/>
 
                     <CheckBox x:Name="chkIsPreloadFF"  Margin="233,70,0,0" VerticalAlignment="Top" Content="Précharger Firefox et masquer l'instance." HorizontalAlignment="Left" Width="245" />
+
+                    <Label x:Name="lblWaitBeforeClick" Content="Attendre avant de badger :" HorizontalAlignment="Left" Margin="296,202,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.506,0.375"/>
+                    <ComboBox x:Name="cboxWaitBeforeClick" HorizontalAlignment="Right" Margin="0,227,10.8,0" VerticalAlignment="Top" Width="182" SelectionChanged="cboxMode_SelectionChanged" Height="23">
+                       
+                    </ComboBox>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabHoraire" Header="Horaires">

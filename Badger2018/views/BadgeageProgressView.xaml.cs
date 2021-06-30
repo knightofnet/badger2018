@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Badger2018.constants;
 using Badger2018.dto;
 
@@ -34,6 +35,8 @@ namespace Badger2018.views
             prgOptionRef = prgOptions;
 
             dateStep = DateTime.Now;
+
+            btnCancelBadgeage.Focus();
 
         }
 
@@ -99,9 +102,21 @@ namespace Badger2018.views
         {
             if (BackgrounderRef != null && !BackgrounderRef.CancellationPending)
             {
-                BackgrounderRef.CancelAsync();
+                Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                    new Action(() =>
+                    {
+                        btnCancelBadgeage.BorderBrush = Cst.SCBDarkRed;
+                    })
+                );
+                Dispatcher.BeginInvoke(DispatcherPriority.Send,
+                    new Action(() =>
+                    {
+                        BackgrounderRef.CancelAsync();
+                        btnCancelBadgeage.Content = "Annulation prise en compte";
+                    })
+                );
 
-                btnCancelBadgeage.Content = "Annulation prise en compte";
+
 
                 String browserProcessDriver = null;
                 if (prgOptionRef.BrowserIndex == EnumBrowser.FF )

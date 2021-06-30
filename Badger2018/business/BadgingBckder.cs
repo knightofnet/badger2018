@@ -128,7 +128,10 @@ namespace Badger2018.business
                         throw new UserCancelBadgeageException();
                     }
                     bkg.ReportProgress(EtapeTrt);
+
+
                     _logger.Debug(" Soumission du formulaire");
+                    Thread.Sleep(Pwin.PrgOptions.WaitBeforeClickBadger * 1000);
                     b.Submit();
                 }
                 else if (Pwin.PrgOptions.ModeBadgement == EnumModePointage.ELEMENT)
@@ -141,6 +144,7 @@ namespace Badger2018.business
                     }
                     bkg.ReportProgress(EtapeTrt);
                     _logger.Debug(" Clic sur l'élément");
+                    Thread.Sleep(Pwin.PrgOptions.WaitBeforeClickBadger * 1000);
                     b.Click();
                 }
 
@@ -208,6 +212,11 @@ namespace Badger2018.business
             }
             catch (Exception ex)
             {
+                if (bkg.CancellationPending)
+                {
+                    doWorkEventArgs.Cancel = true;
+                    throw new UserCancelBadgeageException();
+                }
                 throw ex;
 
             }
