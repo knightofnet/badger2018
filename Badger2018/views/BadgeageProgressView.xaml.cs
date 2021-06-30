@@ -21,7 +21,9 @@ namespace Badger2018.views
 
         private DateTime dateStep;
 
-        public BackgroundWorker BackgrounderRef { get; internal set; }
+        public int Step { get; private set; }
+
+        public BackgroundWorker BackgrounderRef { get; set; }
 
         public BadgeageProgressView(AppOptions prgOptions)
         {
@@ -38,6 +40,8 @@ namespace Badger2018.views
 
             btnCancelBadgeage.Focus();
 
+            Step = 0;
+
         }
 
 
@@ -53,10 +57,13 @@ namespace Badger2018.views
             {
                 label.Foreground = Cst.SCBGrey;
             }
+
+            Step = 0;
         }
 
         public void EnterStep(int i)
         {
+            Step = i;
             if (i >= _lstImage.Count || i > _lstLabel.Count || i < 0)
             {
                 return;

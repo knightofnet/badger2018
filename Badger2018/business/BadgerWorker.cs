@@ -26,6 +26,7 @@ namespace Badger2018.business
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
         private readonly Action<DateTime?, int> _actionAfterBadgeage;
+        public BadgeageProgressView Progress;
         public MainWindow Pwin { get; set; }
 
         //public bool isInBadgeWork = false;
@@ -186,8 +187,9 @@ namespace Badger2018.business
                 return false;
             }
 
-            BadgeageProgressView progress = new BadgeageProgressView(Pwin.PrgOptions);
-            progress.Show();
+            Progress = new BadgeageProgressView(Pwin.PrgOptions);
+            Progress.Show();
+            
 
             BadgingBckder b = new BadgingBckder
             {
@@ -199,24 +201,24 @@ namespace Badger2018.business
 
 
             _badgeageBackgrounder = new BackgroundWorker();
-            progress.BackgrounderRef = _badgeageBackgrounder;
+            Progress.BackgrounderRef = _badgeageBackgrounder;
             _badgeageBackgrounder.DoWork += b.BadgeageBackgrounderOnDoWork;
             _badgeageBackgrounder.WorkerSupportsCancellation = true;
             _badgeageBackgrounder.WorkerReportsProgress = true;
             _badgeageBackgrounder.ProgressChanged += (sender, args) =>
             {
                 int pInt = args.ProgressPercentage;
-                if (progress != null)
+                if (Progress != null)
                 {
-                
-                    progress.Dispatcher.BeginInvoke(DispatcherPriority.Send,
+                    
+                    Progress.Dispatcher.BeginInvoke(DispatcherPriority.Send,
                         new Action(() =>
                         {
-                            progress.ValidStep(pInt - 1);
-                            progress.EnterStep(pInt);
+                            Progress.ValidStep(pInt - 1);
+                            Progress.EnterStep(pInt);
                             if (pInt == 3)
                             {
-                                progress.ToogleBtnCancel();
+                                Progress.ToogleBtnCancel();
                             }
 
                         })
@@ -240,9 +242,9 @@ namespace Badger2018.business
                     _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
                     afterWork(dtNow);
                     _actionAfterBadgeage(dtNow, etatBadger);
-                    if (progress != null)
+                    if (Progress != null)
                     {
-                        progress.Hide();
+                        Progress.Hide();
                     }
                     Pwin.PrgOptions.LastCdSeen = b.ElementsFromPage.TsCd.Value;
                 }
@@ -253,10 +255,10 @@ namespace Badger2018.business
                     _logger.Warn(ex.Message);
                     _logger.Warn(ex.StackTrace);
 
-                    if (progress != null)
+                    if (Progress != null)
                     {
-                        progress.ErrorStep(b.EtapeTrt);
-                        progress.Topmost = false;
+                        Progress.ErrorStep(b.EtapeTrt);
+                        Progress.Topmost = false;
                     }
                     Pwin.PrgSwitch.IsInBadgeWork = false;
 
@@ -288,9 +290,9 @@ namespace Badger2018.business
 
                         actionAfter(result);
                         afterWork(null);
-                        if (progress != null)
+                        if (Progress != null)
                         {
-                            progress.Hide();
+                            Progress.Hide();
                         }
 
                         Pwin.PrgSwitch.IsInBadgeWork = false;
@@ -300,16 +302,16 @@ namespace Badger2018.business
                     // Erreur lors du badgeage
                     IntPtr hwnd = new WindowInteropHelper(Pwin).Handle;
                     FlashWindowUtils.Flash(hwnd, 10);
-                    EnumErrorCodeRetour response = MessageErrorBadgeageView.ShowMessageError(ex, dtNow, progress, b.EtapeTrt);
+                    EnumErrorCodeRetour response = MessageErrorBadgeageView.ShowMessageError(ex, dtNow, Progress, b.EtapeTrt);
                     if (response == EnumErrorCodeRetour.ANNULER)
                     {
                         _logger.Info("Erreur lors du badgeage : aucune action");
                         _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork(null)");
                         afterWork(null);
                         Pwin.SetBtnBadgerEnabled(true);
-                        if (progress != null)
+                        if (Progress != null)
                         {
-                            progress.Hide();
+                            Progress.Hide();
                         }
 
 
@@ -319,13 +321,13 @@ namespace Badger2018.business
                     {
                         _logger.Info("Erreur lors du badgeage : consultation pointage");
                         MiscAppUtils.GoTo(Pwin.PrgOptions.UrlMesPointages);
-                        CommonAfterReprise(afterWork, progress, etatBadger);
+                        CommonAfterReprise(afterWork, Progress, etatBadger);
                     }
                     if (response == EnumErrorCodeRetour.OPEN_SIRHIUS)
                     {
                         _logger.Info("Erreur lors du badgeage : ouverture de Sirhius");
                         MiscAppUtils.GoTo(Pwin.PrgOptions.UrlSirhius);
-                        CommonAfterReprise(afterWork, progress, etatBadger);
+                        CommonAfterReprise(afterWork, Progress, etatBadger);
                     }
 
                     if (response == EnumErrorCodeRetour.OPEN_BADGE_PAGE)
@@ -333,20 +335,20 @@ namespace Badger2018.business
                         Pwin.PrgSwitch.IsInBadgeWork = false;
                         _logger.Info("Erreur lors du badgeage : ouverture page badgeage");
                         MiscAppUtils.GoTo(Pwin.PrgOptions.Uri);
-                        CommonAfterReprise(afterWork, progress, etatBadger);
+                        CommonAfterReprise(afterWork, Progress, etatBadger);
 
                     }
                     if (response == EnumErrorCodeRetour.RETRY)
                     {
                         Pwin.PrgSwitch.IsInBadgeWork = true;
                         _logger.Info("Erreur lors du badgeage : réessai");
-                        if (progress != null)
+                        if (Progress != null)
                         {
-                            progress.Hide();
+                            Progress.Hide();
                         }
 
-                        progress = new BadgeageProgressView(Pwin.PrgOptions);
-                        progress.Show();
+                        Progress = new BadgeageProgressView(Pwin.PrgOptions);
+                        Progress.Show();
                         _badgeageBackgrounder.RunWorkerAsync();
                     }
                 }

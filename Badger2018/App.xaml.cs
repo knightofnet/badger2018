@@ -77,7 +77,7 @@ namespace Badger2018
             // BetaSpec(prgOptions);
 
 
-
+            AppArgsDto argsDto = null;
 
 
             /*
@@ -91,7 +91,7 @@ namespace Badger2018
 
                 Cst.ApplicationDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
 
-                AppArgsDto argsDto = new AppArgsDto();
+                argsDto = new AppArgsDto();
 
                 _logger.Debug("Chargement des options du programme");
                 prgOptions = OptionManager.LoadOptions();
@@ -150,7 +150,7 @@ namespace Badger2018
             try
             {
 
-                MainWindow mainWindow = new MainWindow(prgOptions, updaterManager, pManager, licenceInfo);
+                MainWindow mainWindow = new MainWindow(prgOptions, updaterManager, pManager, licenceInfo, argsDto);
                 mainWindow.ShowDialog();
 
             }
@@ -353,6 +353,11 @@ namespace Badger2018
                 prgOptions.CptCtrlStateShowned = (int) CompteurControl.CompteurState.TempsTravailDuJour;
                 OptionManager.SaveOptions(prgOptions);
                 _logger.Debug("RaZ de l'état du CptCtrl");
+            }
+
+            if (argsDto.NoAutoBadgeage)
+            {
+                _logger.Info("Auto-badgeage non actif durant cette session");
             }
 
         }

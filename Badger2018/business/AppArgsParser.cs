@@ -49,12 +49,24 @@ namespace Badger2018.business
         };
 
 
+        private static readonly Option _noAutoBadgeage = new Option()
+        {
+            ShortOpt = "n",
+            LongOpt = "noAutoBadgeage",
+            Description = "N'effectue pas l'autobadgeage au lancement",
+            HasArgs = false,
+            IsMandatory = false,
+            Name = "_noAutoBadgeage"
+        };
+
+
         public AppArgsParser()
         {
             AddOption(_exportConfigFilePath);
             AddOption(_importConfigFilePath);
             AddOption(_forceLogDebugOption);
             AddOption(_loadAfterExpImpOption);
+            AddOption(_noAutoBadgeage);
 
         }
 
@@ -87,17 +99,10 @@ namespace Badger2018.business
                 appArgsDto.ImportConfFilePath = GetSingleOptionValue(_importConfigFilePath, dictionary);
             }
 
-            if (HasOption(_forceLogDebugOption, dictionary))
-            {
-                appArgsDto.IsForceLogDebug = true;
-            }
 
-            if (HasOption(_loadAfterExpImpOption, dictionary))
-            {
-                appArgsDto.LoadAfterImportExport = true;
-            }
-
-
+            appArgsDto.IsForceLogDebug = HasOption(_forceLogDebugOption, dictionary);
+            appArgsDto.LoadAfterImportExport = HasOption(_loadAfterExpImpOption, dictionary);
+            appArgsDto.NoAutoBadgeage = HasOption(_noAutoBadgeage, dictionary);
 
 
             return appArgsDto;

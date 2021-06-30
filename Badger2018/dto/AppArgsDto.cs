@@ -11,7 +11,7 @@ namespace Badger2018.dto
         public bool IsForceLogDebug { get; set; }
         public bool LoadAfterImportExport { get; set; }
 
-
+        public bool NoAutoBadgeage { get; set; }
 
     }
 }

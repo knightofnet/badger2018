@@ -26,6 +26,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -135,7 +136,7 @@ namespace Badger2018
         public LicenceInfo LicenceApp { get; private set; }
         public bool IsFullyLoaded { get; private set; }
 
-        public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager, LicenceInfo licenceInfo)
+        public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager, LicenceInfo licenceInfo, AppArgsDto appArgs)
         {
             _logger.Debug("Chargement de l'écran principal");
 # if DEBUG
@@ -401,7 +402,7 @@ args.Key == Key.F12 ||
                 TimeSpan tsfinMat = TimesUtils.GetTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions,
                     EnumTypesJournees.Matin);
 
-                if (PrgOptions.IsAutoBadgeAtStart && EtatBadger == -1)
+                if (PrgOptions.IsAutoBadgeAtStart && EtatBadger == -1 && !appArgs.NoAutoBadgeage)
                 {
 
                     if (RealTimes.RealTimeTsNow >= new TimeSpan(6, 45, 0))
@@ -451,7 +452,7 @@ args.Key == Key.F12 ||
             _mainTimerManager.OnPauseToggled += MainTimerManagerOnOnPauseToggled;
             _mainTimerManager.Interval = new TimeSpan(0, 0, 10);
             _mainTimerManager.OnTick += ClockUpdTimerOnOnTick;
-            _mainTimerManager.Start();
+            
 
 
 
@@ -462,6 +463,32 @@ args.Key == Key.F12 ||
 
             Loaded += (sender, args) =>
             {
+
+                Dispatcher.BeginInvoke(DispatcherPriority.Send,
+                    new Action(() =>
+                    {
+                        if (PrgSwitch.IsInBadgeWork && BadgerWorker.Progress != null)
+                        {
+                            BadgeageProgressView b = new BadgeageProgressView(PrgOptions);
+                            b.BackgrounderRef = BadgerWorker.Progress.BackgrounderRef;
+                            int bStep = BadgerWorker.Progress.Step;
+
+                            BadgerWorker.Progress.Hide();
+                            BadgerWorker.Progress.Close();
+                            BadgerWorker.Progress = b;
+                            b.EnterStep(bStep);
+                            b.Show();
+                        }
+
+                    })
+                );
+
+
+
+
+
+                _mainTimerManager.Start();
+
                 AfterLoadPostInitComponent();
                 CoreAppBridge.Instance.RegisterMethodsForPlugin(this);
 
