@@ -51,7 +51,7 @@
         </Grid>
         <Button x:Name="btnBadgerM" Content="Badger et suspendre" HorizontalAlignment="Right" Margin="0,0,90.2,9.8" Grid.Row="2" VerticalAlignment="Bottom" Width="146" Height="23" Click="btnBadgerM_Click" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
 
-        <Button x:Name="btnOptions" HorizontalAlignment="Left" Margin="10,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Options et paramêtres" Click="btnOptions_Click" Width="27" Height="27" VerticalAlignment="Bottom" Foreground="#00000000" >
+        <Button x:Name="btnOptions" HorizontalAlignment="Left" Margin="10,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Options et paramêtres" Click="btnOptions_Click" Width="27" Height="27" VerticalAlignment="Bottom" Foreground="#00000000" Cursor="Hand" >
             <Button.Background>
                 <ImageBrush ImageSource="Resources/iconSetting.png"/>
             </Button.Background>
