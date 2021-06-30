@@ -119,6 +119,18 @@ namespace Badger2018.business
                 bkg.ReportProgress(EtapeTrt);
                 _logger.Debug(" Recherche de l'élément: {0}", IdElt);
                 IWebElement b = BadgingUtils.FindEltById(IdElt, driver);
+
+                // Attente (éventuelle, selon l'option WaitBeforeClickBadger) avant de cliquer sur l'élément
+                for (int tps = 0; tps < Pwin.PrgOptions.WaitBeforeClickBadger * 2; tps++)
+                {
+                    Thread.Sleep(500);
+                    if (bkg.CancellationPending)
+                    {
+                        doWorkEventArgs.Cancel = true;
+                        throw new UserCancelBadgeageException();
+                    }
+                }
+
                 if (Pwin.PrgOptions.ModeBadgement == EnumModePointage.FORM)
                 {
                     EtapeTrt = 3;
@@ -131,7 +143,6 @@ namespace Badger2018.business
 
 
                     _logger.Debug(" Soumission du formulaire");
-                    Thread.Sleep(Pwin.PrgOptions.WaitBeforeClickBadger * 1000);
                     b.Submit();
                 }
                 else if (Pwin.PrgOptions.ModeBadgement == EnumModePointage.ELEMENT)
@@ -144,7 +155,6 @@ namespace Badger2018.business
                     }
                     bkg.ReportProgress(EtapeTrt);
                     _logger.Debug(" Clic sur l'élément");
-                    Thread.Sleep(Pwin.PrgOptions.WaitBeforeClickBadger * 1000);
                     b.Click();
                 }
 
