@@ -822,6 +822,7 @@ args.Key == Key.F12 ||
 
                 if (isSpecBadgeage)
                 {
+                    btnBadger.IsEnabled = true;
                     return;
                 }
             }
@@ -845,7 +846,7 @@ args.Key == Key.F12 ||
         private bool BadgeageM1Manuell()
         {
             bool isSpecBadgeage;
-            MessageBoxResult v = MessageBox.Show("Voulez-vous effectuer le premier badgeage de la journée ? Cliquez sur Oui pour badger ou Non pour entrer l'heure manuellement (dans le cas où le pointage a déjà été effectuer via la page)",
+            MessageBoxResult v = MessageBox.Show("Voulez-vous effectuer le premier badgeage de la journée ? Cliquez sur Oui pour badger ou Non pour entrer l'heure manuellement (dans le cas où le pointage a déjà été effectué via la page)",
                 "Question",
                 MessageBoxButton.YesNoCancel,
                 MessageBoxImage.Question
