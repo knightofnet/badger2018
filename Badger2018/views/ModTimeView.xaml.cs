@@ -20,6 +20,8 @@ namespace Badger2018.views
     {
         public TimesBadgerDto Times { get; private set; }
 
+        public TimeSpan LastCdSeen { get; private set; }
+
         public EnumTypesJournees TypeJournee { get; private set; }
 
         public AppOptions PrgOptionsRef { get; private set; }
@@ -59,28 +61,27 @@ namespace Badger2018.views
             {
                 cboxTyJournee.Items.Add(enumTyJ.Libelle);
             }
-            
-
-         
 
             lienMesBadgeages.Click += (sender, args) => MiscAppUtils.GoTo(urlMesPointages);
         }
 
-        public void SetCurrentDay(DateTime day, TimesBadgerDto times, EnumTypesJournees tyJournee, int etatBadger, bool isCurrentDay)
+        public void SetCurrentDay(DateTime day, TimesBadgerDto times, EnumTypesJournees tyJournee, int etatBadger, bool pIsCurrentDay)
         {
             CurrentModDay = day;
-            if (isCurrentDay)
+            if (pIsCurrentDay)
             {
                 Times = times;
                 TypeJournee = tyJournee;
                 EtatBadger = etatBadger;
-               
-            } else
+                LastCdSeen = PrgOptionsRef.LastCdSeen;
+
+            }
+            else
             {
                 Times = new TimesBadgerDto();
             }
 
-            this.isCurrentDay = isCurrentDay;
+            this.isCurrentDay = pIsCurrentDay;
         }
 
         private void OnLoaded(object objSender, RoutedEventArgs a)
@@ -95,16 +96,23 @@ namespace Badger2018.views
                 EtatBadger = jour.EtatBadger;
 
                 Times.PlageTravMatin.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, CurrentModDay)).AtSec(Cst.SecondeOffset);
-                Times.PlageTravMatin.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END , CurrentModDay)).AtSec(Cst.SecondeOffset);
+                Times.PlageTravMatin.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END, CurrentModDay)).AtSec(Cst.SecondeOffset);
                 Times.PlageTravAprem.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_START, CurrentModDay)).AtSec(Cst.SecondeOffset);
                 Times.PlageTravAprem.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_APREM_END, CurrentModDay)).AtSec(Cst.SecondeOffset);
 
                 Times.PausesHorsDelai = new System.Collections.Generic.List<IntervalTemps>();
                 Times.PausesHorsDelai.AddRange(bServices.GetPauses(CurrentModDay));
+
+                TimeSpan? tsLastCd = bServices.GetLastCD(CurrentModDay);
+                if (tsLastCd.HasValue)
+                {
+                    LastCdSeen = tsLastCd.Value;
+                }
             }
 
 
             cboxTyJournee.SelectedItem = TypeJournee.Libelle;
+            EnumTypesJournees locTyJournees = TypeJournee;
 
             // On ajoute les 4 temps badgés si dispo
             c0.SetTextTime(Times.PlageTravMatin.Start);
@@ -112,14 +120,15 @@ namespace Badger2018.views
             c2.SetTextTime(Times.PlageTravAprem.Start);
             c3.SetTextTime(Times.PlageTravAprem.EndOrDft);
 
+
             // On ajoute le dernier C/D relevé
-            tboxLastCdSeen.Text = PrgOptionsRef.LastCdSeen.ToStrSignedhhmm();
+            tboxLastCdSeen.Text = LastCdSeen.ToStrSignedhhmm();
 
             // On ajoute les pauses si dispo            
             Times.PausesHorsDelai.ForEach(r => obsListPause.Add(r.Clone()));
 
 
-            EnumTypesJournees locTyJournees = TypeJournee;
+
 
             ChangeUiToEtatBadgerTyJournee(EtatBadger, locTyJournees);
 
@@ -146,10 +155,10 @@ namespace Badger2018.views
             _colColumnStart = new DataGridTextColumn();
             _colColumnStart.Header = "Début";
             IntervalTempsToStringConverter convColDeb = new IntervalTempsToStringConverter();
-           convColDeb.DataGridRef = dgPause;
+            convColDeb.DataGridRef = dgPause;
             Binding bindgColumnName = new Binding("Start") { Converter = convColDeb };
             _colColumnStart.Binding = bindgColumnName;
-          //  _colColumnStart.CellStyle = sCenteredCell;
+            //  _colColumnStart.CellStyle = sCenteredCell;
             dgPause.Columns.Add(_colColumnStart);
 
             _colColumnEnd = new DataGridTextColumn();
@@ -178,9 +187,9 @@ namespace Badger2018.views
             else if (locTyJournees == EnumTypesJournees.Matin)
             {
                 c0.IsEnabled = true;
-                c1.IsEnabled = true;
+                c1.IsEnabled = false;
                 c2.IsEnabled = false;
-                c3.IsEnabled = false;
+                c3.IsEnabled = true;
             }
             else if (locTyJournees == EnumTypesJournees.ApresMidi)
             {
@@ -235,7 +244,7 @@ namespace Badger2018.views
             }
         }
 
-    
+
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
@@ -250,7 +259,7 @@ namespace Badger2018.views
                 Times.PlageTravAprem.Start = c2.GetStrictDateTime().ChangeDate(dtNow);
                 Times.PlageTravAprem.End = c3.GetStrictDateTime().ChangeDate(dtNow);
 
-                
+
 
                 if (TypeJournee == EnumTypesJournees.Complete)
                 {
@@ -275,23 +284,7 @@ namespace Badger2018.views
                         EtatBadger = 3;
                     }
                 }
-                else if (TypeJournee == EnumTypesJournees.Matin)
-                {
-                    if (!c0.IsEnabled && !c1.IsEnabled)
-                    {
-                        EtatBadger = -1;
-                    }
-                    else if (c0.IsEnabled && !c1.IsEnabled)
-                    {
-                        EtatBadger = 0;
-                    }
-                    else if (c0.IsEnabled && c1.IsEnabled)
-                    {
-                        EtatBadger = 3;
-                    }
-
-                }
-                else if (TypeJournee == EnumTypesJournees.ApresMidi)
+                else 
                 {
                     if (!c0.IsEnabled && !c3.IsEnabled)
                     {
@@ -323,11 +316,11 @@ namespace Badger2018.views
                         ts = ts.Negate();
                     }
 
-                    PrgOptionsRef.LastCdSeen = ts;
+                    LastCdSeen = ts;
                 }
 
                 Times.PausesHorsDelai.Clear();
-                foreach(IntervalTemps pause in obsListPause)
+                foreach (IntervalTemps pause in obsListPause)
                 {
                     Times.PausesHorsDelai.Add(pause);
                 }
@@ -342,6 +335,8 @@ namespace Badger2018.views
 
         }
 
+
+
         private bool VerifyDatas()
         {
 
@@ -350,16 +345,16 @@ namespace Badger2018.views
             //bool isNegateLastSeen = false;
             if (tboxLastSeenRaw.StartsWith("-"))
             {
-              //  isNegateLastSeen = true;
+                //  isNegateLastSeen = true;
                 tboxLastSeenRaw = tboxLastSeenRaw.Substring(1);
             }
-            if ((!tboxLastSeenRaw.StartsWith("-") && !TimeSpan.TryParse(tboxLastSeenRaw, out ts)) 
+            if ((!tboxLastSeenRaw.StartsWith("-") && !TimeSpan.TryParse(tboxLastSeenRaw, out ts))
                 && (tboxLastSeenRaw.StartsWith("-") && !TimeSpan.TryParse(tboxLastSeenRaw.Substring(1), out ts)))
             {
                 MessageBox.Show("Le C/D doit être au format HH:mm.");
                 tboxLastCdSeen.Focus();
                 return false;
-            } 
+            }
 
             if (!c0.IsValidTextTime())
             {
@@ -393,7 +388,7 @@ namespace Badger2018.views
 
             }
 
-            
+
 
             if (TypeJournee == EnumTypesJournees.Complete)
             {
@@ -463,7 +458,7 @@ namespace Badger2018.views
 
 
 
- 
+
 
     class CoupleCboxTbox
     {

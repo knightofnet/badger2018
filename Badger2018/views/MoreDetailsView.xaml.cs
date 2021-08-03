@@ -53,9 +53,14 @@ namespace Badger2018.views
             _memoryDay = new Dictionary<string, List<LabelledDateTime>>(1);
 
             PrgOptions = prgOptions;
-
-            Loaded += OnLoadUi; 
-
+            
+            Loaded += OnLoadUi;
+            lienCalcCd.Click += (sender, args) =>
+            {
+                CalculateCDView calcView = new CalculateCDView(PrgOptions);
+                calcView.SetDtMin(CurrentShowDay);
+                calcView.ShowDialog();
+            };
         }
 
         private void OnLoadUi(object Sender, RoutedEventArgs args)
@@ -425,7 +430,7 @@ namespace Badger2018.views
                 List<LabelledDateTime> listIvlDayForDay = SetListValueForCurrentDay(times, etatBadgeage, typesJournees);
                 //_memoryDay.Add(dtLastDayStr, listIvlDayForDay);
 
-
+                TimeSpan? cdLast = bServices.GetLastCD(dtLastDay);
 
                 InitStackPanel(listIvlDayForDay, times, typesJournees);
 
@@ -438,6 +443,9 @@ namespace Badger2018.views
                     ref isMaxDepass);
                 lblTempsTrav.Content = a.ToString(Cst.TimeSpanFormatWithH);
                 Add5MinTooltip();
+
+                lblCD.Content = cdLast.HasValue ? cdLast.Value.ToStrSignedhhmm() : "";
+
             }
             else
             {

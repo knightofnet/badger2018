@@ -83,6 +83,20 @@ namespace Badger2018.services
         }
 
 
+        public List<BadgeageEntryDto> GetAllBadgeageOfDay( DateTime dt)
+        {
+            _logger.Debug("GetAllBadgeageOfDay( dt: {0})",  dt);
+     
+
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+            List<BadgeageEntryDto> endEntries = BadgeageBddLayer.GetListBadgeagesOf(dbb, dt);
+          
+
+            _logger.Debug("FIN - GetAllBadgeageOfDay(...) => {0}", endEntries);
+
+            return endEntries;
+        }
+
         public string GetBadgeageOrDft(EnumBadgeageType tyBadgeage, DateTime dt)
         {
             _logger.Debug("GetBadgeageOrDft(tyBadgeage: {0}, dt: {1})", tyBadgeage.Libelle, dt);
@@ -243,6 +257,22 @@ namespace Badger2018.services
                 _logger.Error("FIN - RemoveDuplicatesBadgeages(...) ");
             }
 
+        }
+
+        public TimeSpan? GetLastCD(DateTime dt)
+        {
+            _logger.Debug("GetLastCD(dt: {0})", dt);
+            string day = dt.ToString("d");
+
+           TimeSpan? retTimeSpan;
+
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+            TimeSpan? ts = BadgeageBddLayer.GetLastCD(dbb, dt);
+           
+
+            _logger.Debug("FIN - GetLastCD(...) => {0}", ts);
+
+            return ts;
         }
     }
 }

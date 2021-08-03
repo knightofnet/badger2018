@@ -287,7 +287,7 @@ namespace Badger2018.business.saver
 
         }
 
-        public void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger)
+        public void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger, TimeSpan cdLastSeen)
         {
             throw new NotImplementedException();
         }

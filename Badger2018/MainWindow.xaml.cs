@@ -58,6 +58,7 @@ namespace Badger2018
         DispatcherTimer finPauseMidiTimer = null;
         DispatcherTimer finHeureReglTimer = null;
         DispatcherTimer pauseHorsPeriodeTimer = null;
+        DispatcherTimer apresUnlockMidiWhileBadgeDebutApremTimer = null;
 
         public AppOptions PrgOptions { get; set; }
 
@@ -139,11 +140,11 @@ namespace Badger2018
         public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager, LicenceInfo licenceInfo, AppArgsDto appArgs)
         {
             _logger.Debug("Chargement de l'écran principal");
-# if DEBUG
-           // AppDateUtils.ForceDtNow(new DateTime(2021, 01, 03, 16, 00, 0));
+#if DEBUG
+            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 3, 13, 00, 40));
 
             //SetDarkTheme();
-# endif
+#endif
 
             PrgSwitch = new AppSwitchs();
 
@@ -452,7 +453,7 @@ args.Key == Key.F12 ||
             _mainTimerManager.OnPauseToggled += MainTimerManagerOnOnPauseToggled;
             _mainTimerManager.Interval = new TimeSpan(0, 0, 10);
             _mainTimerManager.OnTick += ClockUpdTimerOnOnTick;
-            
+
 
 
 
@@ -816,16 +817,44 @@ args.Key == Key.F12 ||
         {
             if (EtatBadger == 1 && e.Reason == SessionSwitchReason.SessionUnlock)
             {
-                ShowInTaskbar = true;
-                MessageBoxUtils.TopMostMessageBox(
-                    String.Format("Bien déjeuné ?{0}La session a été dévérouillée pendant la pause du midi : penser à Badger !", Environment.NewLine),
-                    "Question",
-                     MessageBoxButton.OK,
-                    MessageBoxImage.Question
+                if (apresUnlockMidiWhileBadgeDebutApremTimer != null)
+                {
+                    apresUnlockMidiWhileBadgeDebutApremTimer.Stop();
+                }
+
+                apresUnlockMidiWhileBadgeDebutApremTimer = new DispatcherTimer
+                {
+                    IsEnabled = true, Interval = new TimeSpan(0, 5, 0)
+                };
+                apresUnlockMidiWhileBadgeDebutApremTimer.Tick += (o, args) =>
+                {
+                    if (EtatBadger > 1)
+                    {
+                        apresUnlockMidiWhileBadgeDebutApremTimer.Stop();
+                        return;
+                    }
+
+                    ShowInTaskbar = true;
+                    MessageBoxResult res = MessageBoxUtils.TopMostMessageBox(
+                        String.Format(
+                            "Bien déjeuné ?{0}La session a été déverrouillée pendant la pause du midi : pensez à Badger !",
+                            Environment.NewLine),
+                        "Question",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Question
                     );
 
-                RestoreWindow();
-                ShowInTaskbar = false;
+                    RestoreWindow();
+                    ShowInTaskbar = false;
+
+
+                    if (res != MessageBoxResult.OK)
+                    {
+                        apresUnlockMidiWhileBadgeDebutApremTimer.Stop();
+                    }
+                };
+                apresUnlockMidiWhileBadgeDebutApremTimer.Start();
+
             }
 
         }
@@ -1020,7 +1049,7 @@ args.Key == Key.F12 ||
                                 }
                             }
 
-                          
+
                         }
                         else
                         {
@@ -1070,7 +1099,7 @@ args.Key == Key.F12 ||
                 {
                     Times.PlageTravMatin.Start = DateTime.Parse(p.B0).AtSec(Cst.SecondeOffset);
 
-                    SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, Times.GetTpsPause());
+                    SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, null);
 
                 }
                 if (EtatBadger >= 1)
@@ -1140,12 +1169,14 @@ args.Key == Key.F12 ||
                     btnBadgerM.Content = "Badger et suspendre";
                     PrgSwitch.PauseCurrentState = EnumStatePause.HAVE_PAUSES;
 
+                    /*
                     Times.EndTheoDateTime = Times.EndTheoDateTime
                                                    + Times.GetTpsPause();
                     Times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(Times.EndTheoDateTime, PrgOptions, TypeJournee);
 
                     lblEndTime.ContentShortTime(Times.EndTheoDateTime);
                     lblEndTime.Content += "*";
+                    */
                 }
                 else
                 {
@@ -1616,6 +1647,8 @@ args.Key == Key.F12 ||
         private void SignalUpdate(bool isForceCheck = false)
         {
             //UpdateChecker chk = UpdateChecker.Instance;
+            if (!UpdaterMgr.IsUpdateEnabled) return;
+
 
             bool isOkToSignalUpd = false;
             if (!isForceCheck && EtatBadger == 0 && UpdaterMgr.IsNewUpdateAvalaible &&
@@ -2064,6 +2097,10 @@ args.Key == Key.F12 ||
         {
             DateTime timeEndTheoRaw = TimesUtils.GetDateTimeEndTravTheoriqueBis(start, prgOptions, typeJournee);
             timeEndTheoRaw += endDelta.GetValueOrDefault();
+            if (times.IsTherePauseMatin() || times.IsTherePauseAprem())
+            {
+                timeEndTheoRaw += times.GetTpsPause();
+            }
             times.EndRawDateTime = timeEndTheoRaw;
             times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(timeEndTheoRaw, prgOptions, typeJournee);
             times.EndTheoDateTime = TimesUtils.ClassicTransform(timeEndTheoRaw, prgOptions, typeJournee);
@@ -2780,6 +2817,19 @@ args.Key == Key.F12 ||
                 );
             n.DtoAfterShowNotif += afterShowAction;
 
+
+            notifName = "Heure max travail pour la journée";
+            n = NotifManager.RegisterNotification(
+                notifName + ":0",
+                "Information",
+                String.Format("Il est {0} : le temps de travail n'est plus compté.", PrgOptions.HeureMaxJournee.ToStrSignedhhmm()),
+                null,
+                null,
+                PrgOptions.HeureMaxJournee,
+                EnumTypesTemps.RealTime
+            );
+            n.DtoAfterShowNotif += afterShowAction;
+
         }
 
 
@@ -2974,9 +3024,9 @@ args.Key == Key.F12 ||
 
             ModTimeView m = new ModTimeView(dayToMod, PrgOptions.UrlMesPointages, PrgOptions);
 
-          
+
             m.SetCurrentDay(dayToMod.Date, Times, TypeJournee, EtatBadger, isCurrentDay);
-                       
+
             m.ShowDialog();
 
 
@@ -2987,8 +3037,7 @@ args.Key == Key.F12 ||
                     TypeJournee = m.TypeJournee;
                     EtatBadger = m.EtatBadger;
                     OldEtatBadger = m.EtatBadger;
-
-
+                    PrgOptions.LastCdSeen = m.LastCdSeen;
 
                     AdaptUiLowerThanState();
 
@@ -2998,18 +3047,17 @@ args.Key == Key.F12 ||
 
                     ClockUpdTimerOnOnTick(null, null);
 
-
                     PointageSaverObj.SaveCurrentDayTimes();
-
 
                     PrgSwitch.IsMoreThanTpsTheo = false;
                     PrgSwitch.IsTimerStoppedByMaxTime = false;
                     PrgSwitch.PbarMainTimerActif = true;
 
                     StopTimers();
-                } else
+                }
+                else
                 {
-                    PointageSaverObj.SaveAnotherDayTime(dayToMod, m.Times, m.TypeJournee, m.EtatBadger);
+                    PointageSaverObj.SaveAnotherDayTime(dayToMod, m.Times, m.TypeJournee, m.EtatBadger, m.LastCdSeen);
                 }
             }
         }
@@ -3133,7 +3181,7 @@ args.Key == Key.F12 ||
 
         private void FixLastDay()
         {
-            
+
         }
 
         internal void StopTimers()

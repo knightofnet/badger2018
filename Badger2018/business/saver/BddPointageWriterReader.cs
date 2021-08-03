@@ -39,7 +39,7 @@ namespace Badger2018.business.saver
 
         }
 
-        public void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger)
+        public void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger, TimeSpan cdLastSeen)
         {
             DataBadgeageVehicle data = new DataBadgeageVehicle()
             {
@@ -48,7 +48,7 @@ namespace Badger2018.business.saver
                 EtatBadger = etatBadger,
                 TypeJournee = typeJournee,
                 OldEtatBadger = etatBadger,
-                LastCdSeen = null,
+                LastCdSeen = cdLastSeen,
             };
             SaveDayTimes(data);
         }

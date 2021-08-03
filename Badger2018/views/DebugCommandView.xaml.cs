@@ -95,6 +95,7 @@ namespace Badger2018.views
             {
                 CsLog("Commandes :");
                 CsLog(" archiveData : archives les captures, les journaux et les anciens pointages xml.");
+                CsLog(" calcCd : calcul le c/D manuellement.");
                 CsLog(" cls : efface la console.");
                 CsLog(" log : ouvre le fichier journal.");
                 CsLog(" folder : ouvre le dossier de l'application dans l'explorateur.");
@@ -148,6 +149,12 @@ namespace Badger2018.views
                 CsLog("Archives les captures, les journaux et les anciens pointages xml");
                 MiscAppUtils.CreatePaths();
                 _pWinRef.ArchiveDatas();
+            }
+            else if ("calcCd".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
+            {
+                CsLog("calcul le c/D manuellement");
+                CalculateCDView c = new CalculateCDView(_pWinRef.PrgOptions);
+                c.ShowDialog();
             }
             else if ("log".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
             {

@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="specUser" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Z016287;Z017855;Z017405;ARyx;Z015828</Value>
+      <Value Profile="(Default)">Z016287;Z017855;Z017405;ARyx;Z015828;Z019363</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -188,9 +188,10 @@ namespace Badger2018.views
             tboxPfAE.Text = opt.PlageFixeApremFin.ToString(Cst.TimeSpanFormat);
 
             tboxPtmpsPause.Text = opt.TempsMinPause.ToString(Cst.TimeSpanFormat);
-            tboxMaxTravTime.Text = opt.TempsMaxJournee.ToString(Cst.TimeSpanFormat);
+            tboxDayMaxTpsTime.Text = opt.TempsMaxJournee.ToString(Cst.TimeSpanFormat);
             tboxMaxTravTimeDemi.Text = opt.TempsMaxDemieJournee.ToString(Cst.TimeSpanFormat);
-            tboxMinTravTime.Text = opt.HeureMinJournee.ToString(Cst.TimeSpanFormat);
+            tboxMinHourTime.Text = opt.HeureMinJournee.ToString(Cst.TimeSpanFormat);
+            tboxMaxHourTime.Text = opt.HeureMaxJournee.ToString(Cst.TimeSpanFormat);
             tboxTpsReglementaireDemieJournee.Text = opt.TempsDemieJournee.ToString(Cst.TimeSpanFormat);
 
 
@@ -803,7 +804,7 @@ namespace Badger2018.views
 
             // tps max trav
             TimeSpan newTboxTmax = new TimeSpan();
-            if (MiscAppUtils.TryParseAlt(tboxMaxTravTime.Text, out newTboxTmax))
+            if (MiscAppUtils.TryParseAlt(tboxDayMaxTpsTime.Text, out newTboxTmax))
             {
                 if (!newTboxTmax.Equals(OrigOptions.TempsMaxJournee))
                 {
@@ -814,11 +815,11 @@ namespace Badger2018.views
             else
             {
                 MessageBox.Show("Le temps maximum de travail doit être au format HH:mm.");
-                tboxMaxTravTime.Focus();
+                tboxDayMaxTpsTime.Focus();
                 return true;
             }
 
-            // tps max trav
+            // tps max trav demi J
             TimeSpan newTboxTmaxD = new TimeSpan();
             if (MiscAppUtils.TryParseAlt(tboxMaxTravTimeDemi.Text, out newTboxTmaxD))
             {
@@ -835,14 +836,14 @@ namespace Badger2018.views
                 return true;
             }
 
-            // tps min trav
+            // heure min trav
             TimeSpan newTboxTmin = new TimeSpan();
-            if (MiscAppUtils.TryParseAlt(tboxMinTravTime.Text, out newTboxTmin))
+            if (MiscAppUtils.TryParseAlt(tboxMinHourTime.Text, out newTboxTmin))
             {
                 if (newTboxTmin.CompareTo(NewOptions.PlageFixeMatinStart) >= 0)
                 {
                     MessageBox.Show("L'horaire minimum pour commencer à travailler doit être inférieur au début de la plage fixe du matin.");
-                    tboxMinTravTime.Focus();
+                    tboxMinHourTime.Focus();
                     return true;
                 }
                 else if (!newTboxTmin.Equals(OrigOptions.HeureMinJournee))
@@ -854,7 +855,30 @@ namespace Badger2018.views
             else
             {
                 MessageBox.Show("L'horaire minimum pour commencer à travailler doit être au format HH:mm.");
-                tboxMinTravTime.Focus();
+                tboxMinHourTime.Focus();
+                return true;
+            }
+
+            // heure max trav sur une journée
+            TimeSpan newTboxMaxHourTime = new TimeSpan();
+            if (MiscAppUtils.TryParseAlt(tboxMaxHourTime.Text, out newTboxMaxHourTime))
+            {
+                if (newTboxTmin.CompareTo(NewOptions.PlageFixeApremFin) <= 0)
+                {
+                    MessageBox.Show("L'horaire maximum pour finir de travailler doit être supérieur à la fin de la plage fixe de l'après-midi.");
+                    tboxMaxHourTime.Focus();
+                    return true;
+                }
+                else if (!newTboxMaxHourTime.Equals(OrigOptions.HeureMaxJournee))
+                {
+                    HasChangeOption = true;
+                    NewOptions.HeureMaxJournee = newTboxTmin;
+                }
+            }
+            else
+            {
+                MessageBox.Show("L'horaire minimum pour commencer à travailler doit être au format HH:mm.");
+                tboxMinHourTime.Focus();
                 return true;
             }
 

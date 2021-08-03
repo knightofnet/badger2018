@@ -20,6 +20,8 @@ namespace BadgerCommonLibrary.business
         private static readonly Logger _logger = Logger.LastLoggerInstance;
         private string _xmlUpdFilePath;
 
+        public bool IsUpdateEnabled = true;
+
         public string XmlUpdFilePath
         {
             get { return _xmlUpdFilePath; }
@@ -47,6 +49,8 @@ namespace BadgerCommonLibrary.business
 
         private void LoadsXmlFile(string filepath)
         {
+            if (!IsUpdateEnabled) return;
+
             FileInfo fileInfo = new FileInfo(filepath);
             IsUpdaterFileLoaded = false;
             if (!fileInfo.Exists)
@@ -61,6 +65,8 @@ namespace BadgerCommonLibrary.business
 
         public void CheckForUpdates(string tagCheckUpd, string versionIn, string versionTarget = "*")
         {
+            if (!IsUpdateEnabled) return;
+
             try
             {
 

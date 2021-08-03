@@ -191,5 +191,11 @@
     <Setting Name="WaitBeforeClickBadger" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="HeureMaxJournee" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">19:00:00</Value>
+    </Setting>
+    <Setting Name="IsUpdateSvcEnable" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Globalization;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.business.dbb;
@@ -102,7 +103,25 @@ namespace Badger2018.services.bddLastLayer
 
         }
 
+        public static TimeSpan? GetLastCD(DbbAccessManager dbbManager, DateTime date)
+        {
+            SQLiteCommand command = null;
+            string whereClause = "DATE_BADGE=@DATEBADGE AND CD_AT_TIME IS NOT NULL LIMIT 1";
 
+            string sql = String.Format(SqlConstants.SELECT_COL_WHERE, "CD_AT_TIME", TableBadgeages, whereClause);
+
+            command = new SQLiteCommand(sql, dbbManager.Connection);
+
+            command.Parameters.Add(new SQLiteParameter("@DATEBADGE", date.ToString("yyyy-MM-dd")));
+
+            String ret = (string)command.ExecuteScalar();
+            if (ret != null && TimeSpan.TryParse(ret, CultureInfo.CurrentCulture, out TimeSpan outTs))
+            {
+                return outTs;
+            }
+
+            return null;
+        }
 
         internal static string GetBadgeageTimeStrFor(DbbAccessManager dbbManager, int index, DateTime date, string relationKey = null)
         {
@@ -127,12 +146,16 @@ namespace Badger2018.services.bddLastLayer
 
         }
 
-        public static List<BadgeageEntryDto> GetListBadgeagesOf(DbbAccessManager dbbManager, DateTime date, int index, string relationKey)
+        public static List<BadgeageEntryDto> GetListBadgeagesOf(DbbAccessManager dbbManager, DateTime date, int index = -1, string relationKey = null)
         {
             List<BadgeageEntryDto> lstRet = new List<BadgeageEntryDto>();
 
             SQLiteCommand command = null;
-            string whereClause = "DATE_BADGE=@DATEBADGE AND TYPE_BADGE=@TYPE_BADGE";
+            string whereClause = "DATE_BADGE=@DATEBADGE";
+            if (index > -1)
+            {
+                whereClause += " AND TYPE_BADGE=@TYPE_BADGE";
+            }
             if (relationKey != null)
             {
                 whereClause += " AND RELATION_KEY=@RELATION_KEY";
@@ -142,7 +165,11 @@ namespace Badger2018.services.bddLastLayer
             command = new SQLiteCommand(sql, dbbManager.Connection);
 
             command.Parameters.Add(new SQLiteParameter("@DATEBADGE", date.ToString("yyyy-MM-dd")));
-            command.Parameters.Add(new SQLiteParameter("@TYPE_BADGE", index));
+            if (index > -1)
+            {
+                command.Parameters.Add(new SQLiteParameter("@TYPE_BADGE", index));
+            }
+
             if (relationKey != null)
             {
                 command.Parameters.Add(new SQLiteParameter("@RELATION_KEY", relationKey));

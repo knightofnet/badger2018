@@ -1,0 +1,104 @@
+﻿<Window x:Class="Badger2018.views.CalculateCDView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Badger2018.views"
+        mc:Ignorable="d"
+        Title="Outil de calcul du crédit-débit entre deux dates" Height="480" Width="746" MaxHeight="500" MaxWidth="860">
+    <Grid>
+        <Label x:Name="label" Content="Calculer crédit-débit entre deux dates en utilisant les enregistrements de l'outil :" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+        <Grid Margin="10,78,10.2,0" Height="142" VerticalAlignment="Top">
+
+            <Label x:Name="l2" Content="A partir du crédit-débit du" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Label x:Name="l3" Content="jusqu'au" HorizontalAlignment="Left" Margin="308,0,0,0" VerticalAlignment="Top"/>
+
+            <DatePicker x:Name="dtMin" HorizontalAlignment="Left" Margin="154,1,0,0" VerticalAlignment="Top"/>
+            <DatePicker x:Name="dtMax" HorizontalAlignment="Left" Margin="369,1,0,0" VerticalAlignment="Top"/>
+            <Button x:Name="btnCalc" Content="Calculer" HorizontalAlignment="Left" Margin="523,1,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="btnCalc_Click"/>
+
+            <Border Margin="0,28,0,0" Height="72" VerticalAlignment="Top" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+                <ScrollViewer VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" >
+                    <StackPanel x:Name="wp" Orientation="Horizontal" />
+                </ScrollViewer>
+            </Border>
+
+            <Label x:Name="l4" Margin="0,105,0,0" VerticalAlignment="Top" FontSize="10" >
+                <AccessText x:Name="l4Content" TextWrapping="Wrap">
+                    Les données ont été chargées : entre le {0} et le {1}, {2} jours travaillés ont été collectés. Le crédit-débit de départ a été récupéré à partir du {3} ({4})
+                </AccessText>
+            </Label>
+        </Grid>
+
+        <Label x:Name="lCdCalc" Content="Crédit-débit calculé : " HorizontalAlignment="Left" Margin="5,0,0,8.4" VerticalAlignment="Bottom"/>
+        <Label x:Name="cdCalc" Content="00h00" HorizontalAlignment="Left" Margin="133,0,0,8.4" VerticalAlignment="Bottom"/>
+        <GroupBox x:Name="gpModDay" Header="Modifier un jour " HorizontalAlignment="Left" Height="177" Margin="10,225,0,0" VerticalAlignment="Top" Width="383">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label x:Name="lblMatinState" Content="Matinée travaillée" HorizontalAlignment="Left" VerticalAlignment="Top" Width="156" HorizontalContentAlignment="Center"/>
+                <Slider x:Name="sliderMatin" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Width="150" Maximum="2" SmallChange="1"/>
+
+
+                <Label x:Name="lbModB0" Content="Début :" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,44,0,0"/>
+                <TextBox x:Name="tboxModB0" HorizontalAlignment="Left" Height="20" Margin="117,48,0,0" TextWrapping="NoWrap" Text="33:00" VerticalAlignment="Top" Width="39" />
+
+                <Label x:Name="lbModB1" Content="Fin matinée :" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,70,0,0"/>
+                <TextBox x:Name="tboxModB1" HorizontalAlignment="Left" Height="20" Margin="117,74,0,0" TextWrapping="NoWrap" Text="33:00" VerticalAlignment="Top" Width="39"/>
+
+
+                <Label x:Name="lblApremState" Content="Après-midi travaillée" HorizontalAlignment="Left" VerticalAlignment="Top" Width="158" HorizontalContentAlignment="Center" Margin="0.4,0,0,0" Grid.Column="1"/>
+                <Slider x:Name="sliderAprem" HorizontalAlignment="Left" Margin="10.4,26,0,0" VerticalAlignment="Top" Width="148" Maximum="2" SmallChange="1" Grid.Column="1"/>
+
+                <Label x:Name="lbModB2" Content="Début après-midi :" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5.4,44,0,0" Grid.Column="1"/>
+                <TextBox x:Name="tboxModB2" HorizontalAlignment="Left" Height="20" Margin="119.4,48,0,0" TextWrapping="NoWrap" Text="33:00" VerticalAlignment="Top" Width="39" Grid.Column="1"/>
+
+                <Label x:Name="lbModB3" Content="Fin journée :" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5.4,70,0,0" Grid.Column="1"/>
+                <TextBox x:Name="tboxModB3" HorizontalAlignment="Left" Height="20" Margin="119.4,74,0,0" TextWrapping="NoWrap" Text="33:00" VerticalAlignment="Top" Width="39" Grid.Column="1"/>
+
+                <Label x:Name="lblTpsPause" Content="Temps pause cumulée :" HorizontalAlignment="Left" Margin="4,99,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="tboxTpsPause" HorizontalAlignment="Left" Height="20" Margin="142,103,0,0" TextWrapping="NoWrap" Text="33:00" VerticalAlignment="Top" Width="39"/>
+
+
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="groupBox" Header="Options " Height="177" Margin="398,225,10.2,0" VerticalAlignment="Top">
+            <Grid>
+                <CheckBox x:Name="chkOptShowEmptyDay" Content="Afficher les jours vides" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+                <Label x:Name="lblCdStart" Content="Crédit-débit de départ :" HorizontalAlignment="Left" Margin="2,30,0,0" VerticalAlignment="Top" />
+                <TextBox x:Name="tBoxCdStart" HorizontalAlignment="Left" Height="23" Margin="239,34,0,0" TextWrapping="NoWrap" Text="33h33" VerticalAlignment="Top" Width="45"/>
+                <Label x:Name="lblMoreTime" Content="Temps supplémentaire (récup.tps.suppl...) :" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="tBoxMoreTime" HorizontalAlignment="Left" Height="23" Margin="239,60,0,0" TextWrapping="NoWrap" Text="33h33" VerticalAlignment="Top" Width="45"/>
+            </Grid>
+        </GroupBox>
+
+
+        <Label x:Name="label1_Copy" Margin="10,31,10.2,0" VerticalAlignment="Top" FontSize="10" Height="42">
+            <AccessText TextWrapping="Wrap">
+                Chaque jour, Badger2018 enregistre les badgeages effectués ainsi que le crédit-débit observé lors du badgeage. A l'aide de ces données et en cas d'instabilité de GTA, il est possible de calculer le crédit-débit théorique entre deux dates.
+            </AccessText>
+        </Label>
+
+        <Label Margin="181,0,0,10.4" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Left" Width="190" Height="19" VerticalAlignment="Bottom" >
+            <Hyperlink x:Name="lienApplyLastCd" >
+                <Run Text="Appliquer ce C/D au programme"/>
+            </Hyperlink>
+        </Label>
+
+        <Label Margin="0,0,90.2,10.4" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Right" Width="216" Height="19" VerticalAlignment="Bottom" >
+            <Hyperlink x:Name="lienMesBadgeages" >
+                <Run Text="Consulter mes pointages sur TamTam"/>
+            </Hyperlink>
+        </Label>
+
+
+        <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Right" Margin="0,0,10.2,10" VerticalAlignment="Bottom" Width="75" Height="23"/>
+
+
+
+
+    </Grid>
+</Window>

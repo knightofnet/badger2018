@@ -58,7 +58,7 @@
 
         </Button>
 
-        <Button x:Name="btnModTimes" HorizontalAlignment="Left" Margin="42,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Modifier les badgeages" Width="27" Height="27" VerticalAlignment="Bottom" Foreground="#00000000" Click="btnModTimes_Click" >
+        <Button x:Name="btnModTimes" HorizontalAlignment="Left" Margin="42,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Modifier les badgeages" Width="27" Height="27" VerticalAlignment="Bottom" Foreground="#00000000" Click="btnModTimes_Click" Cursor="Hand" >
             <Button.Background>
                 <ImageBrush ImageSource="Resources/planTab.png"/>
             </Button.Background>

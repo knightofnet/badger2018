@@ -40,6 +40,7 @@ namespace Badger2018.dto
         public String UriVerif { get; set; }
 
         public TimeSpan HeureMinJournee { get; set; }
+        public TimeSpan HeureMaxJournee { get; set; }
         public TimeSpan TempsMaxJournee { get; set; }
         public TimeSpan TempsMaxDemieJournee { get; set; }
         public TimeSpan TempsDemieJournee { get; set; }
@@ -126,26 +127,7 @@ namespace Badger2018.dto
 
         public bool IsStopCptAtMax { get; set; }
 
-        internal AppOptions Clone()
-        {
-            AppOptions newOptions = new AppOptions();
-            foreach (PropertyInfo pInfo in this.GetType().GetProperties())
-            {
-
-                EnumAppOptions eApp = EnumAppOptions.GetEnumFromOptName(pInfo.Name);
-                if (eApp != null)
-                {
-                    pInfo.SetValue(newOptions, pInfo.GetValue(this, new object[] { }), null);
-                }
-                else
-                {
-                    // _logger.Warn("La propriétée {0} n'existe pas dans EnumAppOptions.", pInfo.Name);
-                }
-
-            }
-
-            return newOptions;
-        }
+      
 
         public bool IsStopCptAtMaxDemieJournee { get; set; }
 
@@ -183,6 +165,7 @@ namespace Badger2018.dto
         public bool IsPreloadFF { get; internal set; }
         public int CptCtrlStateShowned { get; set; }
         public int WaitBeforeClickBadger { get; set; }
+        public bool IsUpdateSvcEnable { get; set; }
 
         public void ResetSpecOption()
         {
@@ -192,7 +175,26 @@ namespace Badger2018.dto
             DeltaAutoBadgeageMinute = 0;
         }
 
+        internal AppOptions Clone()
+        {
+            AppOptions newOptions = new AppOptions();
+            foreach (PropertyInfo pInfo in this.GetType().GetProperties())
+            {
 
+                EnumAppOptions eApp = EnumAppOptions.GetEnumFromOptName(pInfo.Name);
+                if (eApp != null)
+                {
+                    pInfo.SetValue(newOptions, pInfo.GetValue(this, new object[] { }), null);
+                }
+                else
+                {
+                    // _logger.Warn("La propriétée {0} n'existe pas dans EnumAppOptions.", pInfo.Name);
+                }
+
+            }
+
+            return newOptions;
+        }
 
 
 

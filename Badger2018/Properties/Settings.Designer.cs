@@ -780,5 +780,29 @@ namespace Badger2018.Properties {
                 this["WaitBeforeClickBadger"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("19:00:00")]
+        public global::System.TimeSpan HeureMaxJournee {
+            get {
+                return ((global::System.TimeSpan)(this["HeureMaxJournee"]));
+            }
+            set {
+                this["HeureMaxJournee"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsUpdateSvcEnable {
+            get {
+                return ((bool)(this["IsUpdateSvcEnable"]));
+            }
+            set {
+                this["IsUpdateSvcEnable"] = value;
+            }
+        }
     }
 }

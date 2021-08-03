@@ -194,6 +194,9 @@
     <Compile Include="views\BadgeageProgressView.xaml.cs">
       <DependentUpon>BadgeageProgressView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\CalculateCDView.xaml.cs">
+      <DependentUpon>CalculateCDView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\CustomNotificationView.xaml.cs">
       <DependentUpon>CustomNotificationView.xaml</DependentUpon>
     </Compile>
@@ -247,6 +250,9 @@
     </Compile>
     <Compile Include="views\UpdatesReviewerView.xaml.cs">
       <DependentUpon>UpdatesReviewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\usercontrols\calculatecd\CcdDayControl.xaml.cs">
+      <DependentUpon>CcdDayControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\usercontrols\CompteurControl.xaml.cs">
       <DependentUpon>CompteurControl.xaml</DependentUpon>
@@ -315,6 +321,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\BadgeageProgressView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\CalculateCDView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -387,6 +397,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\UpdatesReviewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\usercontrols\calculatecd\CcdDayControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

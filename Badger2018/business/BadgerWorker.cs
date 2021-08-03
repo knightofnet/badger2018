@@ -534,6 +534,10 @@ namespace Badger2018.business
 
 
                 Pwin.Times.PlageTravMatin.EndOrDft = b.Value.AtSec(Cst.SecondeOffset);
+                if (Pwin.Times.PlageTravMatin.EndOrDft.TimeOfDay.CompareTo(Pwin.PrgOptions.HeureMaxJournee) > 0)
+                {
+                    Pwin.Times.PlageTravMatin.EndOrDft = Pwin.Times.PlageTravMatin.EndOrDft.ChangeTime(Pwin.PrgOptions.HeureMaxJournee);
+                }
 
                 Pwin.EtatBadger = 1;
 
@@ -586,6 +590,10 @@ namespace Badger2018.business
                     return;
                 }
                 Pwin.Times.PlageTravAprem.EndOrDft = b.Value.AtSec(Cst.SecondeOffset);
+                if (Pwin.Times.PlageTravAprem.EndOrDft.TimeOfDay.CompareTo(Pwin.PrgOptions.HeureMaxJournee) > 0)
+                {
+                    Pwin.Times.PlageTravAprem.EndOrDft = Pwin.Times.PlageTravAprem.EndOrDft.ChangeTime(Pwin.PrgOptions.HeureMaxJournee);
+                }
 
                 Pwin.EtatBadger = 3;
                 Pwin.AdaptUiFromState(Pwin.EtatBadger, null);

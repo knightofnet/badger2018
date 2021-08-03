@@ -16,6 +16,7 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions TempsMinPause = new EnumAppOptions("TempsMinPause", typeof(TimeSpan), "00:45:00", false);
         public static readonly EnumAppOptions TempsMaxJournee = new EnumAppOptions("TempsMaxJournee", typeof(TimeSpan), "09:30:00", false);
         public static readonly EnumAppOptions HeureMinJournee = new EnumAppOptions("HeureMinJournee", typeof(TimeSpan), "07:00:00", false);
+        public static readonly EnumAppOptions HeureMaxJournee = new EnumAppOptions("HeureMaxJournee", typeof(TimeSpan), "19:00:00", false);
         public static readonly EnumAppOptions TempsMaxDemieJournee = new EnumAppOptions("TempsMaxDemieJournee", typeof(TimeSpan), "05:30:00", false);
         public static readonly EnumAppOptions PlageFixeMatinStart = new EnumAppOptions("PlageFixeMatinStart", typeof(TimeSpan), "10:00:00", false);
         public static readonly EnumAppOptions PlageFixeMatinFin = new EnumAppOptions("PlageFixeMatinFin", typeof(TimeSpan), "11:30:00", false);
@@ -88,6 +89,9 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions CptCtrlStateShowned = new EnumAppOptions("CptCtrlStateShowned", typeof(int), "0", false);
         public static readonly EnumAppOptions WaitBeforeClickBadger = new EnumAppOptions("WaitBeforeClickBadger", typeof(int), "0", false);
 
+        public static readonly EnumAppOptions IsUpdateSvcEnable = new EnumAppOptions("IsUpdateSvcEnable", typeof(bool), "False", false);
+
+
         public static IEnumerable<EnumAppOptions> Values
         {
             get
@@ -96,6 +100,7 @@ namespace Badger2018.constants
                 yield return TempsMinPause;
                 yield return TempsMaxJournee;
                 yield return HeureMinJournee;
+                yield return HeureMaxJournee;
                 yield return TempsMaxDemieJournee;
                 yield return PlageFixeMatinStart;
                 yield return PlageFixeMatinFin;
@@ -160,6 +165,8 @@ namespace Badger2018.constants
                 yield return CptCtrlStateShowned;
 
                 yield return WaitBeforeClickBadger;
+
+                yield return IsUpdateSvcEnable;
 
 
 

@@ -61,22 +61,25 @@ namespace Badger2018.utils
                 return _cacheDatesByKeys[keyCache];
             }
 
-            DateTime retDt;
+            DateTime retDt = new DateTime();
             // Si le type de journée est une journée complète
             if (EnumTypesJournees.Complete == tyJournee)
             {
                 retDt = startTime + appOptions.TempsDemieJournee + appOptions.TempsDemieJournee + appOptions.TempsMinPause;
-                return retDt;
+                //return retDt;
             }
 
             if (EnumTypesJournees.ApresMidi == tyJournee)
             {
                 retDt = startTime + appOptions.TempsDemieJournee;
-                return retDt;
+                //return retDt;
             }
 
-            // Matin
-            retDt = startTime + appOptions.TempsDemieJournee;
+            if (EnumTypesJournees.Matin == tyJournee)
+            {
+                // Matin
+                retDt = startTime + appOptions.TempsDemieJournee;
+            }
 
             _cacheDatesByKeys.Add(keyCache, retDt);
             return retDt;

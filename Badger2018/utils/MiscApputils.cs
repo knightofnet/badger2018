@@ -9,6 +9,7 @@ using System.Media;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
+using AryxDevLibrary.extensions;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
@@ -172,10 +173,20 @@ namespace Badger2018.utils
                 return true;
             }
 
-            return TimeSpan.TryParseExact(text, new string[] { Cst.TimeSpanFormat, Cst.TimeSpanFormatWithH }, CultureInfo.InvariantCulture,
+            if (TimeSpan.TryParseExact(text, new string[] {Cst.TimeSpanFormat, Cst.TimeSpanFormatWithH},
+                CultureInfo.InvariantCulture,
                 TimeSpanStyles.None,
-                out newTboxPfAS);
+                out newTboxPfAS))
+            {
+                return true;
+            }
 
+            if (text.Length == 4 && text.Matches("\\d{4}"))
+            {
+                return TryParseAlt(text.Substring(0, 2) + ":" + text.Substring(2), out newTboxPfAS);
+            }
+
+            return false;
 
         }
 

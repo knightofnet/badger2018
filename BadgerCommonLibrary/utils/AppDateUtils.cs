@@ -4,6 +4,9 @@ namespace BadgerCommonLibrary.utils
 {
     public static class AppDateUtils
     {
+
+        private static readonly String[] _monthsFr = new string[] { "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "décembre" };
+
         public static TimeSpan DecallageDtNowTimeSpan { get; private set; }
 
         public static DateTime DtNow()
@@ -100,6 +103,29 @@ namespace BadgerCommonLibrary.utils
 
         }
 
+        public static string StrDayOfWeek(DayOfWeek dayOfWeek)
+        {
+            switch (dayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                    return "lundi";
+                case DayOfWeek.Tuesday:
+                    return "mardi";
+                case DayOfWeek.Wednesday:
+                    return "mercredi";
+                case DayOfWeek.Thursday:
+                    return "jeudi";
+                case DayOfWeek.Friday:
+                    return "vendredi";
+                case DayOfWeek.Saturday:
+                    return "samedi";
+                case DayOfWeek.Sunday:
+                    return "dimanche";
+            }
+
+            return null;
+        }
+
         public static DateTime WithFirstDayOfMonth(this DateTime date)
         {
 
@@ -116,5 +142,10 @@ namespace BadgerCommonLibrary.utils
         }
 
 
+        public static string StrMonthOfYear(int month)
+        {
+            int m = (month - 1) % 12;
+            return _monthsFr[m];
+        }
     }
 }

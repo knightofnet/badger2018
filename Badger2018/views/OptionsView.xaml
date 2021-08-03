@@ -65,16 +65,16 @@
                         </CheckBox>
                         <TextBox x:Name="tboxTsN1" Height="23" TextWrapping="Wrap" Text="" RenderTransformOrigin="0.492,0.574" HorizontalAlignment="Right" Width="74" VerticalAlignment="Top"/>
                         <Label Content="Texte de la notification :" HorizontalAlignment="Left" Margin="18,0,0,1" VerticalAlignment="Bottom" Height="23"/>
-                        <TextBox x:Name="txtN1" Height="23" TextWrapping="Wrap" Text="" Margin="0,0,0,1" RenderTransformOrigin="0.492,0.574" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="223"/>
+                        <TextBox x:Name="txtN1" Height="23" TextWrapping="NoWrap" Text="" Margin="0,0,0,1" RenderTransformOrigin="0.492,0.574" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="223"/>
                     </Grid>
                     <Grid Margin="10,304,10.8,0" Height="52" VerticalAlignment="Top" Visibility="Collapsed">
 
                         <CheckBox x:Name="chkShowNotifAtN2" Margin="0,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="260">
                             <AccessText  TextWrapping="Wrap" Text="Afficher une notification à l'heure suivante :" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextAlignment="Justify" />
                         </CheckBox>
-                        <TextBox x:Name="tboxTsN2" Height="23" TextWrapping="Wrap" Text="" RenderTransformOrigin="0.492,0.574" HorizontalAlignment="Right" Width="74" VerticalAlignment="Top"/>
+                        <TextBox x:Name="tboxTsN2" Height="23" TextWrapping="NoWrap" Text="" RenderTransformOrigin="0.492,0.574" HorizontalAlignment="Right" Width="74" VerticalAlignment="Top"/>
                         <Label Content="Texte de la notification :" HorizontalAlignment="Left" Margin="18,0,0,1" VerticalAlignment="Bottom" Height="23"/>
-                        <TextBox x:Name="txtN2" Height="23" TextWrapping="Wrap" Text="" RenderTransformOrigin="0.492,0.574" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="223"/>
+                        <TextBox x:Name="txtN2" Height="23" TextWrapping="NoWrap" Text="" RenderTransformOrigin="0.492,0.574" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="223"/>
                     </Grid>
                     <CheckBox x:Name="chkGlobalShowNotifications" Content="Afficher les notifications" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="308"/>
 
@@ -107,7 +107,7 @@
                     <Button x:Name="btnPlaySoundAfterPgFixeMidi" Content="Jouer" HorizontalAlignment="Right" Margin="0,147,55.8,0" VerticalAlignment="Top" Width="75" Click="btnPlaySoundAfterPgFixeMidi_Click"/>
 
 
-                    <TextBlock Margin="10,10,10.4,0" TextWrapping="Wrap"  VerticalAlignment="Top">
+                    <TextBlock Margin="10,10,10.4,0" TextWrapping="NoWrap"  VerticalAlignment="Top">
                         Les options ci-dessous sont différentes techniques destinées à avertir l'utilisateur en cas d'oublie de pointage.
                     </TextBlock>
                 </Grid>
@@ -122,16 +122,16 @@
                     <ComboBox x:Name="cboxMode" HorizontalAlignment="Right" Margin="0,37,10.4,0" VerticalAlignment="Top" Width="182" SelectionChanged="cboxMode_SelectionChanged"/>
 
                     <Label Content="Exécutable firefox :" Margin="11,64,0,0" HorizontalAlignment="Left" Width="150" Height="27" VerticalAlignment="Top"/>
-                    <TextBox x:Name="tboxExecFf" Height="23" Margin="10,91,10.4,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" MouseDoubleClick="tboxExecFf_MouseDoubleClick" ToolTip="Double-clic pour afficher le fichier dans l'explorateur Windows. CTRL et double-clic pour chercher le fichier firefox.exe"/>
+                    <TextBox x:Name="tboxExecFf" Height="23" Margin="10,91,10.4,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" MouseDoubleClick="tboxExecFf_MouseDoubleClick" ToolTip="Double-clic pour afficher le fichier dans l'explorateur Windows. CTRL et double-clic pour chercher le fichier firefox.exe"/>
 
                     <Label Content="URL de la page de pointage :" HorizontalAlignment="Left" Margin="11,119,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="tboxUrl" Height="52" Margin="10,145,10.4,0" TextWrapping="Wrap" Text="https://www.google.fr" VerticalAlignment="Top" MouseDoubleClick="tboxUrl_MouseDoubleClick" ToolTip="Double-clic pour se rendre sur la page"/>
+                    <TextBox x:Name="tboxUrl" Height="52" Margin="10,145,10.4,0" TextWrapping="NoWrap" Text="https://www.google.fr" VerticalAlignment="Top" MouseDoubleClick="tboxUrl_MouseDoubleClick" ToolTip="Double-clic pour se rendre sur la page"/>
 
                     <Label x:Name="lblIdForm" Content="Id du formulaire :" HorizontalAlignment="Left" Margin="11,202,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.506,0.375"/>
-                    <TextBox x:Name="tboxIdForm" Height="23" Margin="11,227,260.4,0" TextWrapping="Wrap" Text="idHtml" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tboxIdForm" Height="23" Margin="11,227,260.4,0" TextWrapping="NoWrap" Text="idHtml" VerticalAlignment="Top"/>
 
                     <Label Content="Id de l'élément de vérification :" Margin="10,255,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.506,0.375" HorizontalAlignment="Left" Width="173"/>
-                    <TextBox x:Name="tboxUriVerif" Height="23" Margin="11,281,0,0" TextWrapping="Wrap" Text="idHtml" VerticalAlignment="Top" HorizontalAlignment="Left" Width="181"/>
+                    <TextBox x:Name="tboxUriVerif" Height="23" Margin="11,281,0,0" TextWrapping="NoWrap" Text="idHtml" VerticalAlignment="Top" HorizontalAlignment="Left" Width="181"/>
                     <Image HorizontalAlignment="Left" Height="23" Margin="205,281,0,0" VerticalAlignment="Top" Width="23" Source="/Badger2018;component/Resources/font-awesome_4-7-0_external-link_23_0_3498db_none.png" Cursor="Hand" ToolTip="Tester" MouseUp="Image_MouseUp"/>
 
                     <CheckBox x:Name="chkIsPreloadFF"  Margin="233,70,0,0" VerticalAlignment="Top" Content="Précharger Firefox et masquer l'instance." HorizontalAlignment="Left" Width="245" />
@@ -145,23 +145,23 @@
             <TabItem x:Name="tabHoraire" Header="Horaires">
                 <Grid >
                     <Grid Margin="10,10,0,0" Height="51" VerticalAlignment="Top" HorizontalAlignment="Left" Width="137">
-                        <TextBox x:Name="tboxPfMS" HorizontalAlignment="Left" Height="23" Margin="0,28,0,0" TextWrapping="Wrap" Text="10:00" VerticalAlignment="Top" Width="63" />
-                        <TextBox x:Name="tboxPfME" HorizontalAlignment="Left" Height="23" Margin="68,28,0,0" TextWrapping="Wrap" Text="11:30" VerticalAlignment="Top" Width="63" />
+                        <TextBox x:Name="tboxPfMS" HorizontalAlignment="Left" Height="23" Margin="0,28,0,0" TextWrapping="NoWrap" Text="10:00" VerticalAlignment="Top" Width="63" />
+                        <TextBox x:Name="tboxPfME" HorizontalAlignment="Left" Height="23" Margin="68,28,0,0" TextWrapping="NoWrap" Text="11:30" VerticalAlignment="Top" Width="63" />
                         <Label Content="Plage fixe matin :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="105"/>
 
                     </Grid>
                     <Grid Margin="259,10,0,0" Height="51" VerticalAlignment="Top" HorizontalAlignment="Left" Width="156">
-                        <TextBox x:Name="tboxPfAS" HorizontalAlignment="Left" Height="23" Margin="0,28,0,0" TextWrapping="Wrap" Text="14:00" VerticalAlignment="Top" Width="63" />
-                        <TextBox x:Name="tboxPfAE" HorizontalAlignment="Left" Height="23" Margin="68,28,0,0" TextWrapping="Wrap" Text="15:30" VerticalAlignment="Top" Width="63" />
+                        <TextBox x:Name="tboxPfAS" HorizontalAlignment="Left" Height="23" Margin="0,28,0,0" TextWrapping="NoWrap" Text="14:00" VerticalAlignment="Top" Width="63" />
+                        <TextBox x:Name="tboxPfAE" HorizontalAlignment="Left" Height="23" Margin="68,28,0,0" TextWrapping="NoWrap" Text="15:30" VerticalAlignment="Top" Width="63" />
                         <Label Content="Plage fixe après-midi :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="131"/>
 
                     </Grid>
 
                     <Label Content="Temps de pause minimum :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="167" Margin="12,176,0,0"/>
-                    <TextBox x:Name="tboxPtmpsPause" HorizontalAlignment="Left" Height="23" Margin="12,204,0,0" TextWrapping="Wrap" Text="23:45" VerticalAlignment="Top" Width="63" />
+                    <TextBox x:Name="tboxPtmpsPause" HorizontalAlignment="Left" Height="23" Margin="12,204,0,0" TextWrapping="NoWrap" Text="23:45" VerticalAlignment="Top" Width="63" />
 
                     <Label Content="Tps travail maximum par jour :" HorizontalAlignment="Left" Margin="10,122,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="tboxMaxTravTime" Height="23" TextWrapping="Wrap" Text="09:30" Margin="10,148,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="63"/>
+                    <TextBox x:Name="tboxDayMaxTpsTime" Height="23" TextWrapping="NoWrap" Text="09:30" Margin="10,148,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="63"/>
 
                     <CheckBox x:Name="chkStopAfterMaxTravTime" Margin="78,148,0,0" VerticalAlignment="Top" ToolTip="Une fois le temps de travail maximum par jour atteint, le compteur arrête de s'incrémenter" HorizontalAlignment="Left" Width="108" Height="28">
                         <AccessText TextWrapping="Wrap" Height="39">Borner le tps travaillé</AccessText>
@@ -171,18 +171,19 @@
                         <AccessText TextWrapping="Wrap" Text="Ajouter les 5 min de temps au compteur de temps de travail." TextAlignment="Justify" />
                     </CheckBox>
 
-                    <Label Content="Horaire minimum de travail :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="167" Margin="10,68,0,0"/>
-                    <TextBox x:Name="tboxMinTravTime" HorizontalAlignment="Left" Height="23" Margin="10,94,0,0" TextWrapping="Wrap" Text="23:45" VerticalAlignment="Top" Width="63" />
+                    <Label Content="Horaire min/max de travail :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="167" Margin="10,68,0,0"/>
+                    <TextBox x:Name="tboxMinHourTime" HorizontalAlignment="Left" Height="23" Margin="10,94,0,0" TextWrapping="NoWrap" Text="23:45" VerticalAlignment="Top" Width="63" />
+                    <TextBox x:Name="tboxMaxHourTime" HorizontalAlignment="Left" Height="23" Margin="78,94,0,0" TextWrapping="NoWrap" Text="23:48" VerticalAlignment="Top" Width="63" />
 
                     <Label Content="Tps Travail par 1/2 journée :" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Width="167" Margin="259,68,0,0"/>
-                    <TextBox x:Name="tboxTpsReglementaireDemieJournee" HorizontalAlignment="Left" Height="23" Margin="259,94,0,0" TextWrapping="Wrap" Text="23:45" VerticalAlignment="Top" Width="63" />
+                    <TextBox x:Name="tboxTpsReglementaireDemieJournee" HorizontalAlignment="Left" Height="23" Margin="259,94,0,0" TextWrapping="NoWrap" Text="23:45" VerticalAlignment="Top" Width="63" />
 
                     <CheckBox x:Name="chkStopAfterMaxTravTimeJournee" Margin="0,150,28.8,0" VerticalAlignment="Top" ToolTip="Une fois le temps de travail maximum par jour atteint, le compteur arrête de s'incrémenter" HorizontalAlignment="Right" Width="133" Height="28">
                         <AccessText TextWrapping="Wrap" Height="39">Borner le tps travaillé</AccessText>
                     </CheckBox>
 
                     <Label Content="Tps travail maximum par 1/2 journée:" HorizontalAlignment="Left" Margin="259,122,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="tboxMaxTravTimeDemi" Height="23" TextWrapping="Wrap" Text="05:30" Margin="259,148,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="63"/>
+                    <TextBox x:Name="tboxMaxTravTimeDemi" Height="23" TextWrapping="NoWrap" Text="05:30" Margin="259,148,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="63"/>
 
 
 

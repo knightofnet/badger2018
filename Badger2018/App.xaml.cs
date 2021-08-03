@@ -116,7 +116,7 @@ namespace Badger2018
                 updaterManager = new UpdaterManager();
                 try
                 {
-
+                    updaterManager.IsUpdateEnabled = prgOptions.IsUpdateSvcEnable;
                     updaterManager.XmlUpdFilePath = prgOptions.UpdateXmlUri;
                     updaterManager.CheckForUpdates("launch", Assembly.GetEntryAssembly().GetName().Version.ToString());
 
