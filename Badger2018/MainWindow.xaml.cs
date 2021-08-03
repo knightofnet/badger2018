@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static Badger2018.business.NoticationsManager;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
 using ContextMenu = System.Windows.Controls.ContextMenu;
@@ -47,7 +48,7 @@ namespace Badger2018
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IPresentableObject
+    public partial class MainWindow : Window, INotificationManagerPresenter, IPresentableObject
     {
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
@@ -187,7 +188,7 @@ namespace Badger2018
             /*
              * Initialisation du gestionnation de notification
              */
-            NotifManager = new NoticationsManager(_notifyIcon);
+            NotifManager = new NoticationsManager(_notifyIcon, this);
             NotifManager.PluginMgrRef = PluginMgr;
             NotifManager.AfterShowNotif += delegate (NotificationDto n)
             {
@@ -824,7 +825,8 @@ args.Key == Key.F12 ||
 
                 apresUnlockMidiWhileBadgeDebutApremTimer = new DispatcherTimer
                 {
-                    IsEnabled = true, Interval = new TimeSpan(0, 5, 0)
+                    IsEnabled = true,
+                    Interval = new TimeSpan(0, 5, 0)
                 };
                 apresUnlockMidiWhileBadgeDebutApremTimer.Tick += (o, args) =>
                 {
@@ -2925,7 +2927,7 @@ args.Key == Key.F12 ||
         }
 
 
-        internal void RestoreWindow()
+        public void RestoreWindow()
         {
             WindowState = WindowState.Normal;
             Topmost = true;

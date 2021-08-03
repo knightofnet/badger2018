@@ -863,7 +863,7 @@ namespace Badger2018.views
             TimeSpan newTboxMaxHourTime = new TimeSpan();
             if (MiscAppUtils.TryParseAlt(tboxMaxHourTime.Text, out newTboxMaxHourTime))
             {
-                if (newTboxTmin.CompareTo(NewOptions.PlageFixeApremFin) <= 0)
+                if (newTboxMaxHourTime.CompareTo(NewOptions.PlageFixeApremFin) <= 0)
                 {
                     MessageBox.Show("L'horaire maximum pour finir de travailler doit être supérieur à la fin de la plage fixe de l'après-midi.");
                     tboxMaxHourTime.Focus();
@@ -872,13 +872,13 @@ namespace Badger2018.views
                 else if (!newTboxMaxHourTime.Equals(OrigOptions.HeureMaxJournee))
                 {
                     HasChangeOption = true;
-                    NewOptions.HeureMaxJournee = newTboxTmin;
+                    NewOptions.HeureMaxJournee = newTboxMaxHourTime;
                 }
             }
             else
             {
-                MessageBox.Show("L'horaire minimum pour commencer à travailler doit être au format HH:mm.");
-                tboxMinHourTime.Focus();
+                MessageBox.Show("L'horaire maximum pour finir de travailler doit être au format HH:mm.");
+                tboxMaxHourTime.Focus();
                 return true;
             }
 

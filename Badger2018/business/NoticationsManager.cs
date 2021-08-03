@@ -13,6 +13,10 @@ namespace Badger2018.business
 {
     public class NoticationsManager
     {
+        public interface INotificationManagerPresenter
+        {
+            void RestoreWindow();
+        }
 
         public PluginManager PluginMgrRef { get; internal set; }
 
@@ -29,9 +33,12 @@ namespace Badger2018.business
         public bool UseAlternateNotification { get; set; }
         public Action<NotificationDto> AfterShowNotif { get; internal set; }
 
-        public NoticationsManager(NotifyIcon notifyIcon)
+        private INotificationManagerPresenter _mainRef;
+
+        public NoticationsManager(NotifyIcon notifyIcon, INotificationManagerPresenter mainWindow)
         {
             _notifyIcon = notifyIcon;
+            _mainRef = mainWindow;
 
         }
 
@@ -91,6 +98,7 @@ namespace Badger2018.business
             EventHandler actionHandler = delegate(object sender, EventArgs args)
             {
                 //
+                _mainRef.RestoreWindow();
             };
 
             foreach (NotificationDto notif in listNotifRealTime.Where(r => r.TypeTemps == typeTempsNotif))
