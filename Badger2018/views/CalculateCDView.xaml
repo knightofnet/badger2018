@@ -95,7 +95,7 @@
         </Label>
 
 
-        <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Right" Margin="0,0,10.2,10" VerticalAlignment="Bottom" Width="75" Height="23"/>
+        <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Right" Margin="0,0,10.2,10" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnOk_Click"/>
 
 
 
