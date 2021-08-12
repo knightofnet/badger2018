@@ -142,7 +142,7 @@ namespace Badger2018
         {
             _logger.Debug("Chargement de l'écran principal");
 #if DEBUG
-            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 3, 13, 00, 40));
+            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 10, 13, 20, 40));
 
             //SetDarkTheme();
 #endif
@@ -712,12 +712,12 @@ args.Key == Key.F12 ||
 
                 if (EtatBadger < 2)
                 {
-                    SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, Times.GetTpsPause());
+                    SetTimesEndTheoAndMaxForOneDay(Times, Times.PlageTravMatin.Start, PrgOptions, TypeJournee, null);
 
                 }
                 else
                 {
-                    TimeSpan tmpEndMore = Times.GetTpsPause();
+                    TimeSpan tmpEndMore = TimeSpan.Zero;
 
                     TimeSpan tmpsPause = Times.PlageTravAprem.Start - Times.PlageTravMatin.EndOrDft;
                     var diffPause = tmpsPause - PrgOptions.TempsMinPause;

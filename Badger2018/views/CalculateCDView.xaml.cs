@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using AryxDevLibrary.extensions;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.dto.bdd;
@@ -56,7 +57,7 @@ namespace Badger2018.views
             bilanTpl = l4Content.Text;
             l4Content.Text = null;
 
-            ((Label) lienApplyLastCd.Parent).Visibility = Visibility.Hidden;
+            ((Label)lienApplyLastCd.Parent).Visibility = Visibility.Hidden;
 
             chkOptShowEmptyDay.IsChecked = true;
             chkOptShowEmptyDay.Click += (sender, args) =>
@@ -76,9 +77,9 @@ namespace Badger2018.views
                         ccdDayControl.IsStripped = isStripped;
                         isStripped = !isStripped;
                     }
+
                     ccdDayControl.AdaptUi();
                 }
-
             };
 
             _tpsSupplCalc = TimeSpan.Zero;
@@ -110,12 +111,17 @@ namespace Badger2018.views
                 {
                     case 0:
                         lblMatinState.Content = "Matin non comptée";
+                        lblMatinState.ToolTip =
+                            "Non travaillée : période prise en compte mais avec aucun temps travaillé (déficit de temps)";
                         break;
                     case 1:
                         lblMatinState.Content = "Matin travaillée";
+                        lblMatinState.ToolTip = "Travaillée : période prise en compte selon les horaires";
                         break;
                     case 2:
                         lblMatinState.Content = "Matin non travaillée";
+                        lblMatinState.ToolTip =
+                            "Non comptée : cette période n'est pas à prendre en compte dans les calculs (la pause du midi non plus par conséquent)";
                         break;
                 }
 
@@ -137,7 +143,7 @@ namespace Badger2018.views
                     case 0:
                         lblApremState.Content = "Après-midi non comptée";
                         lblApremState.ToolTip =
-                            "Non comptée : cette période n'est pas à prendre en compte dans les calculs (la pause du midi non plus par conséquent)";
+                            "Non travaillée : période prise en compte mais avec aucun temps travaillé (déficit de temps)";
                         break;
                     case 1:
                         lblApremState.Content = "Après-midi travaillée";
@@ -145,7 +151,8 @@ namespace Badger2018.views
                         break;
                     case 2:
                         lblApremState.Content = "Après-midi non travaillée";
-                        lblApremState.ToolTip = "Non travaillée : période prise en compte mais avec aucun temps travaillé (déficit de temps)";
+                        lblApremState.ToolTip =
+                            "Non comptée : cette période n'est pas à prendre en compte dans les calculs (la pause du midi non plus par conséquent)";
                         break;
                 }
 
@@ -167,7 +174,8 @@ namespace Badger2018.views
                 TimeSpan? newTs = TsParse(tbox, msgFormatFail);
                 if (ccdDayControlSelected != null && newTs != null)
                 {
-                    ccdDayControlSelected.Times.PlageTravMatin.Start = ccdDayControlSelected.Times.PlageTravMatin.Start.ChangeTime(newTs.Value);
+                    ccdDayControlSelected.Times.PlageTravMatin.Start =
+                        AppDateUtils.ChangeTime(ccdDayControlSelected.Times.PlageTravMatin.Start, newTs.Value);
                     Calc();
                 }
             }
@@ -181,7 +189,8 @@ namespace Badger2018.views
                 TimeSpan? newTs = TsParse(tbox, msgFormatFail);
                 if (ccdDayControlSelected != null && newTs != null)
                 {
-                    ccdDayControlSelected.Times.PlageTravMatin.End = ccdDayControlSelected.Times.PlageTravMatin.Start.ChangeTime(newTs.Value);
+                    ccdDayControlSelected.Times.PlageTravMatin.End =
+                        AppDateUtils.ChangeTime(ccdDayControlSelected.Times.PlageTravMatin.Start, newTs.Value);
                     Calc();
                 }
             }
@@ -195,7 +204,8 @@ namespace Badger2018.views
                 TimeSpan? newTs = TsParse(tbox, msgFormatFail);
                 if (ccdDayControlSelected != null && newTs != null)
                 {
-                    ccdDayControlSelected.Times.PlageTravAprem.Start = ccdDayControlSelected.Times.PlageTravAprem.Start.ChangeTime(newTs.Value);
+                    ccdDayControlSelected.Times.PlageTravAprem.Start =
+                        AppDateUtils.ChangeTime(ccdDayControlSelected.Times.PlageTravAprem.Start, newTs.Value);
                     Calc();
                 }
             }
@@ -209,7 +219,8 @@ namespace Badger2018.views
                 TimeSpan? newTs = TsParse(tbox, msgFormatFail);
                 if (ccdDayControlSelected != null && newTs != null)
                 {
-                    ccdDayControlSelected.Times.PlageTravAprem.End = ccdDayControlSelected.Times.PlageTravAprem.Start.ChangeTime(newTs.Value);
+                    ccdDayControlSelected.Times.PlageTravAprem.End =
+                        AppDateUtils.ChangeTime(ccdDayControlSelected.Times.PlageTravAprem.Start, newTs.Value);
                     Calc();
                 }
             }
@@ -300,7 +311,6 @@ namespace Badger2018.views
             };
 
 
-
             dtMin.SelectedDateChanged += (sender, args) =>
             {
                 if (!dtMin.SelectedDate.HasValue) return;
@@ -351,8 +361,6 @@ namespace Badger2018.views
 
             if (!Keyboard.IsKeyDown(Key.LeftCtrl) && !Keyboard.IsKeyDown(Key.RightCtrl))
             {
-
-
                 // vérid dateMax > datemin
 
                 nbJourTrav = GatherDatas(dateMin, dateMax);
@@ -367,15 +375,13 @@ namespace Badger2018.views
                 nbJourTrav,
                 dateMin.ToShortDateString(),
                 _cdAtStart.ToStrSignedhhmm()
-
-                );
+            );
         }
 
         private void Calc()
         {
             if (wp.Children.Count > 0)
             {
-
                 TimeSpan cd = CalcFromUiElt();
                 _lastCdCalc = cd;
                 cdCalc.Content = cd.ToStrSignedhhmm();
@@ -388,8 +394,8 @@ namespace Badger2018.views
             int nbJourTrav = 0;
 
             DateTime dftDt = DateTime.MinValue;
+            dftDt = AppDateUtils.ChangeTime(dftDt, TimeSpan.Zero);
 
- 
 
             List<DgElt> lstDays = new List<DgElt>();
 
@@ -401,7 +407,6 @@ namespace Badger2018.views
 
             for (int i = 0; i <= nbJours; i++)
             {
-
                 DateTime currIxDay = dateMin.AddDays(i);
 
 
@@ -413,44 +418,85 @@ namespace Badger2018.views
                 {
                     infoDay.TypesJournees = jourBdd.TypeJour;
                     infoDay.EtatBadger = jourBdd.EtatBadger;
-                    infoDay.IsDayActive = true;
-
-
                 }
                 else
                 {
-                    infoDay.IsDayActive = false;
-                    lstDays.Add(infoDay);
-                    continue;
+                    if (currIxDay.DayOfWeek == DayOfWeek.Sunday || currIxDay.DayOfWeek == DayOfWeek.Saturday)
+                    {
+                        infoDay.IsDayActive = false;
+                        //lstDays.Add(infoDay);
+                        //continue;
+                    }
 
+                    infoDay.EtatBadger = -1;
                 }
+
+                infoDay.IsDayActive = true;
 
                 List<BadgeageEntryDto> badgeageEntryDtos = bServices.GetAllBadgeageOfDay(currIxDay);
 
                 infoDay.Times = new TimesBadgerDto();
-                infoDay.Times.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
-                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
-                infoDay.Times.PlageTravMatin.End = badgeageEntryDtos
-                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_END)?.DateTime;
-                infoDay.Times.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
-                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_START)?.DateTime, dftDt);
-                infoDay.Times.PlageTravAprem.End = badgeageEntryDtos
-                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+
+                if (infoDay.TypesJournees == EnumTypesJournees.Complete)
+                {
+                    infoDay.Times.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                    infoDay.Times.PlageTravMatin.End = badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_END)?.DateTime;
+                    infoDay.Times.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_START)?.DateTime, dftDt);
+                    infoDay.Times.PlageTravAprem.End = badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+                }
+                else if (infoDay.TypesJournees == EnumTypesJournees.Matin)
+                {
+                    infoDay.Times.PlageTravAprem.Start = dftDt;
+                    infoDay.Times.PlageTravAprem.End = dftDt;
+
+                    infoDay.Times.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                    infoDay.Times.PlageTravMatin.End = badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+                }
+                else if (infoDay.TypesJournees == EnumTypesJournees.ApresMidi)
+                {
+                    infoDay.Times.PlageTravMatin.Start = dftDt;
+                    infoDay.Times.PlageTravMatin.End = dftDt;
+
+                    infoDay.Times.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                    infoDay.Times.PlageTravAprem.End = badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+                }
+                else if (infoDay.EtatBadger == -1)
+                {
+                    infoDay.Times.PlageTravMatin.Start = dftDt;
+                    infoDay.Times.PlageTravMatin.End = dftDt;
+
+                    infoDay.Times.PlageTravAprem.Start = dftDt;
+                    infoDay.Times.PlageTravAprem.End = dftDt;
+                }
+
 
                 infoDay.Times.PausesHorsDelai = bServices.GetPauses(currIxDay);
                 infoDay.TimePause = infoDay.Times.GetTpsPause();
 
                 if (i == 0)
                 {
-                    _cdAtStart = badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END).CdAtTime;
-
+                    if (badgeageEntryDtos.Any())
+                    {
+                        TimeSpan? cdAtTime = badgeageEntryDtos
+                            .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.CdAtTime;
+                        _cdAtStart = cdAtTime ?? TimeSpan.Zero;
+                    }
+                    else
+                    {
+                        _cdAtStart = TimeSpan.Zero;
+                    }
                 }
 
                 lstDays.Add(infoDay);
                 nbJourTrav++;
-
-
             }
 
 
@@ -459,8 +505,7 @@ namespace Badger2018.views
                 CcdDayControl cElt = new CcdDayControl(elt, wp.Children.Count % 2 == 0);
                 wp.Children.Add(cElt);
 
-                cElt.MouseUp += CEltOnMouseUp;
-                cElt.OnChange += CEltOnMouseUp;
+
                 if (!elt.IsDayActive)
                 {
                     cElt.AdaptUi();
@@ -477,7 +522,16 @@ namespace Badger2018.views
                     cElt.EtatMatin = StateDay.NonTrav;
                     cElt.AdaptUi();
                 }
+                else if (elt.EtatBadger == -1)
+                {
+                    cElt.EtatMatin = StateDay.NonTrav;
+                    cElt.EtatAprem = StateDay.NonTrav;
+                    cElt.AdaptUi();
+                }
 
+
+                cElt.MouseUp += CEltOnMouseUp;
+                cElt.OnChange += CEltOnMouseUp;
             }
 
             tBoxCdStart.Text = _cdAtStart.ToStrSignedhhmm();
@@ -513,9 +567,7 @@ namespace Badger2018.views
             sliderAprem.Value = (int)cElt.EtatAprem;
 
 
-
             isEventChangeEnabled = true;
-
         }
 
         private TimeSpan CalcFromUiElt()
@@ -525,13 +577,13 @@ namespace Badger2018.views
             {
                 retTs = _cdAtStart;
             }
+
             retTs = retTs + _tpsSupplCalc;
 
 
             foreach (CcdDayControl cElt in wp.Children.Cast<CcdDayControl>())
             {
-
-                if (cElt.Elt.EtatBadger < 3 || !cElt.Elt.IsDayActive) continue;
+                if (!cElt.Elt.IsDayActive) continue;
 
 
                 DgElt e = cElt.Elt;
@@ -539,34 +591,23 @@ namespace Badger2018.views
                 TimeSpan normalTpsTravMatin = PrgOptions.TempsDemieJournee;
                 TimeSpan normalTpsTravAprem = PrgOptions.TempsDemieJournee;
                 TimeSpan normalTpsPauseMidi = PrgOptions.TempsMinPause;
+                bool is5minAdded = false;
 
-                EnumTypesJournees tyJournees = EnumTypesJournees.Complete;
-                if (e.Times.PlageTravAprem.Start.TimeOfDay == TimeSpan.Zero &&
-                    e.Times.PlageTravMatin.EndOrDft.TimeOfDay == TimeSpan.Zero)
+
+                is5minAdded = PrgOptions.IsAdd5minCpt;
+                if (cElt.EtatMatin == StateDay.NonTrav)
                 {
-                    tyJournees = EnumTypesJournees.Matin;
+                    normalTpsTravMatin = TimeSpan.Zero;
+                    normalTpsPauseMidi = TimeSpan.Zero;
                 }
 
-
-                if (tyJournees == EnumTypesJournees.Complete)
-                {
-                    if (cElt.EtatMatin == StateDay.NonTrav)
-                    {
-                        normalTpsTravMatin = TimeSpan.Zero;
-                        normalTpsPauseMidi = TimeSpan.Zero;
-                    }
-
-                    if (cElt.EtatAprem == StateDay.NonTrav)
-                    {
-                        normalTpsTravAprem = TimeSpan.Zero;
-                        normalTpsPauseMidi = TimeSpan.Zero;
-                    }
-                }
-                else
+                if (cElt.EtatAprem == StateDay.NonTrav)
                 {
                     normalTpsTravAprem = TimeSpan.Zero;
                     normalTpsPauseMidi = TimeSpan.Zero;
                 }
+
+
 
                 if (cElt.EtatMatin == StateDay.NonTrav && cElt.EtatAprem == StateDay.NonTrav)
                 {
@@ -578,60 +619,52 @@ namespace Badger2018.views
                 TimeSpan normalDayTs = normalTpsTravMatin + normalTpsTravAprem;
 
                 TimeSpan tpsTravMatin = TimeSpan.Zero;
-                if (tyJournees == EnumTypesJournees.Complete)
+
+                if (cElt.EtatMatin == StateDay.ParHoraire)
                 {
-                    if (cElt.EtatMatin == StateDay.ParHoraire)
-                    {
-                        tpsTravMatin = e.Times.PlageTravMatin.GetDuration();
-                    }
+                    tpsTravMatin = e.Times.PlageTravMatin.GetDuration();
                 }
-                else
-                {
-                    tpsTravMatin = e.Times.PlageTravAprem.EndOrDft.TimeOfDay - e.Times.PlageTravMatin.Start.TimeOfDay;
-                }
+
 
                 TimeSpan tpsTravAprem = TimeSpan.Zero;
                 TimeSpan tpsPauseMidi = TimeSpan.Zero;
-                if (tyJournees == EnumTypesJournees.Complete)
+
+                if (cElt.EtatAprem == StateDay.ParHoraire)
                 {
-                    if (cElt.EtatAprem == StateDay.ParHoraire)
-                    {
-                        tpsTravAprem = e.Times.PlageTravAprem.GetDuration();
-                    }
-
-                    TimeSpan tpsMoreAprem = TimeSpan.Zero;
-                    if (normalTpsPauseMidi != TimeSpan.Zero && e.EtatBadger >= 2 &&
-                        e.TypesJournees == EnumTypesJournees.Complete)
-                    {
-                        tpsPauseMidi = e.Times.PlageTravAprem.Start - e.Times.PlageTravMatin.EndOrDft;
-
-                        if (tpsPauseMidi.CompareTo(PrgOptions.TempsMinPause) < 0)
-                        {
-                            tpsMoreAprem = PrgOptions.TempsMinPause - tpsPauseMidi;
-                            tpsPauseMidi = TimeSpan.Zero;
-                        }
-                        else
-                        {
-                            tpsPauseMidi = TimeSpan.Zero;
-                        }
-
-                    }
-
-                    tpsTravAprem = tpsTravAprem - tpsMoreAprem;
-                    //tpsPauseMidi = tpsPauseMidi - PrgOptions.TempsMinPause;
+                    tpsTravAprem = e.Times.PlageTravAprem.GetDuration();
                 }
+
+                TimeSpan tpsMoreAprem = TimeSpan.Zero;
+                if (normalTpsPauseMidi != TimeSpan.Zero && e.EtatBadger >= 2 &&
+                    e.TypesJournees == EnumTypesJournees.Complete)
+                {
+                    tpsPauseMidi = e.Times.PlageTravAprem.Start - e.Times.PlageTravMatin.EndOrDft;
+
+                    if (tpsPauseMidi.CompareTo(PrgOptions.TempsMinPause) < 0)
+                    {
+                        tpsMoreAprem = PrgOptions.TempsMinPause - tpsPauseMidi;
+                        tpsPauseMidi = TimeSpan.Zero;
+                    }
+                    else
+                    {
+                        tpsPauseMidi = TimeSpan.Zero;
+                    }
+                }
+
+                tpsTravAprem = tpsTravAprem - tpsMoreAprem;
+                //tpsPauseMidi = tpsPauseMidi - PrgOptions.TempsMinPause;
 
 
                 TimeSpan tpsPauseHd = e.TimePause;
 
                 TimeSpan cdDay =
                     tpsTravMatin + tpsTravAprem - tpsPauseMidi +
-                    (PrgOptions.IsAdd5minCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) -
+                    (is5minAdded ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) -
                     tpsPauseHd - normalDayTs;
-                cElt.UpdateTimesTrav(tpsTravMatin, tpsPauseMidi, tpsTravAprem, tpsPauseHd, normalDayTs, tyJournees, PrgOptions.IsAdd5minCpt);
+                cElt.UpdateTimesTrav(tpsTravMatin, tpsPauseMidi, tpsTravAprem, tpsPauseHd, normalDayTs,
+                    PrgOptions.IsAdd5minCpt);
 
                 retTs += cdDay;
-
             }
 
             return retTs;
@@ -661,12 +694,16 @@ namespace Badger2018.views
             dtMin.SelectedDate = currentShowDay;
             dtMax.SelectedDate = AppDateUtils.DtNow().AddDays(-1);
         }
+
+        private void btnOk_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 
 
     public class DgElt
     {
-
         public DateTime Date { get; set; }
 
         public TimesBadgerDto Times { get; set; }

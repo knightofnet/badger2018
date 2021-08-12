@@ -376,6 +376,7 @@ namespace Badger2018.views
                 else
                 {
                     btnNextDay.Visibility = Visibility.Visible;
+                    
                 }
 
                 CurrentShowDay = dateSelected.Value;
@@ -445,6 +446,9 @@ namespace Badger2018.views
                 Add5MinTooltip();
 
                 lblCD.Content = cdLast.HasValue ? cdLast.Value.ToStrSignedhhmm() : "";
+
+
+                labelCalcCd.Visibility = dtLastDay.ToString("d").Equals(AppDateUtils.DtNow().ToString("d")) ? Visibility.Collapsed : Visibility.Visible;
 
             }
             else

@@ -4,28 +4,28 @@
         Title="Résumé détaillé de la journée" Height="518.8" Width="418" MinHeight="518.8" MinWidth="418" MaxWidth="418" ResizeMode="CanResizeWithGrip" Icon="/Badger2018;component/Resources/Paomedia-Small-N-Flat-Clock.ico">
     <Grid>
 
-        <DatePicker x:Name="dtPickCurrentDay" HorizontalAlignment="Left" Margin="71,10,0,0" VerticalAlignment="Top" Width="270"/>
+        <DatePicker x:Name="dtPickCurrentDay" Margin="38,10,38.2,0" VerticalAlignment="Top" SelectedDateFormat="Long"/>
 
 
-        <Label Content="Type de journée : " HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" FontSize="10"/>
-        <Label x:Name="lblTyJournee" Content="..." HorizontalAlignment="Left" Margin="98,49,0,0" VerticalAlignment="Top" Width="107" FontSize="10"/>
+        <Label Content="Type de journée : " HorizontalAlignment="Left" Margin="5,49,0,0" VerticalAlignment="Top" FontSize="10"/>
+        <Label x:Name="lblTyJournee" Content="..." HorizontalAlignment="Left" Margin="93,49,0,0" VerticalAlignment="Top" Width="107" FontSize="10"/>
         <ScrollViewer Margin="10,80,10.2,33.6" VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="stackBadgeage"   ScrollViewer.HorizontalScrollBarVisibility="Auto" />
         </ScrollViewer>
         <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Right" Margin="0,0,10.2,9.6" VerticalAlignment="Bottom" Width="75" Click="btnOk_Click"/>
 
-        <Label Content="Temps travaillé :" HorizontalAlignment="Left" Margin="210,49,0,0" VerticalAlignment="Top" FontSize="10" />
-        <Label x:Name="lblTempsTrav" Content="00h00" HorizontalAlignment="Left" Margin="290,49,0,0" VerticalAlignment="Top" FontSize="10"/>
+        <Label Content="Temps travaillé :" HorizontalAlignment="Left" Margin="205,49,0,0" VerticalAlignment="Top" FontSize="10" />
+        <Label x:Name="lblTempsTrav" Content="-00h00" HorizontalAlignment="Left" Margin="285,49,0,0" VerticalAlignment="Top" FontSize="10"/>
 
         <Label Content="C/D :" HorizontalAlignment="Left" Margin="332,49,0,0" VerticalAlignment="Top" FontSize="10"/>
-        <Label x:Name="lblCD" Content="00h00" HorizontalAlignment="Left" Margin="364,49,0,0" VerticalAlignment="Top" FontSize="10"/>
+        <Label x:Name="lblCD" Content="-00h00" HorizontalAlignment="Left" Margin="364,49,0,0" VerticalAlignment="Top" FontSize="10"/>
 
 
         <Button x:Name="btnModTimes" Content="Modifier mes temps" HorizontalAlignment="Left" Margin="10,0,0,9.6" VerticalAlignment="Bottom" Width="136" Click="btnModTimes_Click"/>
-        <Button x:Name="btnPrevDay" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Width="55" Click="btnPrevDay_Click"/>
-        <Button x:Name="btnNextDay" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="346,12,0,0" VerticalAlignment="Top" Width="55" Click="btnNextDay_Click"/>
+        <Button x:Name="btnPrevDay" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Width="23" Click="btnPrevDay_Click"/>
+        <Button x:Name="btnNextDay" Content="&gt;&gt;" HorizontalAlignment="Right" Margin="0,12,10.2,0" VerticalAlignment="Top" Width="23" Click="btnNextDay_Click"/>
 
-        <Label Margin="74,33,0,0" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Left" Width="267" Height="19" VerticalAlignment="Top" >
+        <Label x:Name="labelCalcCd" Margin="74,33,0,0" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Left" Width="267" Height="19" VerticalAlignment="Top" >
             <Hyperlink x:Name="lienCalcCd" >
                 <Run Text="Calcul C/D à partir de cette date"/>
             </Hyperlink>

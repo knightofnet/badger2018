@@ -25,7 +25,7 @@ namespace BetaUserAddons.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Z016287;Z017855;Z017405;ARyx;Z015828;Z019363")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Z016287;Z017855;Z017405;ARyx;Z015828;Z019363;Z013294")]
         public string specUser {
             get {
                 return ((string)(this["specUser"]));

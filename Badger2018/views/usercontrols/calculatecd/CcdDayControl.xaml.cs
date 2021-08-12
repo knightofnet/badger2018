@@ -219,14 +219,13 @@ namespace Badger2018.views.usercontrols.calculatecd
         }
 
         public void UpdateTimesTrav(TimeSpan tpsTravMatin, TimeSpan tpsPauseMidi, TimeSpan tpsTravAprem,
-            TimeSpan tpsPauseHd, TimeSpan tpsNormalJournee, EnumTypesJournees tyJournees,
+            TimeSpan tpsPauseHd, TimeSpan tpsNormalJournee, 
             bool prgOptionsIsAdd5MinCpt)
         {
             StringBuilder strB = new StringBuilder();
             strB.AppendLine(Date.ToShortDateString() + " :");
             strB.AppendLine("------");
-            if (tyJournees == EnumTypesJournees.Complete)
-            {
+           
                 strB.AppendLine("Matin : " + tpsTravMatin.ToStrSignedhhmm());
                 strB.AppendLine("Pause du midi suppl. : " + tpsPauseMidi.ToStrSignedhhmm());
                 strB.AppendLine("Après-midi : " + tpsTravAprem.ToStrSignedhhmm());
@@ -237,17 +236,7 @@ namespace Badger2018.views.usercontrols.calculatecd
                         
                 }
 
-            }
-            else
-            {
-                strB.AppendLine("Temps travaillé : " + tpsTravMatin.ToStrSignedhhmm());
-                if (tpsPauseHd.CompareTo(TimeSpan.Zero) > 0)
-                {
-                    strB.AppendLine("Autres pauses : " + tpsPauseHd.ToStrSignedhhmm());
-
-                }
-            }
-
+           
             TimeSpan total = tpsTravMatin + tpsTravAprem - tpsPauseMidi +
                              (prgOptionsIsAdd5MinCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) - tpsPauseHd;
             strB.AppendLine();
