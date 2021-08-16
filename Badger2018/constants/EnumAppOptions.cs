@@ -91,6 +91,8 @@ namespace Badger2018.constants
 
         public static readonly EnumAppOptions IsUpdateSvcEnable = new EnumAppOptions("IsUpdateSvcEnable", typeof(bool), "False", false);
 
+        public static readonly EnumAppOptions NoConnexionTimeout = new EnumAppOptions("NoConnexionTimeout", typeof(int), "20", false);
+
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -167,6 +169,8 @@ namespace Badger2018.constants
                 yield return WaitBeforeClickBadger;
 
                 yield return IsUpdateSvcEnable;
+
+                yield return NoConnexionTimeout;
 
 
 

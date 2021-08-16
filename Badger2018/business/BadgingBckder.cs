@@ -54,7 +54,7 @@ namespace Badger2018.business
                 Thread.CurrentThread.Name = "BadgerBckder";
 
             BackgroundWorker bkg = sender as BackgroundWorker;
-            
+
             ElementsFromPage = new ElementsFromPageBadgeage();
 
             RemoteWebDriver driver = null;
@@ -100,6 +100,7 @@ namespace Badger2018.business
                 }
                 _logger.Debug(" GoToUrl: {0}", Url);
 
+                // Etape 1 : go to URL
                 EtapeTrt = 1;
                 if (bkg.CancellationPending)
                 {
@@ -108,8 +109,10 @@ namespace Badger2018.business
                 }
                 bkg.ReportProgress(EtapeTrt);
 
+                driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 20);
                 driver.Navigate().GoToUrl(Url);
 
+                // Etape 2 : Recherche de l'élément à cliquer
                 EtapeTrt = 2;
                 if (bkg.CancellationPending)
                 {
@@ -131,6 +134,7 @@ namespace Badger2018.business
                     }
                 }
 
+                // Etape 3 : Action sur l'élément
                 if (Pwin.PrgOptions.ModeBadgement == EnumModePointage.FORM)
                 {
                     EtapeTrt = 3;
@@ -158,6 +162,7 @@ namespace Badger2018.business
                     b.Click();
                 }
 
+                // Etape 4 : Attente
                 EtapeTrt = 4;
                 bkg.ReportProgress(EtapeTrt);
                 Thread.Sleep(2000);
@@ -165,8 +170,8 @@ namespace Badger2018.business
 
                 BadgingUtils.SaveScreenshot(Pwin.Times.TimeRef, Pwin.EtatBadger + "", driver);
 
-              
 
+                // Etape 5 : Vérif
                 if (!StringUtils.IsNullOrWhiteSpace(IdVerif))
                 {
                     EtapeTrt = 5;
@@ -177,6 +182,7 @@ namespace Badger2018.business
 
                 }
 
+                // Etape 6 : Récupération d'info
                 string cssSelector = "";
                 try
                 {
@@ -198,7 +204,7 @@ namespace Badger2018.business
 
 
                 try
-                {           
+                {
                     EtapeTrt = 7;
                     bkg.ReportProgress(EtapeTrt);
                     //_logger.Debug(driver.PageSource);
@@ -233,8 +239,9 @@ namespace Badger2018.business
             finally
             {
                 if (driver != null)
+                {
                     FfDriverSingleton.Instance.Quit();
-
+                }
             }
         }
 

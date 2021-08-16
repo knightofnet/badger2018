@@ -804,5 +804,17 @@ namespace Badger2018.Properties {
                 this["IsUpdateSvcEnable"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int NoConnexionTimeout {
+            get {
+                return ((int)(this["NoConnexionTimeout"]));
+            }
+            set {
+                this["NoConnexionTimeout"] = value;
+            }
+        }
     }
 }

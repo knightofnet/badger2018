@@ -230,6 +230,9 @@
     <Compile Include="views\MoreDetailsView.xaml.cs">
       <DependentUpon>MoreDetailsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\NoConnexionBadgingView.xaml.cs">
+      <DependentUpon>NoConnexionBadgingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\OptionsCtxtHelpView.xaml.cs">
       <DependentUpon>OptionsCtxtHelpView.xaml</DependentUpon>
     </Compile>
@@ -369,6 +372,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\MoreDetailsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\NoConnexionBadgingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

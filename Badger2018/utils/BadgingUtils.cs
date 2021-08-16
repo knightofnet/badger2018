@@ -1,6 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading;
+using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
 using Badger2018.dto;
@@ -117,6 +121,51 @@ namespace Badger2018.utils
 
 
             return null;
+        }
+
+        internal static bool IsNetworkAdapterUp(string networkAdapterToCheck)
+        {
+            if (StringUtils.IsNullOrWhiteSpace(networkAdapterToCheck)) return true;
+
+            NetworkInterface networkAdapterFound = NetworkInterface.GetAllNetworkInterfaces()
+                .FirstOrDefault(r => r.Name.Equals(networkAdapterToCheck));
+            
+            return networkAdapterFound != null && networkAdapterFound.OperationalStatus == OperationalStatus.Up;
+
+        }
+
+        public static bool IsValidWebResponse(string url, int expectedWr = 200)
+        {
+            int statusNumber = -1;
+
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
+            webRequest.AllowAutoRedirect = false;
+            webRequest.UseDefaultCredentials = true;
+
+            HttpWebResponse response = null;
+
+            try
+            {
+                response = (HttpWebResponse)webRequest.GetResponse();
+                // This will have statii from 200 to 30x
+                statusNumber = (int)response.StatusCode;
+            }
+            catch (WebException we)
+            {
+                if (response == null)
+                {
+                    statusNumber = 0;
+                }
+                else
+                {
+                    // Statii 400 to 50x will be here
+                    statusNumber = (int) ((HttpWebResponse) we.Response).StatusCode;
+                }
+            }
+
+            _logger.Debug("IsValidWebResponse(url: {0}, expectedWr: {1}) => statusRep: {2}", url, expectedWr, statusNumber);
+
+            return statusNumber == expectedWr;
         }
     }
 }

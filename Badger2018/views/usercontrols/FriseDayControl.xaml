@@ -11,9 +11,9 @@
 
 
         <Label x:Name="lblName" Content="Premier badgeage du jour" Margin="72,10,10.4,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblMoreStr" Content="Matinée" Margin="72,36,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="169"/>
+        <Label x:Name="lblMoreStr" Content="Matinée" Margin="72,36,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="179"/>
         <Rectangle x:Name="rectColor" Fill="#FFF4F4F5" HorizontalAlignment="Left" Width="6"/>
-        <Label x:Name="lblBtnSeeScreenShot" Margin="0,0,10.4,5.2" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Right" Width="94" Height="26" VerticalAlignment="Bottom" >
+        <Label x:Name="lblBtnSeeScreenShot" Margin="0,0,5.4,7.2" HorizontalContentAlignment="Center" Padding="5,0" HorizontalAlignment="Right" Width="94" Height="19" VerticalAlignment="Bottom" >
             <Hyperlink x:Name="btnSeeScreenShot" Click="btnSeeScreenShot_Click">
                 <Run Text="Voir la capture"/>
             </Hyperlink>

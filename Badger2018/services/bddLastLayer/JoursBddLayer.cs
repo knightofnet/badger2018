@@ -48,6 +48,28 @@ namespace Badger2018.services.bddLastLayer
             return command.ExecuteNonQuery() == 1;
         }
 
+        public static bool UpdateJourIsComplete(DbbAccessManager dbbManager, DateTime date, bool isComplete = true)
+        {
+            SQLiteCommand command = null;
+
+            ListSqlLiteKVPair lstUpd = new ListSqlLiteKVPair();
+            lstUpd.Add("IS_COMPLETE", isComplete);
+            if (isComplete)
+            {
+                lstUpd.Add("ETAT_BADGER", 3);
+            }
+
+
+            string sql = String.Format(SqlConstants.UPDATE_WHERE, TableBadgeages, lstUpd.UpdateClauseStr(), "DATE_JOUR=@DATE_JOUR");
+
+            command = new SQLiteCommand(sql, dbbManager.Connection);
+
+            lstUpd.AddSqlParams(command);
+            command.Parameters.Add(new SQLiteParameter("@DATE_JOUR", date.ToString("yyyy-MM-dd")));
+
+            return command.ExecuteNonQuery() == 1;
+        }
+
         public static bool InsertNewJour(DbbAccessManager dbbManager, DateTime date, PointageElt pointageElt)
         {
             SQLiteCommand command = null;

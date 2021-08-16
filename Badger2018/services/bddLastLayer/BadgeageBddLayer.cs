@@ -123,6 +123,31 @@ namespace Badger2018.services.bddLastLayer
             return null;
         }
 
+
+        public static void ChangeBadgeageType(DbbAccessManager dbbManager, DateTime date, int targetTypeBadgeage, int newTypeBadgeage)
+        {
+            SQLiteCommand command = null;
+
+            string strSetMore = "TYPE_BADGE = @NEW_TYPE_BADGE";
+            if (EnumBadgeageType.IsClassicBadgeage(EnumBadgeageType.GetFromIndex(newTypeBadgeage)))
+            {
+                strSetMore += ", RELATION_KEY = NULL";
+            }
+
+            string sql = String.Format(SqlConstants.UPDATE_WHERE, TableBadgeages, strSetMore,
+                "DATE_BADGE=@DATEBADGE AND TYPE_BADGE=@TYPE_BADGE");
+
+            command = new SQLiteCommand(sql, dbbManager.Connection);
+            command.Parameters.Add(new SQLiteParameter("@DATEBADGE", date.ToString("yyyy-MM-dd")));
+            command.Parameters.Add(new SQLiteParameter("@TYPE_BADGE", targetTypeBadgeage));
+            command.Parameters.Add(new SQLiteParameter("@NEW_TYPE_BADGE", newTypeBadgeage));
+
+            if (command.ExecuteNonQuery() != 1)
+            {
+                throw new Exception("Erreur lors de la modification du badgeage");
+            }
+        }
+
         internal static string GetBadgeageTimeStrFor(DbbAccessManager dbbManager, int index, DateTime date, string relationKey = null)
         {
             SQLiteCommand command = null;

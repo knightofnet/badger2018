@@ -166,6 +166,7 @@ namespace Badger2018.dto
         public int CptCtrlStateShowned { get; set; }
         public int WaitBeforeClickBadger { get; set; }
         public bool IsUpdateSvcEnable { get; set; }
+        public int NoConnexionTimeout { get; set; }
 
         public void ResetSpecOption()
         {

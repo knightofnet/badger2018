@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AryxDevLibrary.utils;
+using Badger2018.business.dbb;
 using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.dto.bdd;
@@ -21,15 +22,14 @@ namespace Badger2018.views
     /// <summary>
     /// Logique d'interaction pour MoreDetailsView.xaml
     /// </summary>
-    public partial class MoreDetailsView : Window
+    public partial class MoreDetailsView : Window, MoreDetailsView.IMoreDetailViewPresenter
     {
-        //public EnumTypesJournees TyJourneeRef { get; private set; }
 
-        //public int EtatBadgeageRef { get; private set; }
+        public interface IMoreDetailViewPresenter
+        {
+            void ChangeEtatBadgeageAndSetComplete(DateTime dtTimeIn, int targetTypeBadgeage, int newTypeBadgeage);
+        }
 
-        //public TimesBadgerDto TimesRef { get; private set; }
-
-        //private List<LabelledDateTime> ListIvlDay { get; set; }
         private AppOptions PrgOptions { get; set; }
         public bool IsMustLoadsModTimeView { get; set; }
 
@@ -37,15 +37,22 @@ namespace Badger2018.views
 
         private Dictionary<String, List<LabelledDateTime>> _memoryDay;
 
+        private readonly BadgeagesServices bServices;
+        private readonly JoursServices jServices;
+
         public MoreDetailsView(AppOptions prgOptions, DateTime? dayToShownAtInit = null)
         {
             InitializeComponent();
             btnNextDay.Visibility = Visibility.Collapsed;
 
+            bServices = ServicesMgr.Instance.BadgeagesServices;
+            jServices = ServicesMgr.Instance.JoursServices;
+
             if (!dayToShownAtInit.HasValue)
             {
                 CurrentShowDay = AppDateUtils.DtNow();
-            } else
+            }
+            else
             {
                 CurrentShowDay = dayToShownAtInit.Value;
             }
@@ -53,7 +60,7 @@ namespace Badger2018.views
             _memoryDay = new Dictionary<string, List<LabelledDateTime>>(1);
 
             PrgOptions = prgOptions;
-            
+
             Loaded += OnLoadUi;
             lienCalcCd.Click += (sender, args) =>
             {
@@ -61,39 +68,16 @@ namespace Badger2018.views
                 calcView.SetDtMin(CurrentShowDay);
                 calcView.ShowDialog();
             };
+
+            dtPickCurrentDay.SelectedDateChanged += DtPickCurrentDayOnSelectedDateChanged;
         }
 
         private void OnLoadUi(object Sender, RoutedEventArgs args)
         {
-            BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
-            JoursServices jServices = ServicesMgr.Instance.JoursServices;
 
-            AdaptUiToAnotherDay(CurrentShowDay, bServices, jServices);
+            AdaptUiToAnotherDay(CurrentShowDay);
 
-            /*
-            // On initiliase la fenetre avec le jours courant
-            List<LabelledDateTime> listIvlDayForDay = SetListValueForCurrentDay(times, etatBadgeage, typesJournees);
-            _memoryDay.Add(times.TimeRef.ToString("d"), listIvlDayForDay);
-
-
-            InitStackPanel(listIvlDayForDay, times, typesJournees);
-
-
-            lblTyJournee.Content = typesJournees.Libelle;
-
-            dtPickCurrentDay.SelectedDateFormat = DatePickerFormat.Long;
-            dtPickCurrentDay.SelectedDate = times.TimeRef;
-            dtPickCurrentDay.DisplayDateStart = ServicesMgr.Instance.JoursServices.GetFirstDayOfHistory();
-            dtPickCurrentDay.DisplayDateEnd = times.TimeRef;
-            dtPickCurrentDay.DisplayDate = times.TimeRef;
-            dtPickCurrentDay.SelectedDateChanged += DtPickCurrentDayOnSelectedDateChanged;
-
-            bool isMaxDepass = false;
-            var a = TimesUtils.GetTempsTravaille(AppDateUtils.DtNow(), etatBadgeage, times, prgOptions, typesJournees, true,
-                ref isMaxDepass);
-            lblTempsTrav.Content = a.ToString(Cst.TimeSpanFormatWithH);
-            Add5MinTooltip();
-            */
+        
         }
 
         private void InitStackPanel(List<LabelledDateTime> listIvlForDay, TimesBadgerDto times, EnumTypesJournees typesJournees)
@@ -101,7 +85,7 @@ namespace Badger2018.views
             stackBadgeage.Children.Clear();
             foreach (LabelledDateTime lblDtime in listIvlForDay)
             {
-                FriseDayControl fr = new FriseDayControl(lblDtime.Time, lblDtime.BadgeageName, lblDtime.BadgeageInfo);
+                FriseDayControl fr = new FriseDayControl(lblDtime.Time, lblDtime.BadgeageName, lblDtime.BadgeageInfo, this);
                 fr.LTag = lblDtime.LTag;
                 fr.Color = lblDtime.Color;
                 fr.EtatBadgeageAssociated = lblDtime.EtatBadgeage;
@@ -123,11 +107,16 @@ namespace Badger2018.views
                 fr.SetBtnScreenshotVisible(File.Exists(Path.Combine(Cst.ScreenshotDir, fileSshot)));
                 fr.SetEndBloc(lblDtime.IsEndBloc);
 
+                if (lblDtime.EtatBadgeage == 10 && listIvlForDay.Last() == lblDtime)
+                {
+                    fr.ActiveLinkModifyLastBadgeage();
+                }
+
                 stackBadgeage.Children.Add(fr);
 
                 if (EnumTypesJournees.Complete == typesJournees && !StringUtils.IsNullOrWhiteSpace(fr.LTag) && fr.LTag.Equals("FinMatin"))
-                {                    
-                    
+                {
+
 
                     Label lbl = new Label();
                     lbl.Content = String.Format("Temps travaillé le matin : {0}", times.GetTpsTravMatin().ToString(Cst.TimeSpanFormatWithH));
@@ -247,7 +236,7 @@ namespace Badger2018.views
                     pause.Start);
                 lStart.Color = pause.IsIntervalComplet() ? Colors.DarkRed : Colors.IndianRed;
                 lStart.LTag = "Pause";
-                lStart.EtatBadgeage = -2;
+                lStart.EtatBadgeage = 10;
 
                 listIvlDayForDay.Add(lStart);
 
@@ -259,8 +248,9 @@ namespace Badger2018.views
                         pause.EndOrDft);
                     lEnd.Color = Colors.DarkRed;
                     lEnd.LTag = "Pause";
-                    lEnd.EtatBadgeage = -2;
+                    lEnd.EtatBadgeage = 11;
                     lEnd.IsEndBloc = true;
+
                     listIvlDayForDay.Add(lEnd);
                 }
             }
@@ -281,8 +271,6 @@ namespace Badger2018.views
 
         private void btnPrevDay_Click(object sender, RoutedEventArgs e)
         {
-            BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
-            JoursServices jServices = ServicesMgr.Instance.JoursServices;
 
             DateTime? dtLastDay = null;
             try
@@ -304,7 +292,7 @@ namespace Badger2018.views
 
                 CurrentShowDay = dtLastDay.Value;
 
-                AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
+                AdaptUiToAnotherDay(dtLastDay.Value);
 
                 dtLastDay = jServices.GetPreviousDayOf(CurrentShowDay);
                 btnPrevDay.IsEnabled = dtLastDay.HasValue;
@@ -317,8 +305,6 @@ namespace Badger2018.views
 
         private void btnNextDay_Click(object sender, RoutedEventArgs e)
         {
-            BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
-            JoursServices jServices = ServicesMgr.Instance.JoursServices;
 
             DateTime? dtLastDay = null;
             try
@@ -341,7 +327,7 @@ namespace Badger2018.views
 
                 CurrentShowDay = dtLastDay.Value;
 
-                AdaptUiToAnotherDay(dtLastDay.Value, bServices, jServices);
+                AdaptUiToAnotherDay(dtLastDay.Value);
 
                 dtLastDay = jServices.GetNextDayOf(CurrentShowDay);
                 btnNextDay.IsEnabled = dtLastDay.HasValue;
@@ -358,9 +344,6 @@ namespace Badger2018.views
             DateTime? dateSelected = null;
             try
             {
-                BadgeagesServices bServices = ServicesMgr.Instance.BadgeagesServices;
-                JoursServices jServices = ServicesMgr.Instance.JoursServices;
-
 
                 dateSelected = dtPickCurrentDay.SelectedDate;
                 if (!dateSelected.HasValue)
@@ -376,17 +359,13 @@ namespace Badger2018.views
                 else
                 {
                     btnNextDay.Visibility = Visibility.Visible;
-                    
+
                 }
 
                 CurrentShowDay = dateSelected.Value;
 
-                AdaptUiToAnotherDay(dateSelected.Value, bServices, jServices);
+                AdaptUiToAnotherDay(dateSelected.Value);
 
-                //   dateSelected = jServices.GetNextDayOf(currentShowDay);
-                //   btnNextDay.IsEnabled = dateSelected.HasValue;
-                //
-                // 
             }
             catch (Exception ex)
             {
@@ -395,9 +374,9 @@ namespace Badger2018.views
 
         }
 
-        private void AdaptUiToAnotherDay(DateTime dtLastDay, BadgeagesServices bServices, JoursServices jServices)
+        private void AdaptUiToAnotherDay(DateTime dtLastDay)
         {
-            
+
             string dtLastDayStr = dtLastDay.ToString("d");
 
             TimesBadgerDto times = new TimesBadgerDto();
@@ -417,7 +396,7 @@ namespace Badger2018.views
                 int etatBadgeage = j.EtatBadger;
                 EnumTypesJournees typesJournees = j.TypeJour;
 
-                times.PlageTravMatin.Start = 
+                times.PlageTravMatin.Start =
                     DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, dtLastDay));
                 times.PlageTravMatin.End =
                     DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END, dtLastDay));
@@ -497,6 +476,27 @@ namespace Badger2018.views
             Close();
         }
 
+        public void ChangeEtatBadgeageAndSetComplete(DateTime dtTimeIn, int targetTypeBadgeage, int newTypeBadgeage)
+        {
+            DbbAccessManager.Instance.StartTransaction();
+            try
+            {
+                bServices.ChangeBadgeageType(dtTimeIn, targetTypeBadgeage, newTypeBadgeage);
+                jServices.UpdateJourIsComplete(dtTimeIn, true);
+
+                AdaptUiToAnotherDay(dtTimeIn);
+
+                DbbAccessManager.Instance.StopAndCommitTransaction();
+            }
+            catch (Exception ex)
+            {
+                DbbAccessManager.Instance.StopAndRollbackTransaction();
+                ExceptionHandlingUtils.LogAndRethrows(ex);
+            }
+        }
+
+  
+
         public class LabelledDateTime
         {
             public string BadgeageName { get; set; }
@@ -515,9 +515,6 @@ namespace Badger2018.views
                 Color = Colors.DeepSkyBlue;
             }
         }
-
-
-
 
 
 

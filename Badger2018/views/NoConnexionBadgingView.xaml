@@ -1,0 +1,25 @@
+﻿<Window x:Class="Badger2018.views.NoConnexionBadgingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Badger2018.views"
+        mc:Ignorable="d"
+        Title="Problème de connexion" Height="210" Width="380" ResizeMode="NoResize" ShowInTaskbar="True">
+    <Grid>
+        <Label Content="Problème de connexion" Margin="78,10,18,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Image x:Name="imgA" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="63" Source="/Badger2018;component/Resources/sign-warning-icon.png"/>
+        <Label Margin="78,36,18,0" VerticalAlignment="Top" Height="87">
+            <AccessText x:Name="accessText" TextWrapping="Wrap" TextAlignment="Justify"  >
+                Il est possible que le site de badgeage ne soit pas accessible.
+                Le badgeage sera tenté à l'issue du compte à rebour ou lorsque vous aurez cliqué sur le bouton Badger.
+                Vous pouvez arrêter le compte à rebour en double-cliquant dessus.
+
+            </AccessText>
+        </Label>
+        <Label x:Name="lblCptArebour" Content="15s" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top" FontSize="24" Width="63" HorizontalContentAlignment="Right" MouseDoubleClick="lblCptArebour_MouseDoubleClick"/>
+        <Button x:Name="btnCancel" Content="Annuler" HorizontalAlignment="Right" Margin="0,0,89.6,9.6" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnCancel_Click"/>
+        <Button x:Name="btnBadger" Content="Badger" HorizontalAlignment="Right" Margin="0,0,9.6,9.6" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnBadger_Click"/>
+        <ProgressBar x:Name="pbarTimeout" Height="3" VerticalAlignment="Bottom" Margin="0,0,0,0" BorderThickness="0"/>
+    </Grid>
+</Window>

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Shell;
 using AryxDevViewLibrary.utils;
 using Badger2018.constants;
+using Badger2018.dto;
 
 namespace Badger2018.views
 {
@@ -48,7 +50,17 @@ namespace Badger2018.views
                 Close();
             };
 
-
+            TaskbarItemInfo = new TaskbarItemInfo() { ProgressState = TaskbarItemProgressState.Normal };
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                TaskbarItemInfo.ProgressValue = 0.5;
+                TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Error;
+            };
+            
+            FocusableChanged += (sender, args) =>
+            {
+              
+            };
 
         }
 
@@ -71,6 +83,12 @@ namespace Badger2018.views
             Title += " - " + dt.ToShortTimeString();
         }
 
+        private void SetMessage(string message)
+        {
+            atErreur.Text = message;
+
+        }
+
         private void SetIsWarning(bool isWarning)
         {
             if (isWarning)
@@ -89,19 +107,19 @@ namespace Badger2018.views
             bool isConsultRecommand = false;
             switch (etapeBadgage)
             {
-                case 1:
+                case 0:
                     messagePrecision = "Le navigateur permettant de badger n'a pas démarré, ou une erreur s'est produite lors de son démarrage.";
                     break;
-                case 2:
-                    messagePrecision = "Impossible de naviguer vers le site de badgeage. Le site n'est peut-être pas accessible (server hors-service) ou l'URL n'est pas correcte.";
+                case 1:
+                    messagePrecision = "Impossible de naviguer vers le site de badgeage. Le site n'est peut-être pas accessible (serveur hors-service), l'URL n'est pas correcte ou le site n'a pas répondu assez vite.";
                     break;
+                case 2:
                 case 3:
                 case 4:
-                case 5:
                     messagePrecision = "Les éléments nécessaires pour effectuer le pointage n'ont pas été trouvé. La page de badgeage est peut-être inacessible ou son contenu à changer.";
                     isConsultRecommand = true;
                     break;
-                case 6:
+                case 5:
                     isConsultRecommand = true;
                     break;
 
@@ -112,10 +130,13 @@ namespace Badger2018.views
             m.SetIsWarning(isConsultRecommand);
             m.SetErreurMessage(e.Message);
             m.SetDtErreur(dt);
+            m.SetMessage(messagePrecision);
             m.WindowStartupLocation = WindowStartupLocation.Manual;
             m.Top = progessWindow.Top;
             m.Left = progessWindow.Left + progessWindow.Width + 10;
             if (isConsultRecommand) { m.MarkConsultAsRecommend(); };
+
+            System.Media.SystemSounds.Beep.Play();
 
             m.ShowDialog();
 

@@ -59,6 +59,18 @@ namespace Badger2018.services
             _logger.Debug("FIN - UpdateJourWithPointageElt(...)");
         }
 
+        public void UpdateJourIsComplete(DateTime date, bool isDayComplete = true)
+        {
+            _logger.Debug("UpdateJourIsComplete(date: {0}, isDayComplete: {1})", date, isDayComplete);
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+
+            JoursBddLayer.UpdateJourIsComplete(dbb, date, isDayComplete);
+
+            _logger.Debug("FIN - UpdateJourIsComplete(...)");
+        }
+
+        
+
         public void InsertNewJour(DateTime date, PointageElt pointageElt)
         {
             _logger.Debug("InsertNewJour(date: {0}, PointageElt: {1})", date, pointageElt);

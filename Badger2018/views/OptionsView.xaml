@@ -137,9 +137,13 @@
                     <CheckBox x:Name="chkIsPreloadFF"  Margin="233,70,0,0" VerticalAlignment="Top" Content="Précharger Firefox et masquer l'instance." HorizontalAlignment="Left" Width="245" />
 
                     <Label x:Name="lblWaitBeforeClick" Content="Attendre avant de badger :" HorizontalAlignment="Left" Margin="296,202,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.506,0.375"/>
-                    <ComboBox x:Name="cboxWaitBeforeClick" HorizontalAlignment="Right" Margin="0,227,10.8,0" VerticalAlignment="Top" Width="182" SelectionChanged="cboxMode_SelectionChanged" Height="23">
-                       
+                    <ComboBox x:Name="cboxWaitBeforeClick" HorizontalAlignment="Right" Margin="0,227,10.8,0" VerticalAlignment="Top" Width="182" Height="23">
                     </ComboBox>
+
+                    <Label x:Name="lblNoConnexionTimeout" Content="Tps attente si site non accessible :" HorizontalAlignment="Left" Margin="296,255,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.506,0.375"/>
+                    <ComboBox x:Name="cboxNoConnexionTimeout" HorizontalAlignment="Right" Margin="0,281,10.8,0" VerticalAlignment="Top" Width="182"  Height="23">
+                    </ComboBox>
+
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabHoraire" Header="Horaires">

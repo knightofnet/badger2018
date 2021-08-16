@@ -136,6 +136,17 @@ namespace Badger2018.services
 
         }
 
+        public void ChangeBadgeageType(DateTime targetDateTime, int targetTypeBadgeage, int newTypeBadgeage)
+        {
+            _logger.Debug("ChangeBadgeageType(targetDateTime: {0}, targetTypeBadgeage: {1})", targetDateTime, targetTypeBadgeage);
+
+            DbbAccessManager dbb = DbbAccessManager.Instance;
+            BadgeageBddLayer.ChangeBadgeageType(dbb, targetDateTime, targetTypeBadgeage, newTypeBadgeage);
+
+            _logger.Debug("FIN - ChangeBadgeageType(...)");
+        }
+        
+
 
 
         public List<IntervalTemps> GetPauses(DateTime date)

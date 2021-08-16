@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -105,6 +106,12 @@ namespace Badger2018.views
                 {
                     cboxSonChoosed.Items.Add(enumSound.Libelle);
                 }
+            }
+
+
+            for (int i = 0; i < 60; i++)
+            {
+                cboxNoConnexionTimeout.Items.Add(i);
             }
 
             AsyncLoadListOfSoundDevices();
@@ -260,6 +267,7 @@ namespace Badger2018.views
             }
             chkStopAfterMaxTravTime.Visibility = IsSpecUse ? Visibility.Visible : Visibility.Hidden;
 
+            cboxNoConnexionTimeout.SelectedItem = opt.NoConnexionTimeout;
 
             LoadLblNotif();
         }
@@ -530,6 +538,13 @@ namespace Badger2018.views
                 NewOptions.BrowserIndex = browser;
             }
 
+            // Network adapter
+            int noConnexionTimeout= (int) cboxNoConnexionTimeout.SelectedItem;
+            if (noConnexionTimeout >= 0)
+            {
+                HasChangeOption = true;
+                NewOptions.NoConnexionTimeout = noConnexionTimeout;
+            }
 
             // Exec FF
             if (NewOptions.BrowserIndex == EnumBrowser.FF)
@@ -540,7 +555,7 @@ namespace Badger2018.views
                     tempExecFf = tempExecFf.Trim('\"');
                     tboxExecFf.Text = tempExecFf;
                 }
-                if ((tempExecFf == null || tempExecFf.IsEmpty()) || !File.Exists(tempExecFf))
+                if (tempExecFf.IsEmpty() || !File.Exists(tempExecFf))
                 {
                     MessageBox.Show("Le chemin vers l'exécutable FF n'est pas correct.");
                     tboxExecFf.Focus();

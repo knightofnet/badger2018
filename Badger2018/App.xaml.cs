@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,15 +42,14 @@ namespace Badger2018
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
 
-            _logger.Info("/***********************");
+            _logger.Debug("/***********************");
             _logger.Info("*  Application lancée (v. {0})", Assembly.GetExecutingAssembly().GetName().Version);
-            _logger.Info("***********************/");
+            _logger.Debug("***********************/");
             if (ProcessUtils.CountAppInstanceOf(Assembly.GetExecutingAssembly().Location) > 1)
             {
                 _logger.Error("Une autre instance de Badger2018 est déjà chargée...");
                 Environment.Exit(EnumExitCodes.M_ALREADY_RUNNING_INSTANCE.ExitCodeInt);
             }
-
 
             if (Settings.Default.UpgradeRequired)
             {

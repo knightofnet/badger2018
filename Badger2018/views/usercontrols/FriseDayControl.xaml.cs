@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using Badger2018.utils;
 
@@ -11,6 +12,7 @@ namespace Badger2018.views.usercontrols
     /// </summary>
     public partial class FriseDayControl : UserControl
     {
+        private readonly MoreDetailsView.IMoreDetailViewPresenter _presenter;
 
         public event Action<DateTime> OnClickBtnSeeScreenshot;
 
@@ -23,6 +25,8 @@ namespace Badger2018.views.usercontrols
         public Color Color { get; set; }
         public int EtatBadgeageAssociated { get; internal set; }
 
+        public String PauseRef { get; set; }
+
         public FriseDayControl()
         {
             InitializeComponent();
@@ -31,13 +35,15 @@ namespace Badger2018.views.usercontrols
 
 
         }
-        public FriseDayControl(DateTime hour, string title, string subtitle)
+        public FriseDayControl(DateTime hour, string title, string subtitle, MoreDetailsView.IMoreDetailViewPresenter presenter )
             : this()
         {
 
             DtTimeIn = hour;
             Title = title;
             SubTitle = subtitle;
+
+            _presenter = presenter;
 
             RefreshUi();
         }
@@ -71,5 +77,17 @@ namespace Badger2018.views.usercontrols
             rectEndSepBottom.Visibility = value ? Visibility.Visible : Visibility.Hidden;
         }
 
+        public void ActiveLinkModifyLastBadgeage()
+        {
+            lblMoreStr.Content = null;
+            Hyperlink hl = new Hyperlink(new Run("Faire de ce badgage le dernier de la journée"));
+            lblMoreStr.Content = hl;
+
+            hl.Click += (sender, args) =>
+            {
+
+                _presenter.ChangeEtatBadgeageAndSetComplete(DtTimeIn, EtatBadgeageAssociated, 3);
+            };
+        }
     }
 }

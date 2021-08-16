@@ -72,6 +72,17 @@ namespace Badger2018.business
 
             _logger.Info("BadgeFullAction (forceWhenMsg: {0}) EtatBadger: {1})", forceWhenMsg ? "true" : "false", Pwin.EtatBadger);
 
+            if (!BadgingUtils.IsValidWebResponse(Pwin.PrgOptions.Uri))
+            {
+                NoConnexionBadgingView noConnexionBadgingView = new NoConnexionBadgingView(Pwin.PrgOptions.NoConnexionTimeout);
+                noConnexionBadgingView.ShowDialog();
+                if (noConnexionBadgingView.Result == MessageBoxResult.Cancel)
+                {
+                    Pwin.PrgSwitch.IsInBadgeWork = false;
+                    Pwin.SetBtnBadgerEnabled(true);
+                    return;
+                }
+            }
 
             switch (Pwin.EtatBadger)
             {
@@ -188,8 +199,11 @@ namespace Badger2018.business
             }
 
             Progress = new BadgeageProgressView(Pwin.PrgOptions);
+#if DEBUG
+            Progress.Topmost = false;
+#endif
             Progress.Show();
-            
+
 
             BadgingBckder b = new BadgingBckder
             {
@@ -210,7 +224,7 @@ namespace Badger2018.business
                 int pInt = args.ProgressPercentage;
                 if (Progress != null)
                 {
-                    
+
                     Progress.Dispatcher.BeginInvoke(DispatcherPriority.Send,
                         new Action(() =>
                         {
@@ -302,6 +316,10 @@ namespace Badger2018.business
                     // Erreur lors du badgeage
                     IntPtr hwnd = new WindowInteropHelper(Pwin).Handle;
                     FlashWindowUtils.Flash(hwnd, 10);
+                    if (b.EtapeTrt > 0)
+                    {
+                        FfDriverSingleton.Instance.Load(Pwin.PrgOptions);
+                    }
                     EnumErrorCodeRetour response = MessageErrorBadgeageView.ShowMessageError(ex, dtNow, Progress, b.EtapeTrt);
                     if (response == EnumErrorCodeRetour.ANNULER)
                     {
@@ -314,7 +332,7 @@ namespace Badger2018.business
                             Progress.Hide();
                         }
 
-
+                        FfDriverSingleton.Instance.Quit();
 
                     }
                     if (response == EnumErrorCodeRetour.CONSULTER_POINTAGE)
@@ -383,6 +401,7 @@ namespace Badger2018.business
 
             if (!forceWhenMsg && !ShowMessageAvertissementFinPlageFixe())
             {
+                Pwin.PrgSwitch.IsInBadgeWork = false;
                 return;
             }
 
@@ -417,9 +436,38 @@ namespace Badger2018.business
 
         private bool ShowMessageAvertissementFinPlageFixe()
         {
-            if (Pwin.TypeJournee == EnumTypesJournees.Complete || Pwin.TypeJournee == EnumTypesJournees.ApresMidi)
+            if (Pwin.TypeJournee == EnumTypesJournees.Complete)
             {
+                if (Pwin.EtatBadger == 0 && AppDateUtils.DtNow().TimeOfDay.CompareTo(Pwin.PrgOptions.PlageFixeMatinFin) < 0)
+                {
+                    MessageBoxResult doValid = MessageBox.Show(
+                        String.Format(
+                            "Il n'est pas encore {0}. Voulez-vous quand même badger la fin de la matinée ?",
+                            Pwin.PrgOptions.PlageFixeMatinFin), "Question", MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (doValid == MessageBoxResult.No)
+                    {
+                        Pwin.SetBtnBadgerEnabled(true);
+                        return false;
+                    }
+                }
 
+                if (Pwin.EtatBadger == 2 && AppDateUtils.DtNow().TimeOfDay.CompareTo(Pwin.PrgOptions.PlageFixeApremFin) < 0)
+                {
+                    MessageBoxResult doValid = MessageBox.Show(
+                        String.Format(
+                            "Il n'est pas encore {0}. Voulez-vous quand même badger la fin de journée de travail ?",
+                            Pwin.PrgOptions.PlageFixeApremFin), "Question", MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (doValid == MessageBoxResult.No)
+                    {
+                        Pwin.SetBtnBadgerEnabled(true);
+                        return false;
+                    }
+                }
+            }
+            else if (Pwin.TypeJournee == EnumTypesJournees.ApresMidi)
+            {
                 if (AppDateUtils.DtNow().TimeOfDay.CompareTo(Pwin.PrgOptions.PlageFixeApremFin) < 0)
                 {
                     MessageBoxResult doValid = MessageBox.Show(
@@ -507,18 +555,10 @@ namespace Badger2018.business
 
         private void BadgeageEtapeP0(bool forceWhenMsg)
         {
-            if (!forceWhenMsg && AppDateUtils.DtNow().TimeOfDay.CompareTo(Pwin.PrgOptions.PlageFixeMatinFin) < 0)
+            if (!forceWhenMsg && !ShowMessageAvertissementFinPlageFixe()) // AppDateUtils.DtNow().TimeOfDay.CompareTo(Pwin.PrgOptions.PlageFixeMatinFin) < 0)
             {
-                MessageBoxResult doValid = MessageBox.Show(
-                    String.Format(
-                        "Il n'est pas encore {0}. Voulez-vous quand même badger le début de la pause méridienne ?",
-                        Pwin.PrgOptions.PlageFixeMatinFin), "Question", MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-                if (doValid == MessageBoxResult.No)
-                {
-                    Pwin.SetBtnBadgerEnabled(true);
-                    return;
-                }
+                Pwin.PrgSwitch.IsInBadgeWork = false;
+                return;
             }
 
 

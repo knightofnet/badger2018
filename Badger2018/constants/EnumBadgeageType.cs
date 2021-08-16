@@ -43,14 +43,16 @@ namespace Badger2018.constants
 
         public static EnumBadgeageType GetFromIndex(int index)
         {
-            if (index < 0)
-            {
-                return null;
-            }
 
             if (index < 0) return null;
 
             return Values.FirstOrDefault(enumModeP => enumModeP.Index == index);
+        }
+
+        public static bool IsClassicBadgeage(EnumBadgeageType badgeage)
+        {
+            return badgeage != null && (badgeage == PLAGE_TRAV_APREM_END || badgeage == PLAGE_TRAV_APREM_START ||
+                                        badgeage == PLAGE_TRAV_MATIN_END || badgeage == PLAGE_TRAV_MATIN_START);
         }
     }
 }

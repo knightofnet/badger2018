@@ -100,6 +100,7 @@ namespace Badger2018.views
                 CsLog(" log : ouvre le fichier journal.");
                 CsLog(" folder : ouvre le dossier de l'application dans l'explorateur.");
                 CsLog(" help : affiche les commandes disponibles.");
+                CsLog(" isOkWebResponse : test la réponse web à une URL.");
                 CsLog(" listPlugins : affiche le noms des extensions.");
                 CsLog(" modeDate : bascule dans le mode de modification de dates.");
                 CsLog(" modePlugin : bascule vers le mode d'une extension.");
@@ -172,7 +173,17 @@ namespace Badger2018.views
                 _logger.OnLogging += SyncLogging;
                 isSyncLog = true;
             }
+            else if ("isOkWebResponse".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
+            {
+                String url = args.Length >= 2 ? args[1].Trim('"') : _pWinRef.PrgOptions.Uri;
+                String cdRep = args.Length >= 3 ? args[2].Trim('"') : "200";
 
+                Int32.TryParse(cdRep, out int outIntCdRep);
+
+                CsLog("isOkWebResponse(url:"+ url+", cdRep: "+outIntCdRep+") :");
+                CsLog("> "+BadgingUtils.IsValidWebResponse(url, outIntCdRep));
+
+            }
             else if ("stopSyncLog".Equals(textInput, StringComparison.CurrentCultureIgnoreCase))
             {
                 if (!isSyncLog) return true;

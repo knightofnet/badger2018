@@ -142,7 +142,7 @@ namespace Badger2018
         {
             _logger.Debug("Chargement de l'écran principal");
 #if DEBUG
-            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 10, 13, 20, 40));
+            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 10, 15, 30, 40));
 
             //SetDarkTheme();
 #endif
