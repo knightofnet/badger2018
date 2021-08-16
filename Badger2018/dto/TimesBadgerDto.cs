@@ -34,6 +34,8 @@ namespace Badger2018.dto
         {
             PlageTravMatin = new IntervalTemps();
             PlageTravAprem = new IntervalTemps();
+
+            PausesHorsDelai = new List<IntervalTemps>();
         }
 
         public TimeSpan GetTpsTravMatin()

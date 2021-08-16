@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Xml.Linq;
 using static Badger2018.business.NoticationsManager;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
@@ -138,11 +139,13 @@ namespace Badger2018
         public LicenceInfo LicenceApp { get; private set; }
         public bool IsFullyLoaded { get; private set; }
 
+        public TimeSpan? cdCalcTheo;
+
         public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager, LicenceInfo licenceInfo, AppArgsDto appArgs)
         {
             _logger.Debug("Chargement de l'écran principal");
 #if DEBUG
-            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 10, 15, 30, 40));
+            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 11, 07, 30, 40));
 
             //SetDarkTheme();
 #endif
@@ -563,6 +566,7 @@ args.Key == Key.F12 ||
 
             imgBtnUpdate.Visibility = Visibility.Collapsed;
             imgBtnWarnLicence.Visibility = Visibility.Collapsed;
+            imgBtnWarnCD.Visibility = Visibility.Collapsed;
             imgBtnAutoBadgeMidi.Visibility = Visibility.Collapsed;
             imgBtnFirefoxLoaded.Visibility = Visibility.Collapsed;
 
@@ -1414,6 +1418,7 @@ args.Key == Key.F12 ||
                 LoadsDidYouKnow();
 
             }
+
             if (EtatBadger >= 0 && !PrgSwitch.IsShowResumeLastDayNotif && IsLoaded)
             {
 
@@ -1425,7 +1430,7 @@ args.Key == Key.F12 ||
                 }
 
                 JourEntryDto lastDay = ServicesMgr.Instance.JoursServices.GetJourData(lastDayDt.Value);
-                if (!lastDay.IsHydrated)
+                if (!lastDay.IsHydrated || !lastDay.IsComplete)
                 {
                     PrgSwitch.IsShowResumeLastDayNotif = true;
                     return;
@@ -1453,7 +1458,30 @@ args.Key == Key.F12 ||
                     {
                         precTpsTrav = lastDay.TpsTravaille.Value.ToString(Cst.TimeSpanFormatWithH);
                     }
+
+
+                    List<BadgeageEntryDto> badgeageEntryDtos = ServicesMgr.Instance.BadgeagesServices.GetAllBadgeageOfDay(lastDayDt.Value);
+                    TimesBadgerDto times = TimesUtils.HydrateTimesApplicationOrder(lastDay.TypeJour, lastDay.EtatBadger, badgeageEntryDtos);
+                    times.PausesHorsDelai = ServicesMgr.Instance.BadgeagesServices.GetPauses(lastDayDt.Value);
+                    TimeSpan tsTravLastDay = TimesUtils.GetTempsTravaille(AppDateUtils.DtNow(), lastDay.EtatBadger, times, PrgOptions,
+                        lastDay.TypeJour, true, ref isMaxDepass);
+
+                    TimeSpan? cdVeille = badgeageEntryDtos
+                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.CdAtTime;
+
+                    if (cdVeille.HasValue)
+                    {
+                        cdCalcTheo = cdVeille.Value + (tsTravLastDay - TimesUtils.GetTpsTravTheoriqueOneDay(PrgOptions, lastDay.TypeJour));
+                        if (PrgOptions.LastCdSeen != cdCalcTheo)
+                        {
+                            imgBtnWarnCD.Visibility = Visibility.Visible;
+                        }
+                    }
+
+
                 }
+
+
 
                 String message = String.Format("Le {1}{0}Type de journée : {2}{0}Temps travaillé{3} : {4}",
                         Environment.NewLine,
@@ -3139,6 +3167,30 @@ args.Key == Key.F12 ||
             AfficheLicenceInfo(true);
         }
 
+        private void imgBtnWarnCD_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (cdCalcTheo.HasValue)
+            {
+                MessageBoxResult msgReturn = MessageBox.Show(String.Format("Le crédit/débit récupéré lors du dernier badgeage ({0}) est différent de celui calculé avec le temps travaillé lors du dernier jour ({1}). Voulez-vous garder le badgeage observé (cliquez sur Oui) ou le crédit/débit calculé (cliquez sur Non) ?", PrgOptions.LastCdSeen.ToStrSignedhhmm(), cdCalcTheo.Value.ToStrSignedhhmm()), "Erreur de crédit-débit", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+
+                if (msgReturn == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                else if (msgReturn == MessageBoxResult.No)
+                {
+                    PrgOptions.LastCdSeen = cdCalcTheo.Value;
+                    OptionManager.SaveOptions(PrgOptions);
+                    ClockUpdTimerOnOnTick(null, null);
+                    imgBtnWarnCD.Visibility = Visibility.Collapsed;
+                }
+                else if (msgReturn == MessageBoxResult.Yes)
+                {
+                    imgBtnWarnCD.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
         private void imgBtnPauseReport_MouseUp(object sender, MouseButtonEventArgs e)
         {
             LoadDetailView();
@@ -3309,16 +3361,6 @@ args.Key == Key.F12 ||
 
             return l.ToArray();
         }
-
-
-
-
-
-
-
-
-
-
 
 
 

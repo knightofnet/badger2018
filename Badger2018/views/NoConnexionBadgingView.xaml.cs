@@ -32,6 +32,9 @@ namespace Badger2018.views
             InitializeComponent();
             Result = MessageBoxResult.Cancel;
 
+            pbarTimeout.Value = 1;
+            lblCptArebour.Content = null;
+
             nbSecondeMaxTimeout = timeout;
             nbSecondeTimeout = timeout;
 
@@ -50,10 +53,13 @@ namespace Badger2018.views
             {
                 if (nbSecondeTimeout > 0)
                 {
-                    lblCptArebour.Content = nbSecondeTimeout + "s";
+                    if (nbSecondeTimeout < 1000)
+                    {
+                        lblCptArebour.Content = nbSecondeTimeout + "s";
+                    }
                     nbSecondeTimeout--;
 
-                    pbarTimeout.Value = nbSecondeTimeout * 100 / nbSecondeMaxTimeout;
+                    pbarTimeout.Value = (double)nbSecondeTimeout * 100 / nbSecondeMaxTimeout;
                 }
                 else
                 {

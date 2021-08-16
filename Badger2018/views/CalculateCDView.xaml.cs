@@ -393,8 +393,7 @@ namespace Badger2018.views
         {
             int nbJourTrav = 0;
 
-            DateTime dftDt = DateTime.MinValue;
-            dftDt = AppDateUtils.ChangeTime(dftDt, TimeSpan.Zero);
+            
 
 
             List<DgElt> lstDays = new List<DgElt>();
@@ -434,48 +433,7 @@ namespace Badger2018.views
                 infoDay.IsDayActive = true;
 
                 List<BadgeageEntryDto> badgeageEntryDtos = bServices.GetAllBadgeageOfDay(currIxDay);
-
-                infoDay.Times = new TimesBadgerDto();
-
-                if (infoDay.TypesJournees == EnumTypesJournees.Complete)
-                {
-                    infoDay.Times.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
-                    infoDay.Times.PlageTravMatin.End = badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_END)?.DateTime;
-                    infoDay.Times.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_START)?.DateTime, dftDt);
-                    infoDay.Times.PlageTravAprem.End = badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
-                }
-                else if (infoDay.TypesJournees == EnumTypesJournees.Matin)
-                {
-                    infoDay.Times.PlageTravAprem.Start = dftDt;
-                    infoDay.Times.PlageTravAprem.End = dftDt;
-
-                    infoDay.Times.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
-                    infoDay.Times.PlageTravMatin.End = badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
-                }
-                else if (infoDay.TypesJournees == EnumTypesJournees.ApresMidi)
-                {
-                    infoDay.Times.PlageTravMatin.Start = dftDt;
-                    infoDay.Times.PlageTravMatin.End = dftDt;
-
-                    infoDay.Times.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
-                    infoDay.Times.PlageTravAprem.End = badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
-                }
-                else if (infoDay.EtatBadger == -1)
-                {
-                    infoDay.Times.PlageTravMatin.Start = dftDt;
-                    infoDay.Times.PlageTravMatin.End = dftDt;
-
-                    infoDay.Times.PlageTravAprem.Start = dftDt;
-                    infoDay.Times.PlageTravAprem.End = dftDt;
-                }
+                infoDay.Times = TimesUtils.HydrateTimesLogicalOrder(infoDay.TypesJournees, infoDay.EtatBadger, badgeageEntryDtos);
 
 
                 infoDay.Times.PausesHorsDelai = bServices.GetPauses(currIxDay);
@@ -668,12 +626,6 @@ namespace Badger2018.views
             }
 
             return retTs;
-        }
-
-        private static DateTime NullDateTimeOrDft(DateTime? dt, DateTime dft)
-        {
-            if (dt.HasValue) return dt.Value;
-            return dft;
         }
 
         private static TimeSpan? TsParse(TextBox tbox, string msgFormatFail)

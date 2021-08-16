@@ -30,6 +30,8 @@ namespace Badger2018.views
     /// </summary>
     public partial class OptionsView : Window
     {
+        private const string LblPasDeControle = "Pas de contrôle";
+        private const string lblNoConnexionTimeoutInfini = "Infini";
         private static readonly Logger _logger = Logger.LastLoggerInstance;
         public MainWindow Pwin { get; set; }
         public bool HasChangeOption { get; private set; }
@@ -49,6 +51,7 @@ namespace Badger2018.views
             InitializeComponent();
             parentWindow.PluginMgr.PlayHook("OnOptionsViewInit", new object[] { tabCtrl });
 
+            btnEditCustomNotifs.Visibility = Visibility.Collapsed;
 
             OrigOptions = appOptions;
 
@@ -61,7 +64,7 @@ namespace Badger2018.views
                 }
             };
 
-            tabCtrl.SelectionChanged += delegate(object sender, SelectionChangedEventArgs args)
+            tabCtrl.SelectionChanged += delegate (object sender, SelectionChangedEventArgs args)
             {
                 if (c != null && tabCtrl.SelectedItem != null)
                 {
@@ -108,11 +111,13 @@ namespace Badger2018.views
                 }
             }
 
-
-            for (int i = 0; i < 60; i++)
+            cboxNoConnexionTimeout.Items.Add(LblPasDeControle);
+            for (int i =  1; i <= 60; i++)
             {
                 cboxNoConnexionTimeout.Items.Add(i);
             }
+            cboxNoConnexionTimeout.Items.Add(lblNoConnexionTimeoutInfini);
+
 
             AsyncLoadListOfSoundDevices();
 
@@ -121,7 +126,6 @@ namespace Badger2018.views
             {
                 cboxWaitBeforeClick.Items.Add(i);
             }
-
 
             for (int i = 0; i < 6; i++)
             {
@@ -267,7 +271,17 @@ namespace Badger2018.views
             }
             chkStopAfterMaxTravTime.Visibility = IsSpecUse ? Visibility.Visible : Visibility.Hidden;
 
-            cboxNoConnexionTimeout.SelectedItem = opt.NoConnexionTimeout;
+            if (opt.NoConnexionTimeout == 0)
+            {
+                cboxNoConnexionTimeout.SelectedItem = LblPasDeControle;
+            } else if (opt.NoConnexionTimeout >= opt.TempsDemieJournee.TotalSeconds)
+            {
+                cboxNoConnexionTimeout.SelectedItem = lblNoConnexionTimeoutInfini;
+            }
+            else
+            {
+                cboxNoConnexionTimeout.SelectedItem = opt.NoConnexionTimeout;
+            }
 
             LoadLblNotif();
         }
@@ -539,11 +553,25 @@ namespace Badger2018.views
             }
 
             // Network adapter
-            int noConnexionTimeout= (int) cboxNoConnexionTimeout.SelectedItem;
-            if (noConnexionTimeout >= 0)
+            int noConnexionOutNewVal = 0;
+            if (cboxNoConnexionTimeout.SelectedItem is string)
+            {
+                string valStr = cboxNoConnexionTimeout.SelectedItem as string;
+                if (LblPasDeControle.Equals(valStr))
+                {
+                    noConnexionOutNewVal = 0;
+                } else if (lblNoConnexionTimeoutInfini.Equals(valStr))
+                {
+                    noConnexionOutNewVal = (int) NewOptions.TempsMaxJournee.TotalSeconds;
+                }
+            } else if (cboxNoConnexionTimeout.SelectedItem is int)
+            {
+                noConnexionOutNewVal = (int)cboxNoConnexionTimeout.SelectedItem;
+            }
+            if (noConnexionOutNewVal >= 0 && noConnexionOutNewVal != OrigOptions.NoConnexionTimeout)
             {
                 HasChangeOption = true;
-                NewOptions.NoConnexionTimeout = noConnexionTimeout;
+                NewOptions.NoConnexionTimeout = noConnexionOutNewVal;
             }
 
             // Exec FF
@@ -625,7 +653,7 @@ namespace Badger2018.views
             if (selValueD != OrigOptions.WaitBeforeClickBadger)
             {
                 HasChangeOption = true;
-                NewOptions.WaitBeforeClickBadger = selValueD ;
+                NewOptions.WaitBeforeClickBadger = selValueD;
             }
 
             return false;

@@ -20,7 +20,7 @@ namespace Badger2018.utils
 
         public static bool GetBooleanByColName(this SQLiteDataReader reader, String colName)
         {
-            return GetInt32ByColName(reader, colName) == 0;
+            return GetInt32ByColName(reader, colName) == 1;
         }
 
 

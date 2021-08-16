@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AryxDevLibrary.extensions;
 using Badger2018.constants;
 using Badger2018.dto;
+using Badger2018.dto.bdd;
 using BadgerCommonLibrary.utils;
 
 namespace Badger2018.utils
@@ -10,14 +12,14 @@ namespace Badger2018.utils
     public static class TimesUtils
     {
 
-        private static readonly Dictionary<String, DateTime> _cacheDatesByKeys = new Dictionary<string, DateTime>(2);
+        private static readonly Dictionary<string, DateTime> _cacheDatesByKeys = new Dictionary<string, DateTime>(2);
 
         public static DateTime TransformDateTimeWith(DateTime dateTime, TimeSpan minSpan, TimeSpan minusTs,
             bool minusBeforeMin = true)
         {
 
             String keyCache = "TransformDateTimeWith#" + dateTime.ToString("O") + minSpan + minusTs +
-                  minusBeforeMin;
+                              minusBeforeMin;
 
             // Retourne la date mise en cache si existe (evite les recalculs)
             if (_cacheDatesByKeys.ContainsKey(keyCache))
@@ -86,7 +88,7 @@ namespace Badger2018.utils
 
         }
 
-        [ObsoleteAttribute("Use GetDateTimeEndTravTheoriqueBis()")]
+        [Obsolete("Use GetDateTimeEndTravTheoriqueBis()")]
         public static DateTime GetDateTimeEndTravTheorique(DateTime startTime, AppOptions appOptions, EnumTypesJournees tyJournee)
         {
             DateTime retDt = startTime;
@@ -163,7 +165,7 @@ namespace Badger2018.utils
         {
             TimeSpan maxTpsAutorise = prgOptions.TempsMaxJournee - (prgOptions.TempsDemieJournee + prgOptions.TempsDemieJournee);
             TimeSpan tsFinJourneeReglementaire = endTheoDateTime.TimeOfDay + maxTpsAutorise -
-                                  (prgOptions.IsAdd5minCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero);
+                                                 (prgOptions.IsAdd5minCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero);
 
             return DateUtilsExt.ChangeTime(AppDateUtils.DtNow(), tsFinJourneeReglementaire);
 
@@ -318,6 +320,103 @@ namespace Badger2018.utils
             return TransformDateTimeWith(dateTime, EnumTypesJournees.ApresMidi.Equals(typeJournee) || EnumTypesJournees.Complete.Equals(typeJournee) ?
                 prgOptions.PlageFixeApremFin : prgOptions.PlageFixeMatinFin,
                 prgOptions.IsAdd5minCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero);
+        }
+
+
+        public static TimesBadgerDto HydrateTimesLogicalOrder(EnumTypesJournees typesJournees, int etatBadger, List<BadgeageEntryDto> badgeageEntryDtos)
+        {
+            DateTime dftDt = DateTime.MinValue;
+            dftDt = AppDateUtils.ChangeTime(dftDt, TimeSpan.Zero);
+            TimesBadgerDto retTimes = new TimesBadgerDto();
+
+            if (typesJournees == EnumTypesJournees.Complete)
+            {
+                retTimes.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                retTimes.PlageTravMatin.End = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_END)?.DateTime;
+                retTimes.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_START)?.DateTime, dftDt);
+                retTimes.PlageTravAprem.End = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+            }
+            else if (typesJournees == EnumTypesJournees.Matin)
+            {
+                retTimes.PlageTravAprem.Start = dftDt;
+                retTimes.PlageTravAprem.End = dftDt;
+
+                retTimes.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                retTimes.PlageTravMatin.End = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+            }
+            else if (typesJournees == EnumTypesJournees.ApresMidi)
+            {
+                retTimes.PlageTravMatin.Start = dftDt;
+                retTimes.PlageTravMatin.End = dftDt;
+
+                retTimes.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                retTimes.PlageTravAprem.End = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+            }
+            else if (etatBadger == -1)
+            {
+                retTimes.PlageTravMatin.Start = dftDt;
+                retTimes.PlageTravMatin.End = dftDt;
+
+                retTimes.PlageTravAprem.Start = dftDt;
+                retTimes.PlageTravAprem.End = dftDt;
+            }
+
+            return retTimes;
+        }
+
+
+        public static TimesBadgerDto HydrateTimesApplicationOrder(EnumTypesJournees typesJournees, int etatBadger, List<BadgeageEntryDto> badgeageEntryDtos)
+        {
+            DateTime dftDt = DateTime.MinValue;
+            dftDt = AppDateUtils.ChangeTime(dftDt, TimeSpan.Zero);
+            TimesBadgerDto retTimes = new TimesBadgerDto();
+
+            if (typesJournees == EnumTypesJournees.Complete)
+            {
+                retTimes.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                retTimes.PlageTravMatin.End = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_END)?.DateTime;
+                retTimes.PlageTravAprem.Start = NullDateTimeOrDft(badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_START)?.DateTime, dftDt);
+                retTimes.PlageTravAprem.End = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+            }
+            else if (typesJournees == EnumTypesJournees.Matin || typesJournees == EnumTypesJournees.ApresMidi)
+            {
+                retTimes.PlageTravMatin.Start = dftDt;
+                retTimes.PlageTravAprem.End = dftDt;
+
+                retTimes.PlageTravMatin.Start = NullDateTimeOrDft(badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.DateTime, dftDt);
+                retTimes.PlageTravAprem.End = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_APREM_END)?.DateTime;
+            }
+            else if (etatBadger == -1)
+            {
+                retTimes.PlageTravMatin.Start = dftDt;
+                retTimes.PlageTravMatin.End = dftDt;
+
+                retTimes.PlageTravAprem.Start = dftDt;
+                retTimes.PlageTravAprem.End = dftDt;
+            }
+
+
+            return retTimes;
+        }
+
+        private static DateTime NullDateTimeOrDft(DateTime? dt, DateTime dft)
+        {
+            if (dt.HasValue) return dt.Value;
+            return dft;
         }
     }
 }

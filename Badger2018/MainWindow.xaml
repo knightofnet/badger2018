@@ -117,6 +117,7 @@
             <Image x:Name="imgBtnPauseReport" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/pauseExists.png" Cursor="Hand" MouseUp="imgBtnPauseReport_MouseUp" />
             <Image x:Name="imgBtnUpdate" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/updateIcon.png" Cursor="Hand" MouseUp="imgBtnUpdate_MouseUp" />
             <Image x:Name="imgBtnWarnLicence" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/iconWarning.png" Cursor="Hand" MouseUp="imgBtnWarnLicence_MouseUp" />
+            <Image x:Name="imgBtnWarnCD" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/iconWarning.png" Cursor="Hand" MouseUp="imgBtnWarnCD_MouseUp" />
             <Image x:Name="imgBtnFirefoxLoaded" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="16" Source="Resources/firefox_light_016.png" Cursor="Hand" MouseUp="imgBtnFirefoxLoaded_MouseUp" ToolTip="L'instance de Firefox est démarrée."/>
         </controls:AlignableWrapPanel>
         <Rectangle x:Name="rectTemoinActivite" Fill="#FFFFFCB8" HorizontalAlignment="Left" Height="3" Margin="2,10,0,0" Stroke="Black" VerticalAlignment="Top" Width="3" StrokeThickness="0"/>

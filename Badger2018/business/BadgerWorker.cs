@@ -72,7 +72,7 @@ namespace Badger2018.business
 
             _logger.Info("BadgeFullAction (forceWhenMsg: {0}) EtatBadger: {1})", forceWhenMsg ? "true" : "false", Pwin.EtatBadger);
 
-            if (!BadgingUtils.IsValidWebResponse(Pwin.PrgOptions.Uri))
+            if (Pwin.PrgOptions.NoConnexionTimeout > 0 && !BadgingUtils.IsValidWebResponse(Pwin.PrgOptions.Uri))
             {
                 NoConnexionBadgingView noConnexionBadgingView = new NoConnexionBadgingView(Pwin.PrgOptions.NoConnexionTimeout);
                 noConnexionBadgingView.ShowDialog();
