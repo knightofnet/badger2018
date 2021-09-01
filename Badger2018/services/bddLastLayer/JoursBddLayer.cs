@@ -37,6 +37,7 @@ namespace Badger2018.services.bddLastLayer
             lstUpd.Add("IS_COMPLETE", jourEntryDto.IsComplete);
             lstUpd.Add("OLD_ETAT_BADGER", jourEntryDto.OldEtatBadger);
             lstUpd.Add("TPS_TRAV_SECONDE", jourEntryDto.TpsTravaille);
+            lstUpd.Add("WORK_AT_HOME_CPT", jourEntryDto.WorkAtHomeCpt);
 
             string sql = String.Format(SqlConstants.UPDATE_WHERE, TableBadgeages, lstUpd.UpdateClauseStr(), "DATE_JOUR=@DATE_JOUR");
 
@@ -80,6 +81,7 @@ namespace Badger2018.services.bddLastLayer
             lstUpd.Add("ETAT_BADGER", pointageElt.EtatBadger);
             lstUpd.Add("IS_COMPLETE", pointageElt.IsComplete);
             lstUpd.Add("OLD_ETAT_BADGER", pointageElt.OldEtatBadger);
+            lstUpd.Add("WORK_AT_HOME_CPT", pointageElt.WorkAtHomeCpt);
 
             string sql = lstUpd.InserOrderStr(TableBadgeages);
 
@@ -129,6 +131,7 @@ namespace Badger2018.services.bddLastLayer
                     jourEntryDto.TypeJour = EnumTypesJournees.GetFromIndex(reader.GetInt32ByColName("TYPE_JOUR"));
                     jourEntryDto.DateJour = reader.GetDatetimeByColName("DATE_JOUR").Value;
                     jourEntryDto.TpsTravaille = reader.GetTimeSpanByColName("TPS_TRAV_SECONDE");
+                    jourEntryDto.WorkAtHomeCpt = Decimal.ToDouble(reader.GetDecimalByColName("WORK_AT_HOME_CPT"));
 
                     jourEntryDto.IsHydrated = true;
                     break;
@@ -199,6 +202,7 @@ namespace Badger2018.services.bddLastLayer
                     jourEntryDto.TypeJour = EnumTypesJournees.GetFromIndex(reader.GetInt32ByColName("TYPE_JOUR"));
                     jourEntryDto.DateJour = reader.GetDatetimeByColName("DATE_JOUR").Value;
                     jourEntryDto.TpsTravaille = reader.GetTimeSpanByColName("TPS_TRAV_SECONDE");
+                    jourEntryDto.WorkAtHomeCpt = Decimal.ToDouble(reader.GetDecimalByColName("WORK_AT_HOME_CPT"));
 
                     jourEntryDto.IsHydrated = true;
                     break;

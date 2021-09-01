@@ -244,6 +244,26 @@ namespace Badger2018.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap iconHomeGreen {
+            get {
+                object obj = ResourceManager.GetObject("iconHomeGreen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconHomeGrey {
+            get {
+                object obj = ResourceManager.GetObject("iconHomeGrey", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap iconOkHover {
             get {
                 object obj = ResourceManager.GetObject("iconOkHover", resourceCulture);
@@ -395,7 +415,7 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Caesium Canberra.
+        ///   Recherche une chaîne localisée semblable à Dianum Dublin.
         /// </summary>
         internal static string versionName {
             get {

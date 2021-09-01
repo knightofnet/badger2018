@@ -35,6 +35,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using static Badger2018.business.NoticationsManager;
+using static Badger2018.MainWindow;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
 using ContextMenu = System.Windows.Controls.ContextMenu;
@@ -49,8 +50,12 @@ namespace Badger2018
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotificationManagerPresenter, IPresentableObject
+    public partial class MainWindow : Window, INotificationManagerPresenter, IPresentableObject, IAppOptionsProvider
     {
+        public interface IAppOptionsProvider
+        {
+            AppOptions PrgOptions { get; set; }
+        }
 
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
@@ -138,6 +143,7 @@ namespace Badger2018
         public RealTimesObj RealTimes { get; private set; }
         public LicenceInfo LicenceApp { get; private set; }
         public bool IsFullyLoaded { get; private set; }
+        public double WorkAtHomeCpt { get; set; }
 
         public TimeSpan? cdCalcTheo;
 
@@ -145,7 +151,7 @@ namespace Badger2018
         {
             _logger.Debug("Chargement de l'écran principal");
 #if DEBUG
-            AppDateUtils.ForceDtNow(new DateTime(2021, 08, 11, 07, 30, 40));
+           // AppDateUtils.ForceDtNow(new DateTime(2021, 08, 11, 07, 30, 40));
 
             //SetDarkTheme();
 #endif
@@ -401,7 +407,7 @@ args.Key == Key.F12 ||
                 lblHmidiS.Visibility = Visibility.Hidden;
                 lblHmidiE.Visibility = Visibility.Hidden;
 
-                ctrlTyJournee.ChangeTypeJourneeWithoutAction(EnumTypesJournees.Complete);
+                ctrlTyJournee.ChangeTypeJourneeWithoutAction(EnumTypesJournees.Complete, 0);
                 ctrlTyJournee.IsEnabledChange = false;
 
                 TimeSpan tsfinMat = TimesUtils.GetTimeEndTravTheorique(Times.PlageTravMatin.Start, PrgOptions,
@@ -637,6 +643,10 @@ args.Key == Key.F12 ||
             ctrlTyJournee.OnTypeJourneeChange += (e) =>
             {
                 ChangeTypeJournee();
+            };
+            ctrlTyJournee.OnValTtChange += d =>
+            {
+                WorkAtHomeCpt = d;
             };
 
 
@@ -908,12 +918,49 @@ args.Key == Key.F12 ||
         private bool BadgeageM1Manuell()
         {
             bool isSpecBadgeage;
+            MessageBoxResult v = MessageBoxResult.Cancel;
+            if (PrgOptions.BadgeageZeroAction == EnumBadgeageZeroAction.NO_CHOICE)
+            {
+                BadgeageZeroConfirmView b0View = new BadgeageZeroConfirmView(this);
+                b0View.ShowDialog();
+                v = MessageBoxResult.Cancel;
+                if (b0View.IsChoiceDone)
+                {
+                    if (b0View.Action == EnumBadgeageZeroAction.BADGER)
+                    {
+                        v = MessageBoxResult.Yes;
+                    }
+                    else if (b0View.Action == EnumBadgeageZeroAction.REPORT_HEURE)
+                    {
+                        v = MessageBoxResult.No;
+                    }
+
+                    if (b0View.IsSetChoiceToMemory)
+                    {
+                        PrgOptions.BadgeageZeroAction = b0View.Action;
+                        OptionManager.SaveOptions(PrgOptions);
+                    }
+                }
+            }
+            else
+            {
+                if (PrgOptions.BadgeageZeroAction == EnumBadgeageZeroAction.BADGER)
+                {
+                    v = MessageBoxResult.Yes;
+                }
+                else if (PrgOptions.BadgeageZeroAction == EnumBadgeageZeroAction.REPORT_HEURE)
+                {
+                    v = MessageBoxResult.No;
+                }
+            }
+
+            /*
             MessageBoxResult v = MessageBox.Show("Voulez-vous effectuer le premier badgeage de la journée ? Cliquez sur Oui pour badger ou Non pour entrer l'heure manuellement (dans le cas où le pointage a déjà été effectué via la page)",
                 "Question",
                 MessageBoxButton.YesNoCancel,
                 MessageBoxImage.Question
                 );
-
+            */
             if (v == MessageBoxResult.Cancel)
             {
                 isSpecBadgeage = true;
@@ -1101,6 +1148,7 @@ args.Key == Key.F12 ||
             {
                 EtatBadger = p.EtatBadger;
                 ctrlTyJournee.IsEnabledChange = true;
+                
                 if (EtatBadger >= 0)
                 {
                     Times.PlageTravMatin.Start = DateTime.Parse(p.B0).AtSec(Cst.SecondeOffset);
@@ -1134,7 +1182,8 @@ args.Key == Key.F12 ||
                 NotifManager.SetNotifShow(Cst.NotifCust2Name, p.IsNotif2Showed);
 
                 TypeJournee = EnumTypesJournees.GetFromIndex(p.TypeJournee);
-                ctrlTyJournee.ChangeTypeJourneeWithoutAction(TypeJournee);
+                ctrlTyJournee.ChangeTypeJourneeWithoutAction(TypeJournee, p.WorkAtHomeCpt);
+                WorkAtHomeCpt = p.WorkAtHomeCpt;
 
                 OldEtatBadger = p.OldEtatBadger;
 
@@ -1478,10 +1527,7 @@ args.Key == Key.F12 ||
                         }
                     }
 
-
                 }
-
-
 
                 String message = String.Format("Le {1}{0}Type de journée : {2}{0}Temps travaillé{3} : {4}",
                         Environment.NewLine,
@@ -3055,7 +3101,7 @@ args.Key == Key.F12 ||
             ModTimeView m = new ModTimeView(dayToMod, PrgOptions.UrlMesPointages, PrgOptions);
 
 
-            m.SetCurrentDay(dayToMod.Date, Times, TypeJournee, EtatBadger, isCurrentDay);
+            m.SetCurrentDay(dayToMod.Date, Times, TypeJournee, EtatBadger, WorkAtHomeCpt, isCurrentDay);
 
             m.ShowDialog();
 
@@ -3072,6 +3118,7 @@ args.Key == Key.F12 ||
                     AdaptUiLowerThanState();
 
                     ctrlTyJournee.TypeJournee = TypeJournee;
+                    ctrlTyJournee.ValTt = m.ValTt;
 
                     ChangeTypeJournee();
 
@@ -3087,7 +3134,7 @@ args.Key == Key.F12 ||
                 }
                 else
                 {
-                    PointageSaverObj.SaveAnotherDayTime(dayToMod, m.Times, m.TypeJournee, m.EtatBadger, m.LastCdSeen);
+                    PointageSaverObj.SaveAnotherDayTime(dayToMod, m.Times, m.TypeJournee, m.EtatBadger, m.LastCdSeen, m.ValTt);
                 }
             }
         }

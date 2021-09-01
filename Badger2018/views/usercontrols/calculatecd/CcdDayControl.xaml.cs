@@ -125,7 +125,7 @@ namespace Badger2018.views.usercontrols.calculatecd
                 Date.Day,
                 AppDateUtils.StrMonthOfYear(Date.Month).Substring(0, 3)
             );
-            
+
 
             if (!Elt.IsDayActive)
             {
@@ -150,7 +150,7 @@ namespace Badger2018.views.usercontrols.calculatecd
             switch (EtatMatin)
             {
                 case StateDay.NonTrav:
-                    rMatin.Fill = new SolidColorBrush(Colors.White); 
+                    rMatin.Fill = new SolidColorBrush(Colors.White);
                     rMatin.Stroke = new SolidColorBrush(Colors.White); ;
                     lblJ.Foreground = new SolidColorBrush(Colors.Black);
                     break;
@@ -219,24 +219,24 @@ namespace Badger2018.views.usercontrols.calculatecd
         }
 
         public void UpdateTimesTrav(TimeSpan tpsTravMatin, TimeSpan tpsPauseMidi, TimeSpan tpsTravAprem,
-            TimeSpan tpsPauseHd, TimeSpan tpsNormalJournee, 
-            bool prgOptionsIsAdd5MinCpt)
+            TimeSpan tpsPauseHd, TimeSpan tpsNormalJournee,
+            bool prgOptionsIsAdd5MinCpt, double valTt)
         {
             StringBuilder strB = new StringBuilder();
-            strB.AppendLine(Date.ToShortDateString() + " :");
+            strB.AppendLine(Date.ToShortDateString() + (valTt > 0 ? " (" + valTt + " TT)" : "") + " :");
             strB.AppendLine("------");
-           
-                strB.AppendLine("Matin : " + tpsTravMatin.ToStrSignedhhmm());
-                strB.AppendLine("Pause du midi suppl. : " + tpsPauseMidi.ToStrSignedhhmm());
-                strB.AppendLine("Après-midi : " + tpsTravAprem.ToStrSignedhhmm());
 
-                if (tpsPauseHd.CompareTo(TimeSpan.Zero) > 0)
-                {
-                    strB.AppendLine("Autres pauses : " + tpsPauseHd.ToStrSignedhhmm());
-                        
-                }
+            strB.AppendLine("Matin : " + tpsTravMatin.ToStrSignedhhmm());
+            strB.AppendLine("Pause du midi suppl. : " + tpsPauseMidi.ToStrSignedhhmm());
+            strB.AppendLine("Après-midi : " + tpsTravAprem.ToStrSignedhhmm());
 
-           
+            if (tpsPauseHd.CompareTo(TimeSpan.Zero) > 0)
+            {
+                strB.AppendLine("Autres pauses : " + tpsPauseHd.ToStrSignedhhmm());
+
+            }
+
+
             TimeSpan total = tpsTravMatin + tpsTravAprem - tpsPauseMidi +
                              (prgOptionsIsAdd5MinCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) - tpsPauseHd;
             strB.AppendLine();

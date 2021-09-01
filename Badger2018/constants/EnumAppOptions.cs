@@ -93,6 +93,8 @@ namespace Badger2018.constants
 
         public static readonly EnumAppOptions NoConnexionTimeout = new EnumAppOptions("NoConnexionTimeout", typeof(int), "20", false);
 
+        public static readonly EnumAppOptions BadgeageZeroAction = new EnumAppOptions("BadgeageZeroAction", typeof(IEnumSerializableWithIndex<EnumBadgeageZeroAction>), "" + EnumBadgeageZeroAction.NO_CHOICE.GetIndex(),  false);
+
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -171,6 +173,8 @@ namespace Badger2018.constants
                 yield return IsUpdateSvcEnable;
 
                 yield return NoConnexionTimeout;
+
+                yield return BadgeageZeroAction;
 
 
 

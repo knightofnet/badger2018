@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
-using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
 using Badger2018.utils;
+using Badger2018.utils.sqlite;
+using BadgerCommonLibrary.constants;
 
 namespace Badger2018.business.dbb
 {
@@ -14,18 +14,18 @@ namespace Badger2018.business.dbb
     {
         private static readonly Logger _logger = Logger.LastLoggerInstance;
 
-        private readonly Regex regexExtractVers = new Regex(@"sqlUpd-(\d{1,2}\.\d{1,2}\.\d{1,4}\.\d{1,4})\.sql$", RegexOptions.Compiled);
 
-        private SQLiteConnection _connexionRef;
         private readonly string _lastSqlUpdateVersion;
 
-        private readonly List<string> _fileUpd = new List<string>();
+        public Version LastVersion { get; private set; }
 
-        public DbbUpdateManager(SQLiteConnection connection, string lastSqlUpdateVersion)
+
+        public DbbUpdateManager(string lastSqlUpdateVersion)
         {
-            this._connexionRef = connection;
             _lastSqlUpdateVersion = lastSqlUpdateVersion;
         }
+
+        private readonly List<AbstractUpdateDbActions> _updatesToDo = new List<AbstractUpdateDbActions>(0);
 
         public bool CheckUpdateRequired()
         {
@@ -38,40 +38,39 @@ namespace Badger2018.business.dbb
                 lastUpdVersion = new Version(1, 0, 0, 0);
             }
 
-
-            string[] filesCandidates = Directory.GetFiles(".", "sqlUpd-*.sql", SearchOption.TopDirectoryOnly);
-            foreach (string candidate in filesCandidates)
+            AbstractUpdateDbActions ua = new Update_DianumDublin_1_3_0901_1510();
+            if (ua.IsUpdateNeeded())
             {
+                _updatesToDo.Add(ua);
 
-                Match m = regexExtractVers.Match(candidate);
-                if (m.Success)
-                {
-                    string candidateVersRaw = m.Groups[1].ToString();
-                    Version cdtitVersion = Version.Parse(candidateVersRaw);
-
-                    if (lastUpdVersion < cdtitVersion && cdtitVersion <= currentVersionApp)
-                    {
-                        _fileUpd.Add(candidate);
-                        isUpdateRequired = true;
-                    }
-                }
+                return true;
             }
 
-
-            return isUpdateRequired;
+            return false;
         }
 
         public void UpdateDbb()
         {
 
-            if (_fileUpd != null && _fileUpd.Count > 0)
+            if (_updatesToDo.Any())
             {
-                foreach (string fileUpd in _fileUpd)
+                try
                 {
-                    _logger.Info("Fichier de mise à jour BDD detecté ({0}). Exécution", fileUpd);
+                    DbbAccessManager.Instance.StartTransaction();
+                    foreach (AbstractUpdateDbActions update in _updatesToDo)
+                    {
+                        _logger.Info("Mise à jour BDD : {0}. Exécution", update.GetType().Name);
 
-                    SqlLiteUtils.ExecuteContentFile(DbbAccessManager.Instance.Connection, fileUpd);
-                    File.Delete(fileUpd);
+                        update.DoUpdate();
+                        LastVersion = update.VersionMinForUpdate;
+                    }
+
+                    DbbAccessManager.Instance.StopAndCommitTransaction();
+                }
+                catch (Exception ex)
+                {
+                    DbbAccessManager.Instance.StopAndRollbackTransaction();
+                    ExceptionHandlingUtils.LogAndEndsProgram(ex, EnumExitCodes.M_ERROR_UPDATE_BDD.ExitCodeInt, "Erreur lors de la mise à jour schema");
                 }
             }
 
@@ -80,6 +79,53 @@ namespace Badger2018.business.dbb
         public void BackupDbb()
         {
 
+        }
+
+        class Update_DianumDublin_1_3_0901_1510 : AbstractUpdateDbActions
+        {
+            public sealed override bool IsEnabled { get; set; }
+            public sealed override Version VersionMinForUpdate { get; set; }
+
+            public Update_DianumDublin_1_3_0901_1510()
+            {
+                IsEnabled = true;
+                VersionMinForUpdate = new Version("1.3.0901.1510");
+            }
+            public override bool IsUpdateNeeded()
+            {
+                List<TableDef> tableDefs = SqlLiteUtils.GetTableDefinition(DbbAccessManager.Instance.Connection, "JOURS");
+
+                return !tableDefs.Any(r => r.Name.Equals("WORK_AT_HOME_CPT"));
+            }
+
+            public override void DoUpdate()
+            {
+              
+                try
+                {
+                    String[] sqls = {
+                        "ALTER TABLE JOURS ADD COLUMN WORK_AT_HOME_CPT NUMERIC DEFAULT 0;"
+                    };
+                    SqlLiteUtils.ExecuteSqlOrdersArray(DbbAccessManager.Instance.Connection, sqls);
+
+                   
+                }
+                catch (Exception ex)
+                {
+
+                    ExceptionHandlingUtils.LogAndRethrows(ex, "Erreur lors de la mise à jour schema Update_DianumDublin_1_3_0901_1510");
+                }
+            }
+        }
+
+        abstract class AbstractUpdateDbActions
+        {
+            public abstract bool IsEnabled { get; set; }
+            public abstract Version VersionMinForUpdate { get; set; }
+
+            public abstract bool IsUpdateNeeded();
+
+            public abstract void DoUpdate();
         }
     }
 }

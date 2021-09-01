@@ -131,7 +131,7 @@ namespace Badger2018
                 // DbbAccessManager.DbbPasswd = CommonCst.SqliteAppSalt + prgOptions.SqliteAppUserSalt + Environment.UserName.ToUpper();
                 RemoveLegacyBadgeage(prgOptions);
                 UpdateBdd(prgOptions);
-                ConvertsXmlPointageToDEbb();
+                //ConvertsXmlPointageToDEbb();
             }
             catch (Exception ex)
             {
@@ -227,7 +227,7 @@ namespace Badger2018
             try
             {
 
-                DbbUpdateManager dbbUpd = new DbbUpdateManager(DbbAccessManager.Instance.Connection, prgOptions.LastSqlUpdateVersion);
+                DbbUpdateManager dbbUpd = new DbbUpdateManager( prgOptions.LastSqlUpdateVersion);
                 if (dbbUpd.CheckUpdateRequired())
                 {
                     dbbUpd.BackupDbb();
@@ -235,7 +235,7 @@ namespace Badger2018
                 }
                 else
                 {
-                    _logger.Debug("Fichier de mise à jour BDD non detecté.");
+                    _logger.Debug("Pas de maj BDD à réaliser.");
                 }
             }
             catch (Exception ex)
@@ -248,6 +248,7 @@ namespace Badger2018
             }
         }
 
+        /*
         private void ConvertsXmlPointageToDEbb()
         {
 
@@ -263,6 +264,7 @@ namespace Badger2018
 
             ServicesMgr.Instance.BadgeagesServices.RemoveDuplicatesBadgeages();
         }
+        */
 
         private void RemoveLegacyBadgeage(AppOptions prgOptions)
         {

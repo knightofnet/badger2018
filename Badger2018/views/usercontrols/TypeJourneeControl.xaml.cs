@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using AryxDevLibrary.utils.logger;
 using Badger2018.constants;
 
@@ -15,7 +16,10 @@ namespace Badger2018.views.usercontrols
 
         private EnumTypesJournees _typeJournee;
         public Action<EnumTypesJournees> OnTypeJourneeChange;
+        public Action<double> OnValTtChange;
+
         private bool _isEnabledChange;
+        private double _valTt;
 
         public EnumTypesJournees TypeJournee
         {
@@ -23,10 +27,24 @@ namespace Badger2018.views.usercontrols
             set
             {
                 _typeJournee = value;
-                AdaptUiTypeJournee(value);
+                AdaptUiTypeJournee(value, _valTt);
                 if (OnTypeJourneeChange != null)
                 {
                     OnTypeJourneeChange(value);
+                }
+            }
+        }
+
+        public double ValTt
+        {
+            get { return _valTt; }
+            set
+            {
+                _valTt = value;
+                AdaptUiTypeJournee(_typeJournee, value);
+                if (OnValTtChange != null)
+                {
+                    OnValTtChange(value);
                 }
             }
         }
@@ -55,25 +73,28 @@ namespace Badger2018.views.usercontrols
             }
 
 
-            cboxTypeJournee.Visibility = Visibility.Collapsed;
+            gridMod.Visibility = Visibility.Collapsed;
+
 
             lblTypeJournee.MouseEnter += (sender, args) =>
             {
-                if (cboxTypeJournee.Visibility == Visibility.Collapsed && IsEnabledChange)
+                if (gridMod.Visibility == Visibility.Collapsed && IsEnabledChange)
                 {
                     lblTypeJournee.Visibility = Visibility.Collapsed;
-                    cboxTypeJournee.Visibility = Visibility.Visible;
+                    gridMod.Visibility = Visibility.Visible;
+
                     //cboxTypeJournee.Focus();
                 }
             };
 
 
-            cboxTypeJournee.MouseLeave += (sender, args) =>
+            gridMod.MouseLeave += (sender, args) =>
             {
                 if (cboxTypeJournee.Visibility == Visibility.Visible && IsEnabledChange)
                 {
                     lblTypeJournee.Visibility = Visibility.Visible;
-                    cboxTypeJournee.Visibility = Visibility.Collapsed;
+                    gridMod.Visibility = Visibility.Collapsed;
+
                 }
             };
 
@@ -87,12 +108,36 @@ namespace Badger2018.views.usercontrols
 
 
             };
+            chkBoxTT.Click += (sender, args) =>
+            {
+                bool isChecked = chkBoxTT.IsChecked ?? false;
+
+                if (isChecked)
+                {
+                    ValTt = EnumTypesJournees.IsDemiJournee(TypeJournee) ? 0.5 : 1;
+                } else
+                {
+                    ValTt = 0;
+                }
+
+            };
 
         }
 
-        private void AdaptUiTypeJournee(EnumTypesJournees value)
+        private void AdaptUiTypeJournee(EnumTypesJournees value, double valTt)
         {
-            lblTypeJournee.Content = value.Libelle;
+            String strToShow = value.Libelle;
+            if (valTt > 0)
+            {
+                strToShow += " (TT)";
+                chkBoxTT.IsChecked = true;
+            }
+            else
+            {
+                chkBoxTT.IsChecked = false;
+            }
+
+            lblTypeJournee.Content = strToShow;
 
             string valSel = cboxTypeJournee.SelectedItem as string;
 
@@ -106,16 +151,18 @@ namespace Badger2018.views.usercontrols
         {
             if (!value)
             {
-                cboxTypeJournee.Visibility = Visibility.Collapsed;
+                gridMod.Visibility = Visibility.Collapsed;
                 lblTypeJournee.Visibility = Visibility.Visible;
 
-            } 
+
+            }
         }
 
-        internal void ChangeTypeJourneeWithoutAction(EnumTypesJournees tyJournee)
+        internal void ChangeTypeJourneeWithoutAction(EnumTypesJournees tyJournee, double pWorkAtHomeCpt)
         {
             _typeJournee = tyJournee;
-            AdaptUiTypeJournee(tyJournee);
+            _valTt = pWorkAtHomeCpt;
+            AdaptUiTypeJournee(tyJournee, pWorkAtHomeCpt);
         }
     }
 }

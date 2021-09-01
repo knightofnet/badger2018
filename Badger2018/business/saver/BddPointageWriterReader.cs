@@ -23,6 +23,7 @@ namespace Badger2018.business.saver
             public int EtatBadger { get; set; }
             public int OldEtatBadger { get; internal set; }
 
+            public double WorkAtHomeCpt { get; internal set; }
             public TimeSpan? LastCdSeen { get; internal set; }
         }
 
@@ -39,7 +40,7 @@ namespace Badger2018.business.saver
 
         }
 
-        public void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger, TimeSpan cdLastSeen)
+        public void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger, TimeSpan cdLastSeen, double valTt)
         {
             DataBadgeageVehicle data = new DataBadgeageVehicle()
             {
@@ -49,6 +50,7 @@ namespace Badger2018.business.saver
                 TypeJournee = typeJournee,
                 OldEtatBadger = etatBadger,
                 LastCdSeen = cdLastSeen,
+                WorkAtHomeCpt = valTt,
             };
             SaveDayTimes(data);
         }
@@ -63,6 +65,7 @@ namespace Badger2018.business.saver
                 TypeJournee = _pWinRef.TypeJournee,
                 OldEtatBadger = _pWinRef.OldEtatBadger,
                 LastCdSeen = _pWinRef.PrgOptions.LastCdSeen,
+                WorkAtHomeCpt =  _pWinRef.WorkAtHomeCpt,
 
             };
             SaveDayTimes(data);
@@ -83,7 +86,7 @@ namespace Badger2018.business.saver
                     TypeJournee = data.TypeJournee.Index,
                     //IsNotif1Showed = _pWinRef.NotifManager.IsNotifShow(Cst.NotifCust1Name),
                     //IsNotif2Showed = _pWinRef.NotifManager.IsNotifShow(Cst.NotifCust2Name),
-
+                    WorkAtHomeCpt =  data.WorkAtHomeCpt
                 };
 
                 SaveClassicDayBadgeages(data.DayToMod, data);
@@ -241,6 +244,7 @@ namespace Badger2018.business.saver
             pElt.OldEtatBadger = jour.OldEtatBadger;
             pElt.IsComplete = jour.IsComplete;
             pElt.TypeJournee = jour.TypeJour.Index;
+            pElt.WorkAtHomeCpt = jour.WorkAtHomeCpt;
         }
 
 

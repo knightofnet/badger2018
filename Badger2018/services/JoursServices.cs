@@ -53,6 +53,7 @@ namespace Badger2018.services
             j.OldEtatBadger = pointageElt.OldEtatBadger;
             j.IsComplete = pointageElt.IsComplete;
             j.TypeJour = EnumTypesJournees.GetFromIndex(pointageElt.TypeJournee);
+            j.WorkAtHomeCpt = pointageElt.WorkAtHomeCpt;
 
             JoursBddLayer.UpdateJour(dbb, date, j);
 

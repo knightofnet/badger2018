@@ -52,6 +52,7 @@ namespace Badger2018.views
             parentWindow.PluginMgr.PlayHook("OnOptionsViewInit", new object[] { tabCtrl });
 
             btnEditCustomNotifs.Visibility = Visibility.Collapsed;
+            imgBtnHelp.Visibility = Visibility.Collapsed;
 
             OrigOptions = appOptions;
 
@@ -96,7 +97,13 @@ namespace Badger2018.views
             }
             cboxListBrowser.SelectedItem = EnumBrowser.FF.Libelle;
 
+            foreach (EnumBadgeageZeroAction enumB0Action in EnumBadgeageZeroAction.Values)
+            {
+                cboxB0AskUser.Items.Add(enumB0Action.Libelle);
+            }
+            cboxB0AskUser.SelectedItem = EnumBadgeageZeroAction.NO_CHOICE.Libelle;
 
+            
             foreach (EnumActionButtonClose enumAbOc in EnumActionButtonClose.Values)
             {
                 cboxActionButtonClose.Items.Add(enumAbOc.Libelle);
@@ -218,6 +225,7 @@ namespace Badger2018.views
             cboxAutoBadgeAtStart.IsChecked = opt.IsAutoBadgeAtStart;
 
             cboxWaitBeforeClick.SelectedItem = opt.WaitBeforeClickBadger;
+            cboxB0AskUser.SelectedItem = opt.BadgeageZeroAction.Libelle;
 
             cboxActionButtonClose.SelectedItem = opt.ActionButtonClose.Libelle;
             cboxBtnManuelBadgeIsWithHotKeys.IsChecked = opt.IsBtnManuelBadgeIsWithHotKeys;
@@ -655,6 +663,16 @@ namespace Badger2018.views
                 HasChangeOption = true;
                 NewOptions.WaitBeforeClickBadger = selValueD;
             }
+
+            // 
+            string valChkB0AskUser = cboxB0AskUser.SelectedItem as string;
+            if (valChkB0AskUser != null && !valChkB0AskUser.Equals(OrigOptions.BadgeageZeroAction.Libelle))
+            {
+                HasChangeOption = true;
+                EnumBadgeageZeroAction b0AskUser = EnumBadgeageZeroAction.GetFromLibelle(valChkB0AskUser);
+                NewOptions.BadgeageZeroAction = b0AskUser;
+            }
+          
 
             return false;
         }

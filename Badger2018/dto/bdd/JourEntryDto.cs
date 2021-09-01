@@ -18,6 +18,8 @@ namespace Badger2018.dto.bdd
 
         public TimeSpan? TpsTravaille { get; set; }
 
+        public double WorkAtHomeCpt { get; set; }
+
 
 
     }

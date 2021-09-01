@@ -357,13 +357,13 @@ namespace Badger2018.views
 
             DateTime dateMin = dtMin.SelectedDate.Value;
             DateTime dateMax = dtMax.SelectedDate.Value;
-            int nbJourTrav = 0;
+            ResGatherObj resGatherObj = new ResGatherObj();
 
             if (!Keyboard.IsKeyDown(Key.LeftCtrl) && !Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 // vérid dateMax > datemin
 
-                nbJourTrav = GatherDatas(dateMin, dateMax);
+                resGatherObj = GatherDatas(dateMin, dateMax);
             }
 
             Calc();
@@ -372,9 +372,10 @@ namespace Badger2018.views
             l4Content.Text = String.Format(bilanTpl,
                 dateMin.ToShortDateString(),
                 dateMax.ToShortDateString(),
-                nbJourTrav,
+                resGatherObj.NbJourTrav,
                 dateMin.ToShortDateString(),
-                _cdAtStart.ToStrSignedhhmm()
+                _cdAtStart.ToStrSignedhhmm(),
+                resGatherObj.SumValTt
             );
         }
 
@@ -382,19 +383,16 @@ namespace Badger2018.views
         {
             if (wp.Children.Count > 0)
             {
-                TimeSpan cd = CalcFromUiElt();
-                _lastCdCalc = cd;
-                cdCalc.Content = cd.ToStrSignedhhmm();
+                ResCalcObj resObj = CalcFromUiElt();
+                _lastCdCalc = resObj.CptCdCalc;
+                cdCalc.Content = resObj.CptCdCalc.ToStrSignedhhmm();
                 ((Label)lienApplyLastCd.Parent).Visibility = Visibility.Visible;
             }
         }
 
-        private int GatherDatas(DateTime dateMin, DateTime dateMax)
+        private ResGatherObj GatherDatas(DateTime dateMin, DateTime dateMax)
         {
-            int nbJourTrav = 0;
-
-            
-
+            ResGatherObj resObj = new ResGatherObj();
 
             List<DgElt> lstDays = new List<DgElt>();
 
@@ -412,6 +410,7 @@ namespace Badger2018.views
                 JourEntryDto jourBdd = jServices.GetJourData(currIxDay);
 
                 DgElt infoDay = new DgElt();
+                infoDay.ValTt = jourBdd.WorkAtHomeCpt;
                 infoDay.Date = currIxDay;
                 if (jourBdd.IsHydrated)
                 {
@@ -454,7 +453,8 @@ namespace Badger2018.views
                 }
 
                 lstDays.Add(infoDay);
-                nbJourTrav++;
+                resObj.SumValTt += infoDay.ValTt;
+                resObj.NbJourTrav++;
             }
 
 
@@ -494,7 +494,7 @@ namespace Badger2018.views
 
             tBoxCdStart.Text = _cdAtStart.ToStrSignedhhmm();
 
-            return nbJourTrav;
+            return resObj;
         }
 
         private void CEltOnMouseUp(object sender, MouseButtonEventArgs e)
@@ -528,15 +528,15 @@ namespace Badger2018.views
             isEventChangeEnabled = true;
         }
 
-        private TimeSpan CalcFromUiElt()
+        private ResCalcObj CalcFromUiElt()
         {
-            TimeSpan retTs = new TimeSpan(0, 0, 0, 0);
-            if (_cdAtStart != null)
+            ResCalcObj resCalcObj = new ResCalcObj()
             {
-                retTs = _cdAtStart;
-            }
+                CptCdCalc = _cdAtStart,
+            };
+ 
 
-            retTs = retTs + _tpsSupplCalc;
+            resCalcObj.CptCdCalc = resCalcObj.CptCdCalc + _tpsSupplCalc;
 
 
             foreach (CcdDayControl cElt in wp.Children.Cast<CcdDayControl>())
@@ -620,12 +620,12 @@ namespace Badger2018.views
                     (is5minAdded ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) -
                     tpsPauseHd - normalDayTs;
                 cElt.UpdateTimesTrav(tpsTravMatin, tpsPauseMidi, tpsTravAprem, tpsPauseHd, normalDayTs,
-                    PrgOptions.IsAdd5minCpt);
+                    PrgOptions.IsAdd5minCpt, e.ValTt);
 
-                retTs += cdDay;
+                resCalcObj.CptCdCalc += cdDay;
             }
 
-            return retTs;
+            return resCalcObj;
         }
 
         private static TimeSpan? TsParse(TextBox tbox, string msgFormatFail)
@@ -653,6 +653,17 @@ namespace Badger2018.views
         }
     }
 
+    public class ResCalcObj
+    {
+  
+        public TimeSpan CptCdCalc { get; set; }
+    }
+
+    public class ResGatherObj
+    {
+        public double SumValTt { get; set; }
+        public int NbJourTrav { get; set; }
+    }
 
     public class DgElt
     {
@@ -664,5 +675,6 @@ namespace Badger2018.views
         public int EtatBadger { get; internal set; }
         public TimeSpan TimePause { get; set; }
         public bool IsDayActive { get; set; }
+        public double ValTt { get; set; }
     }
 }

@@ -12,6 +12,6 @@ namespace Badger2018.business.saver
 
         PointageElt LoadIncomplete();
 
-        void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger, TimeSpan cdLastSeen);
+        void SaveAnotherDayTime(DateTime dayToMod, TimesBadgerDto times, EnumTypesJournees typeJournee, int etatBadger, TimeSpan cdLastSeen, double valTt);
     }
 }

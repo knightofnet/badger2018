@@ -416,6 +416,10 @@ namespace Badger2018.views
 
 
                 lblTyJournee.Content = typesJournees.Libelle;
+                if (j.WorkAtHomeCpt > 0)
+                {
+                    lblTyJournee.Content += " (TT)";
+                }
                 dtPickCurrentDay.SelectedDate = times.TimeRef;
 
                 bool isMaxDepass = false;

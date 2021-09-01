@@ -25,7 +25,7 @@
 
             <Label x:Name="l4" Margin="0,105,0,0" VerticalAlignment="Top" FontSize="10" >
                 <AccessText x:Name="l4Content" TextWrapping="Wrap">
-                    Les données ont été chargées : entre le {0} et le {1}, {2} jours travaillés ont été collectés. Le crédit-débit de départ a été récupéré à partir du {3} ({4})
+                    Les données ont été chargées : entre le {0} et le {1}, {2} jours travaillés ont été collectés et le nombre de jours enregistrés en télétravail est de {5}. Le crédit-débit de départ a été récupéré à partir du {3} ({4}).
                 </AccessText>
             </Label>
         </Grid>

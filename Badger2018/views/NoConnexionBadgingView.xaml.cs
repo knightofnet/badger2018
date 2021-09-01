@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Badger2018.constants;
+using Badger2018.utils;
 
 namespace Badger2018.views
 {
@@ -20,20 +23,24 @@ namespace Badger2018.views
     /// </summary>
     public partial class NoConnexionBadgingView : Window
     {
+        private MainWindow.IAppOptionsProvider prgOptRef;
         public MessageBoxResult Result { get; set; }
 
-        private DispatcherTimer _timerClose;
+        private string url;
+        private readonly DispatcherTimer _timerClose;
+        private BackgroundWorker testConnexionBackgroundWorker;
 
-        private int nbSecondeMaxTimeout;
+        private readonly int nbSecondeMaxTimeout;
         private int nbSecondeTimeout;
 
-        public NoConnexionBadgingView(int timeout)
+        public NoConnexionBadgingView(int timeout, string urlToTest)
         {
             InitializeComponent();
             Result = MessageBoxResult.Cancel;
 
             pbarTimeout.Value = 1;
             lblCptArebour.Content = null;
+            url = urlToTest;
 
             nbSecondeMaxTimeout = timeout;
             nbSecondeTimeout = timeout;
@@ -47,11 +54,16 @@ namespace Badger2018.views
             };
 
 
+            testConnexionBackgroundWorker = new BackgroundWorker();
+            testConnexionBackgroundWorker.WorkerSupportsCancellation = true;
+            testConnexionBackgroundWorker.DoWork += TestConnexionBackgroundWorkerOnDoWork;
+            testConnexionBackgroundWorker.RunWorkerAsync();
+
             _timerClose = new DispatcherTimer();
             _timerClose.Interval = new TimeSpan(0, 0, 1);
             _timerClose.Tick += (sender, args) =>
             {
-                if (nbSecondeTimeout > 0)
+                if (nbSecondeTimeout > 0 && testConnexionBackgroundWorker.IsBusy)
                 {
                     if (nbSecondeTimeout < 1000)
                     {
@@ -69,8 +81,42 @@ namespace Badger2018.views
                 }
             };
             _timerClose.Start();
+
+            Loaded += (sender, args) =>
+            {
+                Topmost = true;
+            };
+            MouseEnter += (sender, args) =>
+            {
+                Topmost = false;
+            };
         }
 
+        private void TestConnexionBackgroundWorkerOnDoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker bg = sender as BackgroundWorker;
+
+            bool isOk = false;
+
+            while (!bg.CancellationPending)
+            {
+                if (!BadgingUtils.IsValidWebResponse(url))
+                {
+                    Thread.Sleep(500);
+                }
+                else
+                {
+                    if (isOk)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(3500);
+                    isOk = BadgingUtils.IsValidWebResponse(url);
+                }
+            }
+            
+            e.Result = true;
+        }
 
 
         private void btnBadger_Click(object sender, RoutedEventArgs e)

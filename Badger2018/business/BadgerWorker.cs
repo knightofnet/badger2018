@@ -74,7 +74,7 @@ namespace Badger2018.business
 
             if (Pwin.PrgOptions.NoConnexionTimeout > 0 && !BadgingUtils.IsValidWebResponse(Pwin.PrgOptions.Uri))
             {
-                NoConnexionBadgingView noConnexionBadgingView = new NoConnexionBadgingView(Pwin.PrgOptions.NoConnexionTimeout);
+                NoConnexionBadgingView noConnexionBadgingView = new NoConnexionBadgingView(Pwin.PrgOptions.NoConnexionTimeout, Pwin.PrgOptions.Uri);
                 noConnexionBadgingView.ShowDialog();
                 if (noConnexionBadgingView.Result == MessageBoxResult.Cancel)
                 {

@@ -144,6 +144,16 @@
                     <ComboBox x:Name="cboxNoConnexionTimeout" HorizontalAlignment="Right" Margin="0,281,10.8,0" VerticalAlignment="Top" Width="182"  Height="23">
                     </ComboBox>
 
+
+                    <Label x:Name="lblB0AskUser" Margin="12,309,9.8,0" VerticalAlignment="Top" RenderTransformOrigin="0.506,0.375">
+                        <AccessText TextWrapping="Wrap">
+                            Demander à l'utilisateur s'il souhaite badger ou reporter l'heure pour le 1er badgeage de la journée.
+                        </AccessText>
+                    </Label>
+                    <ComboBox x:Name="cboxB0AskUser" HorizontalAlignment="Right" Margin="0,335,10.8,0" VerticalAlignment="Top" Width="182"  Height="23">
+                    </ComboBox>
+
+
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabHoraire" Header="Horaires">

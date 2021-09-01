@@ -8,10 +8,15 @@
              MaxHeight="53" MaxWidth="211" Height="51" Width="211" Background="White">
     <Grid >
         <Label Content="Type de journée :" HorizontalAlignment="Right" Margin="0,0,15.2,23.2" VerticalAlignment="Bottom" Width="196" Height="28" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+        <Grid x:Name="gridMod" Margin="0,28,0.2,1.2">
 
-        <ComboBox x:Name="cboxTypeJournee" HorizontalAlignment="Left" Margin="0,28,0,0" VerticalAlignment="Top" Width="191">
+            <ComboBox x:Name="cboxTypeJournee" HorizontalAlignment="Left" VerticalAlignment="Top" Width="153"/>
+            <CheckBox x:Name="chkBoxTT" Content="TT" Margin="158,0,0,4" VerticalAlignment="Bottom" Height="16"/>
 
-        </ComboBox>
-        <Label x:Name="lblTypeJournee" Content="Complète" HorizontalAlignment="Right" Margin="0,0,24,2" VerticalAlignment="Bottom" Width="182" Height="20" Padding="0"/>
+        </Grid>
+
+        <Label x:Name="lblTypeJournee" Content="Complète" HorizontalAlignment="Right" Margin="0,0,10.2,2.2" VerticalAlignment="Bottom" Width="196" Height="20" Padding="0"/>
+
+
     </Grid>
 </UserControl>

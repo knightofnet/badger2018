@@ -31,6 +31,7 @@ namespace Badger2018.views
         public int EtatBadger { get; private set; }
 
         public DateTime CurrentModDay { get; private set; }
+        public double ValTt { get; set; }
 
         private bool isCurrentDay;
         private ObservableCollection<IntervalTemps> obsListPause = new ObservableCollection<IntervalTemps>();
@@ -65,7 +66,7 @@ namespace Badger2018.views
             lienMesBadgeages.Click += (sender, args) => MiscAppUtils.GoTo(urlMesPointages);
         }
 
-        public void SetCurrentDay(DateTime day, TimesBadgerDto times, EnumTypesJournees tyJournee, int etatBadger, bool pIsCurrentDay)
+        public void SetCurrentDay(DateTime day, TimesBadgerDto times, EnumTypesJournees tyJournee, int etatBadger, double valTt, bool pIsCurrentDay)
         {
             CurrentModDay = day;
             if (pIsCurrentDay)
@@ -74,7 +75,7 @@ namespace Badger2018.views
                 TypeJournee = tyJournee;
                 EtatBadger = etatBadger;
                 LastCdSeen = PrgOptionsRef.LastCdSeen;
-
+                ValTt = valTt;
             }
             else
             {
@@ -94,6 +95,7 @@ namespace Badger2018.views
                 JourEntryDto jour = jServices.GetJourData(CurrentModDay);
                 TypeJournee = jour.TypeJour;
                 EtatBadger = jour.EtatBadger;
+                ValTt = jour.WorkAtHomeCpt;
 
                 Times.PlageTravMatin.Start = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_START, CurrentModDay)).AtSec(Cst.SecondeOffset);
                 Times.PlageTravMatin.End = DateTime.Parse(bServices.GetBadgeageOrDft(EnumBadgeageType.PLAGE_TRAV_MATIN_END, CurrentModDay)).AtSec(Cst.SecondeOffset);
@@ -127,7 +129,8 @@ namespace Badger2018.views
             // On ajoute les pauses si dispo            
             Times.PausesHorsDelai.ForEach(r => obsListPause.Add(r.Clone()));
 
-
+            // ValTt
+            chkTt.IsChecked = ValTt > 0;
 
 
             ChangeUiToEtatBadgerTyJournee(EtatBadger, locTyJournees);
@@ -263,6 +266,7 @@ namespace Badger2018.views
 
                 if (TypeJournee == EnumTypesJournees.Complete)
                 {
+                    ValTt = (chkTt.IsChecked ?? false) ? 1 : 0;
                     if (!c0.IsEnabled && !c1.IsEnabled && !c2.IsEnabled && !c3.IsEnabled)
                     {
                         EtatBadger = -1;
@@ -286,6 +290,7 @@ namespace Badger2018.views
                 }
                 else 
                 {
+                    ValTt = (chkTt.IsChecked ?? false) ? 0.5 : 0;
                     if (!c0.IsEnabled && !c3.IsEnabled)
                     {
                         EtatBadger = -1;

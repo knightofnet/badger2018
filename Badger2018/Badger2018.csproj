@@ -121,19 +121,18 @@
     <Compile Include="business\MainTimerManager.cs" />
     <Compile Include="business\saver\BddPointageWriterReader.cs" />
     <Compile Include="business\saver\ISaverTimes.cs" />
-    <Compile Include="business\saver\XmlPointageWriterReader.cs" />
     <Compile Include="business\SoundWorkBckder.cs" />
     <Compile Include="business\KonamiCodeListener.cs" />
     <Compile Include="business\NoticationsManager.cs" />
     <Compile Include="business\OptionManager.cs" />
     <Compile Include="business\UpdateChecker.cs" />
-    <Compile Include="business\XmlToBddPointageConverter.cs" />
     <Compile Include="business\ZipArchiveManager.cs" />
     <Compile Include="constants\Cst.cs" />
     <Compile Include="constants\EnumActionButtonClose.cs" />
     <Compile Include="constants\EnumAppOptions.cs" />
     <Compile Include="constants\EnumBadgeageType.cs" />
     <Compile Include="constants\EnumHeurePersoNotif.cs" />
+    <Compile Include="constants\EnumBadgeageZeroAction.cs" />
     <Compile Include="constants\EnumStatePause.cs" />
     <Compile Include="constants\EnumBrowser.cs" />
     <Compile Include="constants\EnumErrorCodeRetour.cs" />
@@ -183,6 +182,7 @@
     <Compile Include="utils\MiscApputils.cs" />
     <Compile Include="utils\sqlite\ListSqlLiteKVPair.cs" />
     <Compile Include="utils\sqlite\SqlLiteKVPair.cs" />
+    <Compile Include="utils\sqlite\TableDef.cs" />
     <Compile Include="utils\SqlLiteUtils.cs" />
     <Compile Include="utils\TcpRequestsStore.cs" />
     <Compile Include="utils\TestUtils.cs" />
@@ -193,6 +193,9 @@
     </Compile>
     <Compile Include="views\BadgeageProgressView.xaml.cs">
       <DependentUpon>BadgeageProgressView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\BadgeageZeroConfirmView.xaml.cs">
+      <DependentUpon>BadgeageZeroConfirmView.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\CalculateCDView.xaml.cs">
       <DependentUpon>CalculateCDView.xaml</DependentUpon>
@@ -324,6 +327,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\BadgeageProgressView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\BadgeageZeroConfirmView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -515,6 +522,8 @@
     <Resource Include="Resources\pauseBlinkOn.png" />
     <Resource Include="Resources\pauseExists.png" />
     <Resource Include="Resources\iconWarning.png" />
+    <Resource Include="Resources\iconHomeGreen.png" />
+    <Resource Include="Resources\iconHomeGrey.png" />
     <Content Include="Resources\updateBadger.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

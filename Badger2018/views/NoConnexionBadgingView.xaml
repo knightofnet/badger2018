@@ -9,7 +9,7 @@
     <Grid>
         <Label Content="Problème de connexion" Margin="78,10,18,0" VerticalAlignment="Top" FontWeight="Bold"/>
         <Image x:Name="imgA" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="63" Source="/Badger2018;component/Resources/sign-warning-icon.png"/>
-        <Label Margin="78,36,18,0" VerticalAlignment="Top" Height="87">
+        <Label Margin="78,36,17.6,0" VerticalAlignment="Top" Height="106">
             <AccessText x:Name="accessText" TextWrapping="Wrap" TextAlignment="Justify"  >
                 Il est possible que le site de badgeage ne soit pas accessible.
                 Le badgeage sera tenté à l'issue du compte à rebour ou lorsque vous aurez cliqué sur le bouton Badger.

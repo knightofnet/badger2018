@@ -18,7 +18,7 @@
         <TextBox x:Name="tboxB3Time" HorizontalAlignment="Left" Height="23" Margin="364,273,0,0" TextWrapping="Wrap" Text="15:30" VerticalAlignment="Top" Width="66" RenderTransformOrigin="0.515,0.513"/>
         <Label Content="Entrez les horaires badgés du jour :" Margin="8,163,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="270"/>
         <Label Content="Choisissez le type de journée réalisée :" Margin="8,103,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="218"/>
-        <ComboBox x:Name="cboxTyJournee" HorizontalAlignment="Left" Margin="31,134,0,0" VerticalAlignment="Top" Width="190"/>
+        <ComboBox x:Name="cboxTyJournee" HorizontalAlignment="Left" Margin="31,134,0,0" VerticalAlignment="Top" Width="154"/>
 
 
         <Label Content="Pauses de la journée :" Margin="10,301,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="270"/>
@@ -42,5 +42,6 @@
         <Label Content="C/D au moment du dernier relevé :" Margin="250,103,0,0" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" HorizontalAlignment="Left" Width="204"/>
         <TextBox x:Name="tboxLastCdSeen" HorizontalAlignment="Left" Height="23" Margin="364,134,0,0" TextWrapping="Wrap" Text="07:48" VerticalAlignment="Top" Width="66"/>
         <DataGrid x:Name="dgPause" Margin="31,327,33.2,34.6"/>
+        <CheckBox x:Name="chkTt" Content="TT" HorizontalAlignment="Left" Margin="190,136,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
