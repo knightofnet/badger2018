@@ -327,6 +327,14 @@ namespace Badger2018.views
                 Times.PausesHorsDelai.Clear();
                 foreach (IntervalTemps pause in obsListPause)
                 {
+                    
+                    TimeSpan pStart = pause.Start.TimeOfDay;
+                    pause.Start = pause.Start.ChangeDate(dtNow).ChangeTime(pStart);
+                    if (pause.IsIntervalComplet())
+                    {
+                        TimeSpan pEnd = pause.EndOrDft.TimeOfDay;
+                        pause.EndOrDft = pause.EndOrDft.ChangeDate(dtNow).ChangeTime(pEnd);
+                    }
                     Times.PausesHorsDelai.Add(pause);
                 }
 
