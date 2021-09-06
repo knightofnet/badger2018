@@ -1031,6 +1031,7 @@ namespace Badger2018.views
                 }
                 else
                 {
+                    /*
                     if (!listShortcut.Any(r => r.TargetPath.Contains(Assembly.GetExecutingAssembly().Location)))
                     {
                         return;
@@ -1054,6 +1055,7 @@ namespace Badger2018.views
                             File.Delete(shtcut.FullName);
                         }
                     }
+                    */
                 }
             }
         }
@@ -1244,6 +1246,10 @@ namespace Badger2018.views
             }
         }
 
-
+        private void btnShowShortcutMgr_Click(object sender, RoutedEventArgs e)
+        {
+            CreateShortcutsView cs = new CreateShortcutsView();
+            cs.ShowDialog();
+        }
     }
 }

@@ -46,6 +46,11 @@ namespace Badger2018.constants
         public static readonly EnumAppOptions IsConsentUse = new EnumAppOptions("IsConsentUse", typeof(bool), "False", false);
         public static readonly EnumAppOptions IsAutoBadgeMeridienne = new EnumAppOptions("IsAutoBadgeMeridienne", typeof(bool), "False", true);
 
+        public static readonly EnumAppOptions BadgeageDefaultTimeout = new EnumAppOptions("BadgeageDefaultTimeout", typeof(int), "40", false);
+        public static readonly EnumAppOptions BadgeageTimeoutWaitAfterPost = new EnumAppOptions("BadgeageTimeoutWaitAfterPost", typeof(int), "2", false);
+        public static readonly EnumAppOptions BadgeageNbTentativeVerif = new EnumAppOptions("BadgeageNbTentativeVerif", typeof(int), "20", false);
+
+
         public static readonly EnumAppOptions LastBadgeDelay = new EnumAppOptions("LastBadgeDelay", typeof(int), "0", true);
         public static readonly EnumAppOptions DeltaAutoBadgeageMinute = new EnumAppOptions("DeltaAutoBadgeageMinute", typeof(int), "0", true);
         public static readonly EnumAppOptions IsDailyDisableAutoBadgeMerid = new EnumAppOptions("IsDailyDisableAutoBadgeMerid", typeof(bool), "True", true);
@@ -175,6 +180,10 @@ namespace Badger2018.constants
                 yield return NoConnexionTimeout;
 
                 yield return BadgeageZeroAction;
+
+                yield return BadgeageDefaultTimeout;
+                yield return BadgeageTimeoutWaitAfterPost;
+                yield return BadgeageNbTentativeVerif;
 
 
 

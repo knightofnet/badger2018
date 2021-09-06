@@ -168,6 +168,10 @@ namespace Badger2018.dto
         public bool IsUpdateSvcEnable { get; set; }
         public int NoConnexionTimeout { get; set; }
         public EnumBadgeageZeroAction BadgeageZeroAction { get; set; }
+        public int BadgeageDefaultTimeout { get; set; }
+        public int BadgeageTimeoutWaitAfterPost { get; set; }
+        public int BadgeageNbTentativeVerif { get; set; }
+
 
         public void ResetSpecOption()
         {

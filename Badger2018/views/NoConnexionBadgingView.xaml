@@ -12,8 +12,8 @@
         <Label Margin="78,36,17.6,0" VerticalAlignment="Top" Height="106">
             <AccessText x:Name="accessText" TextWrapping="Wrap" TextAlignment="Justify"  >
                 Il est possible que le site de badgeage ne soit pas accessible.
-                Le badgeage sera tenté à l'issue du compte à rebour ou lorsque vous aurez cliqué sur le bouton Badger.
-                Vous pouvez arrêter le compte à rebour en double-cliquant dessus.
+                Le badgeage sera tenté à l'issue du compte à rebours ou lorsque vous aurez cliqué sur le bouton Badger.
+                Vous pouvez arrêter le compte à rebours en double-cliquant dessus.
 
             </AccessText>
         </Label>

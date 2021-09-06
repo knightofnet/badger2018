@@ -229,7 +229,7 @@ namespace Badger2018
 
 
             #region Gestion du premier lancement du programme
-            /**
+            /*
              * Gestion du premier lancement du programme
              */
             if (PrgOptions.IsFirstRun || !PrgOptions.IsConsentUse)
@@ -249,11 +249,13 @@ namespace Badger2018
                 {
                     MessageBox.Show(
                         "Il s'agit de votre premier démarrage. Pensez à paramètrer l'application en vous rendant dans les options. " +
-                        "Pour cela, cliquez sur la petite roue dentée en bas à gauche dans la fenêtre principale."
+                        "Pour cela, cliquez sur la petite roue dentée en bas à gauche de la fenêtre principale."
                         , "Information",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
 
+                    CreateShortcutsView cs = new CreateShortcutsView();
+                    cs.ShowDialog();
                 }
 
                 OptionManager.SaveOptions(PrgOptions);
@@ -3280,6 +3282,13 @@ args.Key == Key.F12 ||
 
         }
 
+        private void lblVersion_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            AboutView aboutView = new AboutView();
+            aboutView.LicenceRef = LicenceApp;
+            aboutView.ShowDialog();
+        }
+
         private void FixLastDay()
         {
 
@@ -3408,7 +3417,6 @@ args.Key == Key.F12 ||
 
             return l.ToArray();
         }
-
 
 
     }

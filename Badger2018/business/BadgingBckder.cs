@@ -109,7 +109,7 @@ namespace Badger2018.business
                 }
                 bkg.ReportProgress(EtapeTrt);
 
-                driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 20);
+                driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, Pwin.PrgOptions.BadgeageDefaultTimeout);
                 driver.Navigate().GoToUrl(Url);
 
                 // Etape 2 : Recherche de l'élément à cliquer
@@ -165,10 +165,7 @@ namespace Badger2018.business
                 // Etape 4 : Attente
                 EtapeTrt = 4;
                 bkg.ReportProgress(EtapeTrt);
-                Thread.Sleep(2000);
-
-
-                BadgingUtils.SaveScreenshot(Pwin.Times.TimeRef, Pwin.EtatBadger + "", driver);
+                Thread.Sleep(Pwin.PrgOptions.BadgeageTimeoutWaitAfterPost * 1000);
 
 
                 // Etape 5 : Vérif
@@ -177,10 +174,12 @@ namespace Badger2018.business
                     EtapeTrt = 5;
                     bkg.ReportProgress(EtapeTrt);
                     _logger.Debug(" Recherche de l'élément [pour vérif]: {0}", IdVerif);
-                    BadgingUtils.FindEltById(IdVerif, driver);
+                    BadgingUtils.FindEltById(IdVerif, driver, Pwin.PrgOptions.BadgeageNbTentativeVerif);
                     _logger.Debug(" Elément trouvé");
 
                 }
+
+                BadgingUtils.SaveScreenshot(Pwin.Times.TimeRef, Pwin.EtatBadger + "", driver);
 
                 // Etape 6 : Récupération d'info
                 string cssSelector = "";

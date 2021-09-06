@@ -8,7 +8,7 @@
 
 
         <Label Content="Type de journée : " HorizontalAlignment="Left" Margin="5,49,0,0" VerticalAlignment="Top" FontSize="10"/>
-        <Label x:Name="lblTyJournee" Content="..." HorizontalAlignment="Left" Margin="93,49,0,0" VerticalAlignment="Top" Width="107" FontSize="10"/>
+        <Label x:Name="lblTyJournee" Content="..." HorizontalAlignment="Left" Margin="93,49,0,0" VerticalAlignment="Top" Width="112" FontSize="10"/>
         <ScrollViewer Margin="10,80,10.2,33.6" VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="stackBadgeage"   ScrollViewer.HorizontalScrollBarVisibility="Auto" />
         </ScrollViewer>

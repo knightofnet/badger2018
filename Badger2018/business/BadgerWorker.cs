@@ -260,7 +260,16 @@ namespace Badger2018.business
                     {
                         Progress.Hide();
                     }
-                    Pwin.PrgOptions.LastCdSeen = b.ElementsFromPage.TsCd.Value;
+
+                    if (b.ElementsFromPage.TsCd.HasValue)
+                    {
+                        Pwin.PrgOptions.LastCdSeen = b.ElementsFromPage.TsCd.Value;
+                    }
+                    else
+                    {
+                        _logger.Warn("Aucun C/D relevé lors du badgeage");
+                    }
+
                 }
                 else
                 {
@@ -304,10 +313,7 @@ namespace Badger2018.business
 
                         actionAfter(result);
                         afterWork(null);
-                        if (Progress != null)
-                        {
-                            Progress.Hide();
-                        }
+                        Progress?.Hide();
 
                         Pwin.PrgSwitch.IsInBadgeWork = false;
                         return;
@@ -327,10 +333,7 @@ namespace Badger2018.business
                         _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork(null)");
                         afterWork(null);
                         Pwin.SetBtnBadgerEnabled(true);
-                        if (Progress != null)
-                        {
-                            Progress.Hide();
-                        }
+                        Progress?.Hide();
 
                         FfDriverSingleton.Instance.Quit();
 
@@ -360,10 +363,7 @@ namespace Badger2018.business
                     {
                         Pwin.PrgSwitch.IsInBadgeWork = true;
                         _logger.Info("Erreur lors du badgeage : réessai");
-                        if (Progress != null)
-                        {
-                            Progress.Hide();
-                        }
+                        Progress?.Hide();
 
                         Progress = new BadgeageProgressView(Pwin.PrgOptions);
                         Progress.Show();
@@ -388,12 +388,9 @@ namespace Badger2018.business
             DateTime? dtSaisieManuelle = SaisieManuelleTsView.ShowAskForDateTime();
             _logger.Info(" > Date saisie manuellement : {0}", dtSaisieManuelle != null ? dtSaisieManuelle.Value.ToShortTimeString() : "null");
             _logger.Debug("BadgeWorker:::BadgeAction() : do Afterwork()");
-            afterWork(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset));
-            if (progress != null)
-            {
-                progress.Hide();
-            }
-            _actionAfterBadgeage(dtSaisieManuelle == null ? dtSaisieManuelle : dtSaisieManuelle.Value.AtSec(Cst.SecondeOffset), etatBadger);
+            afterWork(dtSaisieManuelle?.AtSec(Cst.SecondeOffset) ?? dtSaisieManuelle);
+            progress?.Hide();
+            _actionAfterBadgeage(dtSaisieManuelle?.AtSec(Cst.SecondeOffset) ?? dtSaisieManuelle, etatBadger);
         }
 
         private void BadgeageEtapeP2(bool forceWhenMsg, bool isOkToShutdownIfOptionEnabled)

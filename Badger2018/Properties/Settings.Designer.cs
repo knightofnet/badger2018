@@ -828,5 +828,41 @@ namespace Badger2018.Properties {
                 this["BadgeageZeroAction"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("40")]
+        public int BadgeageDefaultTimeout {
+            get {
+                return ((int)(this["BadgeageDefaultTimeout"]));
+            }
+            set {
+                this["BadgeageDefaultTimeout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int BadgeageTimeoutWaitAfterPost {
+            get {
+                return ((int)(this["BadgeageTimeoutWaitAfterPost"]));
+            }
+            set {
+                this["BadgeageTimeoutWaitAfterPost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int BadgeageNbTentativeVerif {
+            get {
+                return ((int)(this["BadgeageNbTentativeVerif"]));
+            }
+            set {
+                this["BadgeageNbTentativeVerif"] = value;
+            }
+        }
     }
 }

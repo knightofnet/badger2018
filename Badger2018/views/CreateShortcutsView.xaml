@@ -1,0 +1,36 @@
+﻿<Window x:Class="Badger2018.views.CreateShortcutsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Badger2018.views"
+        mc:Ignorable="d"
+        Title="Gestion des raccourcis" ResizeMode="NoResize" Height="289" Width="536">
+    <Grid>
+        <Label Content="Création de raccourcis pour démarrer l'application" Margin="78,10,18,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Image x:Name="imgA" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="63" Source="/Badger2018;component/Resources/sign-info-icon.png"/>
+        <Label Margin="78,36,17.6,0" VerticalAlignment="Top" >
+            <AccessText x:Name="accessText" TextWrapping="Wrap" TextAlignment="Justify"  >
+                Cette fenêtre va vous permettre de créer différents raccourcis utiles pour démarrer l'application. Cochez la case de ceux dont vous souhaitez la création :
+
+            </AccessText>
+        </Label>
+        <Button x:Name="btnCancel" Content="Annuler" HorizontalAlignment="Right" Margin="0,0,89.6,9.6" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnCancel_Click"/>
+        <Button x:Name="btnBadger" Content="OK" HorizontalAlignment="Right" Margin="0,0,9.6,9.6" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnOk_Click"/>
+        <ProgressBar x:Name="pbarTimeout" Height="3" VerticalAlignment="Bottom" Margin="0,0,0,0" BorderThickness="0"/>
+        <CheckBox x:Name="chkShortcutBureau" Content="Raccourci sur le bureau." Margin="78,83,239.6,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="chkShortcutBureauNoAuto" Margin="78,103,9.6,0" VerticalAlignment="Top" >
+            <AccessText TextWrapping="Wrap">
+                Raccourci sur le bureau pour démarrer l'application tout en empêchant le badgeage automatique au premier lancement si celui-ci est actif.
+            </AccessText>
+        </CheckBox>
+        <CheckBox x:Name="chkShortcutStartMenu" Content="Raccourci dans le menu démarrer." Margin="78,139,186.6,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="chkShortcutStartFolder" Margin="78,159,13.6,0" VerticalAlignment="Top">
+            <AccessText TextWrapping="Wrap">
+                Raccourci dans le dossier de démarrage : permet à l'outil de démarrer au lancement de l'ordinateur 
+                (il s'agit juste de lancer l'appplication, pas de badger automatiquement au démarrage).
+            </AccessText>
+        </CheckBox>
+    </Grid>
+</Window>
+

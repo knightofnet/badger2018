@@ -200,6 +200,9 @@
     <Compile Include="views\CalculateCDView.xaml.cs">
       <DependentUpon>CalculateCDView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\CreateShortcutsView.xaml.cs">
+      <DependentUpon>CreateShortcutsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\CustomNotificationView.xaml.cs">
       <DependentUpon>CustomNotificationView.xaml</DependentUpon>
     </Compile>
@@ -335,6 +338,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\CalculateCDView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\CreateShortcutsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -237,6 +237,8 @@
                         <AccessText TextWrapping="Wrap" Text="Affiche une barre de progression sur l'écran en surimpression" TextAlignment="Justify" />
                     </CheckBox>
 
+                    <Button x:Name="btnShowShortcutMgr" Content="Gérer les raccourcis" Margin="10,0,0,9.6" HorizontalAlignment="Left" Width="133" Height="23" VerticalAlignment="Bottom" Click="btnShowShortcutMgr_Click"/>
+
                 </Grid>
 
             </TabItem>
@@ -266,6 +268,8 @@
 
                 </Grid >
             </TabItem>
+
+
 
 
 

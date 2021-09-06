@@ -34,13 +34,22 @@ namespace Badger2018
     /// </summary>
     public partial class App : Application
     {
-        private static Logger _logger = new Logger(CommonCst.AppLogFile, CommonCst.ConsoleLogLvl, CommonCst.FileLogLvl, "1 Mo", CommonCst.MainLogName);
+        private static Logger _logger = null;
 
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+
+            string asDir = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
+            if (!String.IsNullOrWhiteSpace(asDir) && Directory.GetCurrentDirectory() != asDir)
+            {
+                Directory.SetCurrentDirectory(asDir);
+            }
+
+            _logger = new Logger(CommonCst.AppLogFile, CommonCst.ConsoleLogLvl, CommonCst.FileLogLvl, "1 Mo",
+                CommonCst.MainLogName);
 
             _logger.Debug("/***********************");
             _logger.Info("*  Application lancée (v. {0})", Assembly.GetExecutingAssembly().GetName().Version);

@@ -11,7 +11,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Rectangle x:Name="rectDebug" Fill="Orange" Height="10" VerticalAlignment="Top" Margin="0,0,0,0" ToolTip="VERSION DEBUG"/>
-        <Label x:Name="lblVersion" Content="v. {0} {1}" Margin="0,0,241,6" HorizontalAlignment="Right" Width="217" Height="27" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Grid.Row="2" ToolTip="par Arnaud Leblanc" />
+        <Label x:Name="lblVersion" Content="v. {0} {1}" Margin="0,0,241,6" HorizontalAlignment="Right" Width="217" Height="27" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Grid.Row="2" ToolTip="par Arnaud Leblanc" MouseDoubleClick="lblVersion_MouseDoubleClick" />
         <Rectangle x:Name="rectMatin" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Left" Width="179" Margin="0,0,0,0"/>
         <Rectangle x:Name="rectAprem" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Right" Width="179" Margin="0,0,0,0"/>
 
