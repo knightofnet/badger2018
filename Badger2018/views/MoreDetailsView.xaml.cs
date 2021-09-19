@@ -485,7 +485,7 @@ namespace Badger2018.views
             DbbAccessManager.Instance.StartTransaction();
             try
             {
-                bServices.ChangeBadgeageType(dtTimeIn, targetTypeBadgeage, newTypeBadgeage);
+                bServices.ChangeLastBadgeageType(dtTimeIn, targetTypeBadgeage, newTypeBadgeage);
                 jServices.UpdateJourIsComplete(dtTimeIn, true);
 
                 AdaptUiToAnotherDay(dtTimeIn);

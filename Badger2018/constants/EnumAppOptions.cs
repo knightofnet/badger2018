@@ -100,6 +100,12 @@ namespace Badger2018.constants
 
         public static readonly EnumAppOptions BadgeageZeroAction = new EnumAppOptions("BadgeageZeroAction", typeof(IEnumSerializableWithIndex<EnumBadgeageZeroAction>), "" + EnumBadgeageZeroAction.NO_CHOICE.GetIndex(),  false);
 
+        public static readonly EnumAppOptions IsCheckCDLastDay = new EnumAppOptions("IsCheckCDLastDay", typeof(bool), "True", false);
+
+        public static readonly EnumAppOptions IsCanAskForTT = new EnumAppOptions("IsCanAskForTT", typeof(bool), "True", false);
+
+        public static readonly EnumAppOptions LastWeekNbrTtChecked = new EnumAppOptions("LastWeekNbrTtChecked", typeof(int), "0", false);
+        
 
         public static IEnumerable<EnumAppOptions> Values
         {
@@ -184,6 +190,10 @@ namespace Badger2018.constants
                 yield return BadgeageDefaultTimeout;
                 yield return BadgeageTimeoutWaitAfterPost;
                 yield return BadgeageNbTentativeVerif;
+
+                yield return IsCanAskForTT;
+                yield return LastWeekNbrTtChecked;
+                yield return IsCheckCDLastDay;
 
 
 

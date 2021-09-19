@@ -11,7 +11,7 @@ namespace BadgerCommonLibrary.utils
 
         public static DateTime DtNow()
         {
-            return DateTime.Now - DecallageDtNowTimeSpan;
+            return (DateTime.Now - DecallageDtNowTimeSpan).NoLowerThanSec();
         }
 
         public static void ForceDtNow(DateTime? dtTime)
@@ -93,6 +93,24 @@ namespace BadgerCommonLibrary.utils
                 dateTime.Millisecond,
                 dateTime.Kind);
         }
+
+        public static DateTime NoLowerThanSec(this DateTime dateTime)
+        {
+            return new DateTime(
+                dateTime.Year,
+                dateTime.Month,
+                dateTime.Day,
+                dateTime.Hour,
+                dateTime.Minute,
+                0,
+                0);
+        }
+
+        public static TimeSpan AtSec(this TimeSpan ts, int seconds)
+        {
+            return new TimeSpan(ts.Hours, ts.Minutes, seconds);
+        }
+
 
 
 

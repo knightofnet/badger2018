@@ -172,7 +172,10 @@ namespace Badger2018.dto
         public int BadgeageTimeoutWaitAfterPost { get; set; }
         public int BadgeageNbTentativeVerif { get; set; }
 
+        public bool IsCheckCDLastDay { get; set; }
 
+        public bool IsCanAskForTT { get; set; }
+        public int LastWeekNbrTtChecked { get; set; }
         public void ResetSpecOption()
         {
             IsAutoBadgeMeridienne = false;

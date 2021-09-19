@@ -202,7 +202,7 @@ namespace Badger2018.services.bddLastLayer
                     jourEntryDto.TypeJour = EnumTypesJournees.GetFromIndex(reader.GetInt32ByColName("TYPE_JOUR"));
                     jourEntryDto.DateJour = reader.GetDatetimeByColName("DATE_JOUR").Value;
                     jourEntryDto.TpsTravaille = reader.GetTimeSpanByColName("TPS_TRAV_SECONDE");
-                    jourEntryDto.WorkAtHomeCpt = Decimal.ToDouble(reader.GetDecimalByColName("WORK_AT_HOME_CPT"));
+                    jourEntryDto.WorkAtHomeCpt = Decimal.ToDouble(reader.GetDecimalNByColName("WORK_AT_HOME_CPT") ?? 0);
 
                     jourEntryDto.IsHydrated = true;
                     break;

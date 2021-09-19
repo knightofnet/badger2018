@@ -112,7 +112,7 @@ namespace Badger2018.services
             }
             else if (endEntries.Count == 0)
             {
-                _logger.Info("Aucun retour. Badgeage en défaut");
+                _logger.Debug("Aucun retour. Badgeage en défaut");
                 retStr = day + " " + TimeSpan.Zero.ToString(Cst.TimeSpanFormat);
             }
             else
@@ -136,14 +136,14 @@ namespace Badger2018.services
 
         }
 
-        public void ChangeBadgeageType(DateTime targetDateTime, int targetTypeBadgeage, int newTypeBadgeage)
+        public void ChangeLastBadgeageType(DateTime targetDateTime, int targetTypeBadgeage, int newTypeBadgeage)
         {
-            _logger.Debug("ChangeBadgeageType(targetDateTime: {0}, targetTypeBadgeage: {1})", targetDateTime, targetTypeBadgeage);
+            _logger.Debug("ChangeLastBadgeageType(targetDateTime: {0}, targetTypeBadgeage: {1})", targetDateTime, targetTypeBadgeage);
 
             DbbAccessManager dbb = DbbAccessManager.Instance;
-            BadgeageBddLayer.ChangeBadgeageType(dbb, targetDateTime, targetTypeBadgeage, newTypeBadgeage);
+            BadgeageBddLayer.ChangeLastBadgeageType(dbb, targetDateTime, targetTypeBadgeage, newTypeBadgeage);
 
-            _logger.Debug("FIN - ChangeBadgeageType(...)");
+            _logger.Debug("FIN - ChangeLastBadgeageType(...)");
         }
         
 

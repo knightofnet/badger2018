@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -16,6 +17,7 @@ using Badger2018.constants;
 using Badger2018.dto;
 using Badger2018.utils;
 using BadgerCommonLibrary.constants;
+using BadgerCommonLibrary.utils;
 using BadgerPluginExtender.dto;
 using IWshRuntimeLibrary;
 using CheckBox = System.Windows.Controls.CheckBox;
@@ -119,11 +121,14 @@ namespace Badger2018.views
             }
 
             cboxNoConnexionTimeout.Items.Add(LblPasDeControle);
-            for (int i =  1; i <= 60; i++)
+            for (int i =  1; i <= 120; i++)
             {
                 cboxNoConnexionTimeout.Items.Add(i);
             }
             cboxNoConnexionTimeout.Items.Add(lblNoConnexionTimeoutInfini);
+
+
+
 
 
             AsyncLoadListOfSoundDevices();
@@ -262,8 +267,14 @@ namespace Badger2018.views
             chkAutoShutdown.IsChecked = opt.IsLastBadgeIsAutoShutdown;
             chkRemoveLegacyShorcutFirefox.IsChecked = opt.IsRemoveLegacyShorcutFirefox;
 
-
             chkShowScreenBar.IsChecked = opt.ShowOnScreenProgressBar;
+            
+            chkIsCanAskForTT.IsChecked = opt.IsCanAskForTT;
+            chkIsLastWeekNbrSaved.IsChecked = opt.LastWeekNbrTtChecked > 0 && opt.LastWeekNbrTtChecked == new GregorianCalendar(GregorianCalendarTypes.Localized).GetWeekOfYear(AppDateUtils.DtNow(),
+                CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            chkIsCheckCDLastDay.IsChecked = opt.IsCheckCDLastDay;
+
 
             //Spec
             if (IsSpecUse)
@@ -337,6 +348,9 @@ namespace Badger2018.views
 
             tabCtrl.SelectedItem = tabRappels;
             if (VerifDatasOngletRappels()) return;
+
+            tabCtrl.SelectedItem = tabTeletravail;
+            if (VerifDatasOngletTeletravail()) return;
 
             tabCtrl.SelectedItem = tabDivers;
             if (VerifDatasOngletDivers()) return;
@@ -418,8 +432,60 @@ namespace Badger2018.views
                 NewOptions.SoundPlayedAtLockMidiVolume = soundVol;
             }
 
-            return false;
 
+            return false;
+        }
+
+        private bool VerifDatasOngletTeletravail()
+        {
+
+            // NoConnexionTimeout
+            int noConnexionOutNewVal = 0;
+            if (cboxNoConnexionTimeout.SelectedItem is string)
+            {
+                string valStr = cboxNoConnexionTimeout.SelectedItem as string;
+                if (LblPasDeControle.Equals(valStr))
+                {
+                    noConnexionOutNewVal = 0;
+                }
+                else if (lblNoConnexionTimeoutInfini.Equals(valStr))
+                {
+                    noConnexionOutNewVal = (int)NewOptions.TempsMaxJournee.TotalSeconds;
+                }
+            }
+            else if (cboxNoConnexionTimeout.SelectedItem is int)
+            {
+                noConnexionOutNewVal = (int)cboxNoConnexionTimeout.SelectedItem;
+            }
+            if (noConnexionOutNewVal >= 0 && noConnexionOutNewVal != OrigOptions.NoConnexionTimeout)
+            {
+                HasChangeOption = true;
+                NewOptions.NoConnexionTimeout = noConnexionOutNewVal;
+            }
+
+            // Option IsBtnManuelBadgeIsWithHotKeys
+            CheckBox chkBox = chkIsCanAskForTT;
+            if (chkBox.IsChecked != null &&
+                chkBox.IsChecked.Value != OrigOptions.IsCanAskForTT)
+            {
+                HasChangeOption = true;
+                NewOptions.IsCanAskForTT = chkBox.IsChecked.Value;
+            }
+
+
+            // LastWeekNbrTtChecked
+            chkBox = chkIsLastWeekNbrSaved;
+            int nbWeek = new GregorianCalendar(GregorianCalendarTypes.Localized).GetWeekOfYear(AppDateUtils.DtNow(),
+                CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            if (chkBox.IsChecked != null &&
+                OrigOptions.LastWeekNbrTtChecked > 0 && OrigOptions.LastWeekNbrTtChecked == nbWeek )
+            {
+                HasChangeOption = true;
+                NewOptions.LastWeekNbrTtChecked = (chkBox.IsChecked ?? false) ? nbWeek : 0;
+            }
+
+
+            return false;
         }
 
         private bool VerifDatasOngletSpecial()
@@ -560,28 +626,6 @@ namespace Badger2018.views
                 NewOptions.BrowserIndex = browser;
             }
 
-            // Network adapter
-            int noConnexionOutNewVal = 0;
-            if (cboxNoConnexionTimeout.SelectedItem is string)
-            {
-                string valStr = cboxNoConnexionTimeout.SelectedItem as string;
-                if (LblPasDeControle.Equals(valStr))
-                {
-                    noConnexionOutNewVal = 0;
-                } else if (lblNoConnexionTimeoutInfini.Equals(valStr))
-                {
-                    noConnexionOutNewVal = (int) NewOptions.TempsMaxJournee.TotalSeconds;
-                }
-            } else if (cboxNoConnexionTimeout.SelectedItem is int)
-            {
-                noConnexionOutNewVal = (int)cboxNoConnexionTimeout.SelectedItem;
-            }
-            if (noConnexionOutNewVal >= 0 && noConnexionOutNewVal != OrigOptions.NoConnexionTimeout)
-            {
-                HasChangeOption = true;
-                NewOptions.NoConnexionTimeout = noConnexionOutNewVal;
-            }
-
             // Exec FF
             if (NewOptions.BrowserIndex == EnumBrowser.FF)
             {
@@ -664,7 +708,7 @@ namespace Badger2018.views
                 NewOptions.WaitBeforeClickBadger = selValueD;
             }
 
-            // 
+            // BadgeageZeroAction
             string valChkB0AskUser = cboxB0AskUser.SelectedItem as string;
             if (valChkB0AskUser != null && !valChkB0AskUser.Equals(OrigOptions.BadgeageZeroAction.Libelle))
             {
@@ -741,6 +785,16 @@ namespace Badger2018.views
                 NewOptions.ShowOnScreenProgressBar = chkBox.IsChecked.Value;
             }
 
+            // Option IsCheckCDLastDay
+            chkBox = chkIsCheckCDLastDay;
+            if (chkBox.IsChecked != null &&
+                chkBox.IsChecked.Value != OrigOptions.IsCheckCDLastDay)
+            {
+                HasChangeOption = true;
+                NewOptions.IsCheckCDLastDay = chkBox.IsChecked.Value;
+            }
+
+            
 
 
             return false;
@@ -984,6 +1038,15 @@ namespace Badger2018.views
                 tboxPfME.Focus();
                 return true;
             }
+
+            if (NewOptions.HeureMinJournee.CompareTo(NewOptions.HeureMaxJournee) >= 0)
+            {
+                HasChangeOption = true;
+                MessageBox.Show("L'heure de travail minimale doit inférieure stricte à l'heure de travail maximale.");
+                tboxMinHourTime.Focus();
+                return true;
+            }
+
             return false;
         }
 
@@ -1251,5 +1314,7 @@ namespace Badger2018.views
             CreateShortcutsView cs = new CreateShortcutsView();
             cs.ShowDialog();
         }
+
+    
     }
 }

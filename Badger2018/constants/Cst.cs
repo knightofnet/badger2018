@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Badger2018.constants
@@ -33,6 +34,9 @@ namespace Badger2018.constants
         public const string LogArchiveDirName = "logsArchives";
 
         public const string LogArchiveDir = "./" + LogArchiveDirName + "/";
+
+        public static readonly Regex ExtractHoursMinRegex =
+            new Regex(@"(?'h'\d{1,2})[h:](?'M'\d{2})", RegexOptions.Compiled);
 
 
 

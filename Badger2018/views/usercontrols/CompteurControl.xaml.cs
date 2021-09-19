@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Badger2018.business;
 using Badger2018.constants;
 using Badger2018.dto;
@@ -17,6 +18,7 @@ namespace Badger2018.views.usercontrols
     {
         private CompteurState _currentState;
         private MainWindow _pwinRef;
+        private DispatcherTimer _dotDispatcher;
 
         public enum CompteurState
         {
@@ -82,8 +84,27 @@ namespace Badger2018.views.usercontrols
             lblTpsTravReelSuppl.MouseDoubleClick += OnMouseDblClick;
 
             //  AdaptUiAtState(CurrentState);
+            gridDot.Visibility = Visibility.Hidden;
 
-
+            lblTpsTravReel.MouseEnter += (sender, args) => UpdateDots(CurrentState);
+            lblTpsTravReelLbl.MouseEnter += (sender, args) => UpdateDots(CurrentState);
+            lblTpsTravReelSuppl.MouseEnter += (sender, args) => UpdateDots(CurrentState);
+            dotCptCeD.MouseLeftButtonUp += (sender, args) =>
+            {
+                CurrentState = CompteurState.TempsCdRealTime;
+                UpdateInfos();
+            };
+            dotCptTempsRest.MouseLeftButtonUp += (sender, args) =>
+            {
+                CurrentState = CompteurState.TempsRestantJour;
+                UpdateInfos();
+            };
+            dotCptTempsTrav.MouseLeftButtonUp += (sender, args) =>
+            {
+                
+                CurrentState = CompteurState.TempsTravailDuJour;
+                UpdateInfos();
+            };
         }
 
         private void OnMouseDblClick(object sender, MouseButtonEventArgs e)
@@ -371,6 +392,54 @@ namespace Badger2018.views.usercontrols
         private void OnChangeCurrentState(CompteurState value)
         {
             lblTpsTravReelLbl.ContextMenu = GetLblCtxMenu();
+            UpdateDots(value);
+
+        }
+
+        private void UpdateDots(CompteurState value)
+        {
+          
+            if (value == CompteurState.TempsCdRealTime)
+            {
+                dotCptCeD.Fill = SystemColors.ControlDarkDarkBrush;
+                dotCptTempsRest.Fill = SystemColors.AppWorkspaceBrush;
+                dotCptTempsTrav.Fill = SystemColors.AppWorkspaceBrush;
+                
+            }  else if (value == CompteurState.TempsRestantJour)
+            {
+                dotCptCeD.Fill = SystemColors.AppWorkspaceBrush;
+                dotCptTempsRest.Fill = SystemColors.ControlDarkDarkBrush;
+                dotCptTempsTrav.Fill = SystemColors.AppWorkspaceBrush;
+            }
+            else if (value == CompteurState.TempsTravailDuJour)
+            {
+                dotCptCeD.Fill = SystemColors.AppWorkspaceBrush;
+                dotCptTempsRest.Fill = SystemColors.AppWorkspaceBrush;
+                dotCptTempsTrav.Fill = SystemColors.ControlDarkDarkBrush;
+            }
+            else
+            {
+                dotCptCeD.Fill = SystemColors.AppWorkspaceBrush;
+                dotCptTempsRest.Fill = SystemColors.AppWorkspaceBrush;
+                dotCptTempsTrav.Fill = SystemColors.AppWorkspaceBrush;
+
+                gridDot.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            gridDot.Visibility = Visibility.Visible;
+            if (_dotDispatcher != null && _dotDispatcher.IsEnabled)
+            {
+                _dotDispatcher.Stop();
+            }
+            _dotDispatcher = new DispatcherTimer();
+            _dotDispatcher.Interval = new TimeSpan(0, 0, 3);
+            _dotDispatcher.Tick += (sender, args) =>
+            {
+                gridDot.Visibility = Visibility.Hidden;
+                _dotDispatcher.Stop();
+            };
+            _dotDispatcher.Start();
         }
 
 

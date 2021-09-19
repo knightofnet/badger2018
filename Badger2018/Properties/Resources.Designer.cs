@@ -101,6 +101,16 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap calculator_solid {
+            get {
+                object obj = ResourceManager.GetObject("calculator_solid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à BEGIN TRANSACTION;
         ///DROP TABLE IF EXISTS `TYBADGEAGES`;
         ///CREATE TABLE IF NOT EXISTS `TYBADGEAGES` (

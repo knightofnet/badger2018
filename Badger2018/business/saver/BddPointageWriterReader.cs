@@ -50,7 +50,7 @@ namespace Badger2018.business.saver
                 TypeJournee = typeJournee,
                 OldEtatBadger = etatBadger,
                 LastCdSeen = cdLastSeen,
-                WorkAtHomeCpt = valTt,
+                WorkAtHomeCpt = valTt
             };
             SaveDayTimes(data);
         }
@@ -86,7 +86,8 @@ namespace Badger2018.business.saver
                     TypeJournee = data.TypeJournee.Index,
                     //IsNotif1Showed = _pWinRef.NotifManager.IsNotifShow(Cst.NotifCust1Name),
                     //IsNotif2Showed = _pWinRef.NotifManager.IsNotifShow(Cst.NotifCust2Name),
-                    WorkAtHomeCpt =  data.WorkAtHomeCpt
+                    WorkAtHomeCpt =  data.WorkAtHomeCpt,
+                    IsComplete = data.EtatBadger == 3
                 };
 
                 SaveClassicDayBadgeages(data.DayToMod, data);

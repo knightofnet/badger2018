@@ -11,7 +11,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Rectangle x:Name="rectDebug" Fill="Orange" Height="10" VerticalAlignment="Top" Margin="0,0,0,0" ToolTip="VERSION DEBUG"/>
-        <Label x:Name="lblVersion" Content="v. {0} {1}" Margin="0,0,241,6" HorizontalAlignment="Right" Width="217" Height="27" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Grid.Row="2" ToolTip="par Arnaud Leblanc" MouseDoubleClick="lblVersion_MouseDoubleClick" />
+        <Label x:Name="lblVersion" Content="v. {0} {1}" Margin="0,0,241.2,5.8" HorizontalAlignment="Right" Width="185" Height="27" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Grid.Row="2" ToolTip="par Arnaud Leblanc" MouseDoubleClick="lblVersion_MouseDoubleClick" />
         <Rectangle x:Name="rectMatin" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Left" Width="179" Margin="0,0,0,0"/>
         <Rectangle x:Name="rectAprem" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Grid.Row="1" HorizontalAlignment="Right" Width="179" Margin="0,0,0,0"/>
 
@@ -51,20 +51,18 @@
         </Grid>
         <Button x:Name="btnBadgerM" Content="Badger et suspendre" HorizontalAlignment="Right" Margin="0,0,90.2,9.8" Grid.Row="2" VerticalAlignment="Bottom" Width="146" Height="23" Click="btnBadgerM_Click" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
 
-        <Button x:Name="btnOptions" HorizontalAlignment="Left" Margin="10,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Options et paramêtres" Click="btnOptions_Click" Width="27" Height="27" VerticalAlignment="Bottom" Foreground="#00000000" Cursor="Hand" >
-            <Button.Background>
-                <ImageBrush ImageSource="Resources/iconSetting.png"/>
-            </Button.Background>
+        <Button x:Name="btnOptions" HorizontalAlignment="Left" Margin="10,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Options et paramêtres" Click="btnOptions_Click" Width="27" Height="27" VerticalAlignment="Bottom" Background="#00000000" Foreground="#00000000" Cursor="Hand" >
+            <Image Source="Resources/iconSetting.png"/>
 
         </Button>
 
-        <Button x:Name="btnModTimes" HorizontalAlignment="Left" Margin="42,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Modifier les badgeages" Width="27" Height="27" VerticalAlignment="Bottom" Foreground="#00000000" Click="btnModTimes_Click" Cursor="Hand" >
-            <Button.Background>
-                <ImageBrush ImageSource="Resources/planTab.png"/>
-            </Button.Background>
-
+        <Button x:Name="btnModTimes" HorizontalAlignment="Left" Margin="74,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Modifier les badgeages" Width="27" Height="27" VerticalAlignment="Bottom" Background="#00000000" Foreground="#00000000" Click="btnModTimes_Click" Cursor="Hand" >
+            <Image Source="Resources/planTab.png"/>
         </Button>
 
+        <Button x:Name="btnOutilCalcCd" HorizontalAlignment="Left" Margin="42,0,0,5.8" Grid.Row="2" BorderBrush="{x:Null}" ToolTip="Ouvrir l'outil de calcul du crédit-débit" Width="27" Height="27" VerticalAlignment="Bottom" Background="#00000000" Foreground="#00000000" Click="btnOutilCalcCd_Click" Cursor="Hand" >
+            <Image Source="Resources/calculator-solid.png" Width="20"/>
+        </Button>
 
 
         <Label x:Name="lblTpsTravMatin" Content="5h30" HorizontalAlignment="Left" Margin="0,10" Grid.Row="1" Width="159" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontWeight="Bold" FontSize="18" ToolTip="Temps travaillé le matin" />

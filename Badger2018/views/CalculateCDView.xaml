@@ -67,7 +67,7 @@
         </GroupBox>
         <GroupBox x:Name="groupBox" Header="Options " Height="177" Margin="398,225,10.2,0" VerticalAlignment="Top">
             <Grid>
-                <CheckBox x:Name="chkOptShowEmptyDay" Content="Afficher les jours vides" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+                <CheckBox x:Name="chkOptShowEmptyDay" Content="Afficher les week-end" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
                 <Label x:Name="lblCdStart" Content="Crédit-débit de départ :" HorizontalAlignment="Left" Margin="2,30,0,0" VerticalAlignment="Top" />
                 <TextBox x:Name="tBoxCdStart" HorizontalAlignment="Left" Height="23" Margin="239,34,0,0" TextWrapping="NoWrap" Text="33h33" VerticalAlignment="Top" Width="45"/>
                 <Label x:Name="lblMoreTime" Content="Temps supplémentaire (récup.tps.suppl...) :" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top"/>

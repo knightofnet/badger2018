@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Badger2018.views"
         mc:Ignorable="d"
-        Title="Question" Height="184" Width="523" ResizeMode="NoResize">
+        Title="Question" Height="184" Width="467" ResizeMode="NoResize">
     <Grid>
         <Button x:Name="btnBadge" Content="Badger" HorizontalAlignment="Right" Margin="0,0,209,10.4" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnBadge_Click"/>
         <Button x:Name="btnReport" Content="Reporter l'heure" HorizontalAlignment="Right" Margin="0,0,90,10.4" VerticalAlignment="Bottom" Width="114" Height="23" Click="btnReport_Click"/>
         <Button x:Name="btnCancel" Content="Annuler" HorizontalAlignment="Right" Margin="0,0,10,10.4" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnCancel_Click"/>
         <CheckBox x:Name="chkBoxMemory" Content="Ne plus me demander" HorizontalAlignment="Left" Margin="10,0,0,13.4" VerticalAlignment="Bottom"/>
-        <RichTextBox x:Name="richTextBox" HorizontalAlignment="Left" Margin="73,10,0,38.4" Width="434" IsReadOnly="True">
+        <RichTextBox x:Name="richTextBox" Margin="47,10,10.4,38.4" IsReadOnly="True"  Focusable="false"   SelectionOpacity="0" BorderBrush="{x:Null}" Cursor="Arrow" BorderThickness="0"
+        >
             <FlowDocument>
                 <Paragraph>
                     <Run Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}">Voulez-vous effectuer le premier badgeage de la journée ?</Run>
@@ -21,7 +22,7 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Image x:Name="image" HorizontalAlignment="Left" Height="58" Margin="10,10,0,0" VerticalAlignment="Top" Width="58" Source="/Badger2018;component/Resources/helpIcon.png"/>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="32" Source="/Badger2018;component/Resources/helpIcon.png"/>
 
     </Grid>
 </Window>

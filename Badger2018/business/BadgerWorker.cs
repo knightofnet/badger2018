@@ -261,13 +261,13 @@ namespace Badger2018.business
                         Progress.Hide();
                     }
 
-                    if (b.ElementsFromPage.TsCd.HasValue)
+                    if (b.ElementsFromPage.TsCd.HasValue && etatBadger == -1)
                     {
                         Pwin.PrgOptions.LastCdSeen = b.ElementsFromPage.TsCd.Value;
                     }
                     else
                     {
-                        _logger.Warn("Aucun C/D relevé lors du badgeage");
+                        _logger.Warn("C/D non pris en compte (déjà relevé, ou non disponible)");
                     }
 
                 }

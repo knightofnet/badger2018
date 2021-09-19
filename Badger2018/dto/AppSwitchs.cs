@@ -1,5 +1,6 @@
 ﻿using System;
 using Badger2018.constants;
+using Badger2018.views;
 
 namespace Badger2018.dto
 {
@@ -69,6 +70,10 @@ namespace Badger2018.dto
         /// Indique que le traitement de badgeage est en cours.
         /// </summary>
         public bool IsInBadgeWork { get; internal set; }
+
+        public bool IsHasAskForTt { get; set; }
+        public bool IsCheckCdLastDayDone { get; set; }
+        public CheckCDLastDay ObjCheckCdLastDayView { get; internal set; }
 
         public AppSwitchs()
         {

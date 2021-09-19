@@ -79,6 +79,10 @@ namespace Badger2018.utils.sqlite
             {
                 kv.Value = value;
             }
+            else if (value is double)
+            {
+                kv.Value = value;
+            }
             else if (value is DateTime)
             {
                 if (options.HasFlag(AddOptions.DateTimeToStrDate))

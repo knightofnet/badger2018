@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -145,13 +146,13 @@ namespace Badger2018
         public bool IsFullyLoaded { get; private set; }
         public double WorkAtHomeCpt { get; set; }
 
-        public TimeSpan? cdCalcTheo;
+
 
         public MainWindow(AppOptions prgOptions, UpdaterManager updaterManager, PluginManager pluginManager, LicenceInfo licenceInfo, AppArgsDto appArgs)
         {
             _logger.Debug("Chargement de l'écran principal");
 #if DEBUG
-           // AppDateUtils.ForceDtNow(new DateTime(2021, 08, 11, 07, 30, 40));
+            AppDateUtils.ForceDtNow(new DateTime(2021, 09, 19, 7, 30, 40));
 
             //SetDarkTheme();
 #endif
@@ -627,13 +628,7 @@ args.Key == Key.F12 ||
             btnMContextMenu.Items.Add(new Separator());
             btnMContextMenu.Items.Add(badgerShowPausesItem);
 
-
-
             btnBadgerM.ContextMenu = btnMContextMenu;
-
-
-
-
 
             MenuItem mainCtxQuitItem = new MenuItem();
             mainCtxQuitItem.Header = "Quitter";
@@ -765,27 +760,7 @@ args.Key == Key.F12 ||
                     pauseHorsPeriodeTimer.Stop();
                 }
                 pauseHorsPeriodeTimer = new DispatcherTimer();
-                pauseHorsPeriodeTimer.Tick += (sender, args) =>
-                {
-                    IntervalTemps ivlTemps = Times.PausesHorsDelai.FirstOrDefault(r => !r.IsIntervalComplet());
-                    if (ivlTemps != null)
-                    {
-                        TimeSpan tpsPause = AppDateUtils.DtNow().TimeOfDay - ivlTemps.Start.TimeOfDay;
-
-                        ctrlCompteur.SetText(tpsPause.ToString("h':'mm':'ss"));
-                        ctrlCompteur.SetTitle("Temps de la pause en cours :");
-                        ctrlCompteur.SetVisibility(CompteurControl.CompteurVisibility.OnlyMain);
-                        //lblTpsTravReel.Content = tpsPause.ToString("h':'mm':'ss");
-                        //lblTpsTravReelLbl.Content = "Temps de la pause en cours :";
-
-                        DateTime newEndTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
-                                    PrgOptions, EnumTypesJournees.Complete)
-                                                        + Times.GetTpsPause() + tpsPause;
-                        lblEndTime.ContentShortTime(newEndTime);
-                        //lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
-
-                    }
-                };
+                pauseHorsPeriodeTimer.Tick += (sender, args) => { ClockUpdTimerOnPauseOnTick(); };
                 pauseHorsPeriodeTimer.Interval = new TimeSpan(0, 0, 1);
 
                 ctrlCompteur.CurrentState = CompteurControl.CompteurState.CustumExt;
@@ -803,6 +778,7 @@ args.Key == Key.F12 ||
             }
 
         }
+
 
         private void CurrentOnSessionEnding(object sender, SessionEndingCancelEventArgs eventArgs)
         {
@@ -956,13 +932,7 @@ args.Key == Key.F12 ||
                 }
             }
 
-            /*
-            MessageBoxResult v = MessageBox.Show("Voulez-vous effectuer le premier badgeage de la journée ? Cliquez sur Oui pour badger ou Non pour entrer l'heure manuellement (dans le cas où le pointage a déjà été effectué via la page)",
-                "Question",
-                MessageBoxButton.YesNoCancel,
-                MessageBoxImage.Question
-                );
-            */
+
             if (v == MessageBoxResult.Cancel)
             {
                 isSpecBadgeage = true;
@@ -1150,7 +1120,7 @@ args.Key == Key.F12 ||
             {
                 EtatBadger = p.EtatBadger;
                 ctrlTyJournee.IsEnabledChange = true;
-                
+
                 if (EtatBadger >= 0)
                 {
                     Times.PlageTravMatin.Start = DateTime.Parse(p.B0).AtSec(Cst.SecondeOffset);
@@ -1305,6 +1275,10 @@ args.Key == Key.F12 ||
 
                     TimeSpan maxTpsAutorise = (PrgOptions.TempsMaxJournee - (PrgOptions.TempsDemieJournee + PrgOptions.TempsDemieJournee));
                     TimeSpan tsFinJourneeReglementaire = Times.EndTheoDateTime.TimeOfDay + maxTpsAutorise;
+                    if (tsFinJourneeReglementaire.CompareTo(PrgOptions.HeureMaxJournee) > 0)
+                    {
+                        tsFinJourneeReglementaire = PrgOptions.HeureMaxJournee;
+                    }
                     TimeSpan tpsMaxTravRestant = tsFinJourneeReglementaire - RealTimes.RealTimeTsNow;
                     if (tpsMaxTravRestant.TotalSeconds >= 0)
                     {
@@ -1333,7 +1307,6 @@ args.Key == Key.F12 ||
             if (RealTimes.RealTimeDtNow.DayOfYear != Times.TimeRef.DayOfYear)
             {
                 // Le jour a changé. Il faut redémarrer.
-                // PointageSaverObj.SaveCurrentDayTimes();
                 PrgSwitch.IsCloseWithSave = false;
                 RestartApp();
             }
@@ -1344,9 +1317,10 @@ args.Key == Key.F12 ||
             NotifManager.DoNotification(RealTimes.RealTimeTempsTravailleMatin, EnumTypesTemps.TpsTravMatin, PrgOptions.IsGlobalShowNotifications);
             NotifManager.DoNotification((RealTimes.RealTimeTempsTravaille - RealTimes.RealTimeTempsTravailleMatin), EnumTypesTemps.TpsTravAprem, PrgOptions.IsGlobalShowNotifications);
 
-            if (PrgOptions.IsStopCptAtMax
+            if (RealTimes.RealTimeTsNow.CompareTo(PrgOptions.HeureMaxJournee) > 0
+                 || (PrgOptions.IsStopCptAtMax
                && isMaxDepass
-               && !PrgSwitch.IsTimerStoppedByMaxTime)
+               && !PrgSwitch.IsTimerStoppedByMaxTime))
             {
                 PrgSwitch.PbarMainTimerActif = false;
                 pbarTimeExtension.IsIndeterminate = true;
@@ -1470,86 +1444,90 @@ args.Key == Key.F12 ||
 
             }
 
+            // Invite pour le télétravail
+            if (PrgOptions.IsCanAskForTT && IsLoaded && EtatBadger >= 0 && !PrgSwitch.IsHasAskForTt)
+            {
+                PrgSwitch.IsHasAskForTt = true;
+
+                int weekNumber = new GregorianCalendar(GregorianCalendarTypes.Localized).GetWeekOfYear(AppDateUtils.DtNow(),
+                    CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                if (weekNumber != PrgOptions.LastWeekNbrTtChecked)
+                {
+                    AskForTtView askForTtView = new AskForTtView(this);
+                    askForTtView.Show();
+                    askForTtView.ActionOnClose += (AskForTtView aftv) =>
+                    {
+                        double newValTt = 0;
+                        if (aftv.IsDayTt)
+                        {
+                            newValTt = EnumTypesJournees.IsDemiJournee(TypeJournee) ? 0.5 : 1;
+                        }
+
+                        if (Math.Abs(WorkAtHomeCpt - newValTt) > 0.01)
+                        {
+                            ctrlTyJournee.ValTt = newValTt;
+                            PointageSaverObj.SaveCurrentDayTimes();
+                        }
+
+
+                        if (aftv.HasChanged)
+                        {
+                            OptionManager.SaveOptions(PrgOptions);
+                        }
+
+                        aftv.StopTimer();
+                    };
+
+                }
+
+
+            }
+
+            // Résumé de la dernière journée travaillée
             if (EtatBadger >= 0 && !PrgSwitch.IsShowResumeLastDayNotif && IsLoaded)
             {
+                ShowLastDayReport(isMaxDepass);
+            }
 
-                DateTime? lastDayDt = ServicesMgr.Instance.JoursServices.GetPreviousDayOf(AppDateUtils.DtNow());
-                if (lastDayDt == null)
-                {
-                    PrgSwitch.IsShowResumeLastDayNotif = true;
-                    return;
-                }
-
-                JourEntryDto lastDay = ServicesMgr.Instance.JoursServices.GetJourData(lastDayDt.Value);
-                if (!lastDay.IsHydrated || !lastDay.IsComplete)
-                {
-                    PrgSwitch.IsShowResumeLastDayNotif = true;
-                    return;
-                }
-
-
-                if (lastDay.EtatBadger < 3)
-                {
-
-                }
-
-                String title = "Résumé de votre dernière journée travaillée";
-                String precTpsTrav = "non renseigné";
-                if (lastDay.TpsTravaille.HasValue)
-                {
-
-                    if (lastDay.TpsTravaille.Value.CompareTo(PrgOptions.TempsMaxJournee) >= 0)
-                    {
-                        precTpsTrav = String.Format("{0} (réellement travaillé : {1})",
-                            PrgOptions.TempsMaxJournee.ToString(Cst.TimeSpanFormatWithH),
-                            lastDay.TpsTravaille.Value.ToString(Cst.TimeSpanFormatWithH)
-                            );
-                    }
-                    else
-                    {
-                        precTpsTrav = lastDay.TpsTravaille.Value.ToString(Cst.TimeSpanFormatWithH);
-                    }
-
-
-                    List<BadgeageEntryDto> badgeageEntryDtos = ServicesMgr.Instance.BadgeagesServices.GetAllBadgeageOfDay(lastDayDt.Value);
-                    TimesBadgerDto times = TimesUtils.HydrateTimesApplicationOrder(lastDay.TypeJour, lastDay.EtatBadger, badgeageEntryDtos);
-                    times.PausesHorsDelai = ServicesMgr.Instance.BadgeagesServices.GetPauses(lastDayDt.Value);
-                    TimeSpan tsTravLastDay = TimesUtils.GetTempsTravaille(AppDateUtils.DtNow(), lastDay.EtatBadger, times, PrgOptions,
-                        lastDay.TypeJour, true, ref isMaxDepass);
-
-                    TimeSpan? cdVeille = badgeageEntryDtos
-                        .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.CdAtTime;
-
-                    if (cdVeille.HasValue)
-                    {
-                        cdCalcTheo = cdVeille.Value + (tsTravLastDay - TimesUtils.GetTpsTravTheoriqueOneDay(PrgOptions, lastDay.TypeJour));
-                        if (PrgOptions.LastCdSeen != cdCalcTheo)
-                        {
-                            imgBtnWarnCD.Visibility = Visibility.Visible;
-                        }
-                    }
-
-                }
-
-                String message = String.Format("Le {1}{0}Type de journée : {2}{0}Temps travaillé{3} : {4}",
-                        Environment.NewLine,
-                        lastDayDt.Value.ToString("D"),
-                        lastDay.TypeJour.Libelle,
-                        PrgOptions.IsAdd5minCpt ? " (avec 5min)" : "",
-                        precTpsTrav
-                     );
-                MiscAppUtils.ShowNotificationBaloon(
-                    _notifyIcon,
-                    title, message,
-                    null, 15000, null, PrgOptions.IsUseAlternateNotification);
-                PluginMgr.PlayHook("OnNotifSend", new object[] { AppDateUtils.DtNow().TimeOfDay, title, message });
-
-
-                PrgSwitch.IsShowResumeLastDayNotif = true;
+            // Vérificaiton du CD de la veille
+            if (PrgOptions.IsCheckCDLastDay && EtatBadger >= 0 && !PrgSwitch.IsCheckCdLastDayDone && IsLoaded)
+            {
+                CheckCdLastDay(isMaxDepass);
             }
 
 
 
+
+        }
+
+
+
+        private void ClockUpdTimerOnPauseOnTick()
+        {
+            if (AppDateUtils.DtNow().DayOfYear != Times.TimeRef.DayOfYear)
+            {
+                // Le jour a changé. Il faut redémarrer.
+                PrgSwitch.IsCloseWithSave = false;
+                RestartApp();
+            }
+
+            IntervalTemps ivlTemps = Times.PausesHorsDelai.FirstOrDefault(r => !r.IsIntervalComplet());
+            if (ivlTemps != null)
+            {
+                TimeSpan tpsPause = AppDateUtils.DtNow().TimeOfDay - ivlTemps.Start.TimeOfDay;
+
+                ctrlCompteur.SetText(tpsPause.ToString("h':'mm':'ss"));
+                ctrlCompteur.SetTitle("Temps de la pause en cours :");
+                ctrlCompteur.SetVisibility(CompteurControl.CompteurVisibility.OnlyMain);
+                //lblTpsTravReel.Content = tpsPause.ToString("h':'mm':'ss");
+                //lblTpsTravReelLbl.Content = "Temps de la pause en cours :";
+
+                DateTime newEndTime = TimesUtils.GetDateTimeEndTravTheorique(Times.PlageTravMatin.Start,
+                                          PrgOptions, EnumTypesJournees.Complete)
+                                      + Times.GetTpsPause() + tpsPause;
+                lblEndTime.ContentShortTime(newEndTime);
+                //lblTpsTravReelSuppl.Visibility = Visibility.Collapsed;
+            }
         }
 
 
@@ -1581,14 +1559,6 @@ args.Key == Key.F12 ||
             {
                 RealTimes.RealTimeTempsTravailleMatin = RealTimes.RealTimeTempsTravaille;
             }
-
-            /**
-             *             DateTime timeEndTheoRaw = TimesUtils.GetDateTimeEndTravTheoriqueBis(start, prgOptions, typeJournee);
-            timeEndTheoRaw += endDelta.GetValueOrDefault();
-            times.EndRawDateTime = timeEndTheoRaw;
-            times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(timeEndTheoRaw, prgOptions, typeJournee);
-            times.EndTheoDateTime = TimesUtils.ClassicTransform(timeEndTheoRaw, prgOptions);
-             * */
 
             RealTimes.RealTimeMinTpsTravRestant = Times.EndTheoDateTime.TimeOfDay - RealTimes.RealTimeTsNow;
             RealTimes.RealTimeMaxTpsTravRestant = Times.MaxTimeForOneDay.TimeOfDay - RealTimes.RealTimeTsNow;
@@ -2183,6 +2153,123 @@ args.Key == Key.F12 ||
             times.MaxTimeForOneDay = TimesUtils.GetMaxDateTimeForOneDay(timeEndTheoRaw, prgOptions, typeJournee);
             times.EndTheoDateTime = TimesUtils.ClassicTransform(timeEndTheoRaw, prgOptions, typeJournee);
         }
+
+
+        private void ShowLastDayReport(bool isMaxDepass)
+        {
+            DateTime? lastDayDt = ServicesMgr.Instance.JoursServices.GetPreviousDayOf(AppDateUtils.DtNow());
+            if (lastDayDt == null)
+            {
+                PrgSwitch.IsShowResumeLastDayNotif = true;
+                return;
+            }
+
+            JourEntryDto lastDay = ServicesMgr.Instance.JoursServices.GetJourData(lastDayDt.Value);
+            if (!lastDay.IsHydrated || !lastDay.IsComplete)
+            {
+                PrgSwitch.IsShowResumeLastDayNotif = true;
+                return;
+            }
+
+            String title = "Résumé de votre dernière journée travaillée";
+            String precTpsTrav = "non renseigné";
+            if (lastDay.TpsTravaille.HasValue)
+            {
+                if (lastDay.TpsTravaille.Value.CompareTo(PrgOptions.TempsMaxJournee) >= 0)
+                {
+                    precTpsTrav = String.Format("{0} (réellement travaillé : {1})",
+                        PrgOptions.TempsMaxJournee.ToString(Cst.TimeSpanFormatWithH),
+                        lastDay.TpsTravaille.Value.ToString(Cst.TimeSpanFormatWithH)
+                    );
+                }
+                else
+                {
+                    precTpsTrav = lastDay.TpsTravaille.Value.ToString(Cst.TimeSpanFormatWithH);
+                }
+
+            }
+
+
+            String message = String.Format("Le {1}{0}Type de journée : {2}{0}Temps travaillé{3} : {4}",
+                Environment.NewLine,
+                lastDayDt.Value.ToString("D"),
+                lastDay.TypeJour.Libelle,
+                PrgOptions.IsAdd5minCpt ? " (avec 5min)" : "",
+                precTpsTrav
+            );
+            MiscAppUtils.ShowNotificationBaloon(
+                _notifyIcon,
+                title, message,
+                null, 15000, null, PrgOptions.IsUseAlternateNotification);
+            PluginMgr.PlayHook("OnNotifSend", new object[] { AppDateUtils.DtNow().TimeOfDay, title, message });
+
+
+            PrgSwitch.IsShowResumeLastDayNotif = true;
+        }
+
+        private void CheckCdLastDay(bool isMaxDepass)
+        {
+            DateTime? lastDayDt = ServicesMgr.Instance.JoursServices.GetPreviousDayOf(AppDateUtils.DtNow());
+            if (lastDayDt == null)
+            {
+                PrgSwitch.IsCheckCdLastDayDone = true;
+                return;
+            }
+
+            JourEntryDto lastDay = ServicesMgr.Instance.JoursServices.GetJourData(lastDayDt.Value);
+            if (!lastDay.IsHydrated || !lastDay.IsComplete)
+            {
+                PrgSwitch.IsCheckCdLastDayDone = true;
+                return;
+            }
+
+
+            if (lastDay.TpsTravaille.HasValue && lastDay.TypeJour == EnumTypesJournees.Complete)
+            {
+                List<BadgeageEntryDto> badgeageEntryDtos =
+                    ServicesMgr.Instance.BadgeagesServices.GetAllBadgeageOfDay(lastDayDt.Value);
+                TimesBadgerDto times = TimesUtils.HydrateTimesApplicationOrder(lastDay.TypeJour,
+                    lastDay.EtatBadger, badgeageEntryDtos);
+                times.PausesHorsDelai = ServicesMgr.Instance.BadgeagesServices.GetPauses(lastDayDt.Value);
+                TimeSpan tsTravLastDay = TimesUtils.GetTempsTravaille(AppDateUtils.DtNow(), lastDay.EtatBadger,
+                    times, PrgOptions,
+                    lastDay.TypeJour, true, ref isMaxDepass);
+                if (tsTravLastDay.CompareTo(PrgOptions.TempsMaxJournee) > 0)
+                {
+                    tsTravLastDay = PrgOptions.TempsMaxJournee;
+                }
+
+                TimeSpan? cdVeille = badgeageEntryDtos
+                    .FirstOrDefault(r => r.TypeBadge == EnumBadgeageType.PLAGE_TRAV_MATIN_START)?.CdAtTime;
+
+                if (cdVeille.HasValue)
+                {
+                    TimeSpan tpsTravDiff = (tsTravLastDay - TimesUtils.GetTpsTravTheoriqueOneDay(PrgOptions, lastDay.TypeJour));
+                    TimeSpan cdCalcTheo = cdVeille.Value + tpsTravDiff;
+                    if (PrgOptions.LastCdSeen != cdCalcTheo)
+                    {
+                        imgBtnWarnCD.Visibility = Visibility.Visible;
+                        PrgSwitch.ObjCheckCdLastDayView = new CheckCDLastDay(this)
+                        {
+                            LastDay = lastDay.DateJour,
+                            CdVeille = cdVeille.Value,
+                            TpsTravLastDay = tsTravLastDay,
+                            CdVeilleAfter = cdCalcTheo,
+                            CurrDay = AppDateUtils.DtNow(),
+                            CdToday = PrgOptions.LastCdSeen,
+                            TpsTravDiff = tpsTravDiff
+
+                        };
+
+
+                    }
+                }
+            }
+
+            PrgSwitch.IsCheckCdLastDayDone = true;
+        }
+
+
 
         private void AdaptUiForState1()
         {
@@ -3075,6 +3162,12 @@ args.Key == Key.F12 ||
             LoadDetailView();
         }
 
+        private void btnOutilCalcCd_Click(object sender, RoutedEventArgs e)
+        {
+            CalculateCDView cdView = new CalculateCDView(PrgOptions);
+            cdView.ShowDialog();
+        }
+
         private void LoadDetailView()
         {
             bool isReloadView = true;
@@ -3218,25 +3311,32 @@ args.Key == Key.F12 ||
 
         private void imgBtnWarnCD_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (cdCalcTheo.HasValue)
+            if (PrgSwitch.ObjCheckCdLastDayView != null)
             {
-                MessageBoxResult msgReturn = MessageBox.Show(String.Format("Le crédit/débit récupéré lors du dernier badgeage ({0}) est différent de celui calculé avec le temps travaillé lors du dernier jour ({1}). Voulez-vous garder le badgeage observé (cliquez sur Oui) ou le crédit/débit calculé (cliquez sur Non) ?", PrgOptions.LastCdSeen.ToStrSignedhhmm(), cdCalcTheo.Value.ToStrSignedhhmm()), "Erreur de crédit-débit", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                PrgSwitch.ObjCheckCdLastDayView.ShowDialog();
 
-                if (msgReturn == MessageBoxResult.Cancel)
+
+                if (PrgSwitch.ObjCheckCdLastDayView.Return == MessageBoxResult.Cancel)
                 {
                     return;
                 }
-                else if (msgReturn == MessageBoxResult.No)
+                else if (PrgSwitch.ObjCheckCdLastDayView.Return == MessageBoxResult.No)
                 {
-                    PrgOptions.LastCdSeen = cdCalcTheo.Value;
+                    PrgOptions.LastCdSeen = PrgSwitch.ObjCheckCdLastDayView.CdVeilleAfter;
                     OptionManager.SaveOptions(PrgOptions);
                     ClockUpdTimerOnOnTick(null, null);
                     imgBtnWarnCD.Visibility = Visibility.Collapsed;
                 }
-                else if (msgReturn == MessageBoxResult.Yes)
+                else if (PrgSwitch.ObjCheckCdLastDayView.Return == MessageBoxResult.Yes)
                 {
                     imgBtnWarnCD.Visibility = Visibility.Collapsed;
                 }
+
+                if (PrgSwitch.ObjCheckCdLastDayView.HasChanged)
+                {
+                    OptionManager.SaveOptions(PrgOptions);
+                }
+                
             }
         }
 
@@ -3417,6 +3517,7 @@ args.Key == Key.F12 ||
 
             return l.ToArray();
         }
+
 
 
     }

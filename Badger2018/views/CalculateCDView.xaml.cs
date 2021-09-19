@@ -68,7 +68,7 @@ namespace Badger2018.views
                 bool isStripped = true;
                 foreach (CcdDayControl ccdDayControl in wp.Children.OfType<CcdDayControl>())
                 {
-                    if (!ccdDayControl.Elt.IsDayActive)
+                    if (ccdDayControl.Elt.Date.DayOfWeek == DayOfWeek.Sunday || ccdDayControl.Elt.Date.DayOfWeek == DayOfWeek.Saturday)
                     {
                         ccdDayControl.Visibility = isShowEmpty ? Visibility.Visible : Visibility.Collapsed;
                     }
@@ -96,7 +96,8 @@ namespace Badger2018.views
             lienMesBadgeages.Click += (sender, args) => MiscAppUtils.GoTo(PrgOptions.UrlMesPointages);
             lienApplyLastCd.Click += (sender, args) =>
             {
-                if (_lastCdCalc != null)
+                if (_lastCdCalc != null
+                    && MessageBoxResult.Yes == MessageBox.Show("Voulez-vous vraiment appliquer le C/D calculé pour aujourd'hui ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question))
                 {
                     PrgOptions.LastCdSeen = _lastCdCalc.Value;
                 }
@@ -534,7 +535,7 @@ namespace Badger2018.views
             {
                 CptCdCalc = _cdAtStart,
             };
- 
+
 
             resCalcObj.CptCdCalc = resCalcObj.CptCdCalc + _tpsSupplCalc;
 
@@ -615,12 +616,17 @@ namespace Badger2018.views
 
                 TimeSpan tpsPauseHd = e.TimePause;
 
-                TimeSpan cdDay =
-                    tpsTravMatin + tpsTravAprem - tpsPauseMidi +
-                    (is5minAdded ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) -
-                    tpsPauseHd - normalDayTs;
-                cElt.UpdateTimesTrav(tpsTravMatin, tpsPauseMidi, tpsTravAprem, tpsPauseHd, normalDayTs,
-                    PrgOptions.IsAdd5minCpt, e.ValTt);
+                TimeSpan tpsTravDay = tpsTravMatin + tpsTravAprem;
+                if (tpsTravDay.CompareTo(PrgOptions.TempsMaxJournee) > 0)
+                {
+                    tpsTravDay = PrgOptions.TempsMaxJournee;
+                    is5minAdded = false;
+                }
+
+                TimeSpan cdDay = tpsTravDay + (is5minAdded ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) -
+                                 tpsPauseHd - normalDayTs;
+                cElt.UpdateTimesTrav(tpsTravMatin, tpsTravAprem, tpsPauseHd, normalDayTs,
+                    PrgOptions.IsAdd5minCpt, PrgOptions.TempsMaxJournee, e.ValTt);
 
                 resCalcObj.CptCdCalc += cdDay;
             }
@@ -655,7 +661,7 @@ namespace Badger2018.views
 
     public class ResCalcObj
     {
-  
+
         public TimeSpan CptCdCalc { get; set; }
     }
 

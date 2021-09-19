@@ -1,0 +1,71 @@
+﻿<Window x:Class="Badger2018.views.CheckCDLastDay"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Badger2018.views"
+        mc:Ignorable="d"
+        Title="Question" Height="430" Width="433.2" ResizeMode="NoResize">
+    <Grid>
+
+        <Button x:Name="btnYes" Content="Garder le C/D" HorizontalAlignment="Right" Margin="0,0,211.2,7.8" VerticalAlignment="Bottom" Width="106" Height="23" Click="btnYes_Click"/>
+        <Button x:Name="btnNo" Content="Remplacer le C/D" HorizontalAlignment="Right" Margin="0,0,90.2,7.8" VerticalAlignment="Bottom" Width="116" Height="23" Click="btnNo_Click"/>
+        <Button x:Name="btnCancel" Content="Annuler" HorizontalAlignment="Right" Margin="0,0,10.2,7.8" VerticalAlignment="Bottom" Width="75" Height="23" Click="btnCancel_Click"/>
+
+
+
+        <RichTextBox x:Name="richTextBox" Margin="72,10,10.2,0" IsReadOnly="True" Focusable="false"   SelectionOpacity="0" BorderBrush="{x:Null}" Cursor="Arrow" BorderThickness="0"  VerticalAlignment="Top" >
+            <FlowDocument>
+                <Paragraph>
+                    <Run Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Text="Crédit-débit incohérent avec les temps de la veille"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Le crédit-débit récupéré lors du dernier badgeage est différent de celui calculé avec les temps du"/>
+                    <Run x:Name="runLastDayA" Text="XXXX XXX"/>
+                    <Run Text="."/>
+                </Paragraph>
+                <Paragraph Padding="0">
+                    <Run Text="Causes probables :"/>
+                    <LineBreak/>
+                    <Run Text="- Erreur dans la remontée des heures."/>
+                    <LineBreak/>
+                    <Run Text="- Remise à zéro du crédit-débit."/>
+                    <LineBreak/>
+                    <Run Text="- Badgeages en défaut sur une journée précédente."/>
+                </Paragraph>
+                <Paragraph Padding="0">
+                    <Run x:Name="runLastDayB" Text="XXXX XXX"/>
+                    <Run Text=":"/>
+                    <LineBreak/>
+                    <Run Text="Crédit-débit au début du jour :"/>
+                    <Run x:Name="runLastDayCdAtStart" Text="-154h54"/>
+                    <LineBreak/>
+                    <Run Text="Temps travaillé :"/>
+                    <Run x:Name="runLastDayTpsTrav" Text="-154h45"/>
+                    <LineBreak/>
+                    <Run Text="Crédit-débit calculé en fin de journée :"/>
+                    <Run x:Name="runLastDayCdAtEnd" Text="555h555"/>
+                </Paragraph>
+                <Paragraph Padding="0">
+                    <Run x:Name="runCurrDay" Text="YYY YYY YYY"/>
+                    <Run Text=":"/>
+                    <LineBreak/>
+                    <Run Text="Crédit-débit récupéré au moment du badgeage :"/>
+                    <Run x:Name="runCurrDayCd" Text="-555h78"/>
+
+                </Paragraph>
+                <Paragraph Padding="0">
+                    <Run Text="Voulez-vous garder le crédit-débit récupéré lors du badgeage ou le remplacer par celui calculé avec les heures du dernier jour travaillé ?"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+
+        <Image x:Name="image" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="62" Source="/Badger2018;component/Resources/sign-warning-icon.png"/>
+
+        <ProgressBar x:Name="pbarTimeout" Height="3" VerticalAlignment="Bottom" Margin="0,0,0,0" BorderThickness="0"/>
+        <CheckBox x:Name="chkBoxNotAsk" HorizontalAlignment="Left" Margin="10,0,0,2.8" VerticalAlignment="Bottom" ToolTip="Modifiable des options" Width="95">
+            <AccessText TextWrapping="Wrap">Ne plus me demander</AccessText></CheckBox>
+
+    </Grid>
+</Window>

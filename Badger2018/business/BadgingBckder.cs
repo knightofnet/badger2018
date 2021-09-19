@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Threading;
 using AryxDevLibrary.utils;
 using AryxDevLibrary.utils.logger;
@@ -187,17 +188,15 @@ namespace Badger2018.business
                 {
                     EtapeTrt = 6;
                     bkg.ReportProgress(EtapeTrt);
-                    cssSelector = "#gv_detailBadgeage tr:last-child td:last-child";
-                    ElementsFromPage.HeureBadgee = GetTimeSpanEltByCssSelector(driver, cssSelector);
-
+                    ElementsFromPage.HeureBadgee = ExtractHeureBadgee(driver);
                 }
                 catch (Exception e)
                 {
-                    ExceptionHandlingUtils.LogAndHideException(e, "Erreur lor de la lecture de " + cssSelector);
+                    ExceptionHandlingUtils.LogAndHideException(e, "Erreur lors de la lecture de " + cssSelector + " (Heure badgée)");
                 }
                 finally
                 {
-                    _logger.Warn("Enregistré");
+                    _logger.Debug("Enregistré");
 
                 }
 
@@ -213,12 +212,12 @@ namespace Badger2018.business
                 }
                 catch (Exception e)
                 {
-                    ExceptionHandlingUtils.LogAndHideException(e, "Erreur lor de la lecture de " + cssSelector);
+                    ExceptionHandlingUtils.LogAndHideException(e, "Erreur lors de la lecture de " + cssSelector + "(C/D)");
                     ElementsFromPage.TsCd = TimeSpan.Zero;
                 }
                 finally
                 {
-                    _logger.Warn("Enregistré");
+                    _logger.Debug("Enregistré");
 
                 }
 
@@ -244,32 +243,79 @@ namespace Badger2018.business
             }
         }
 
-        private static TimeSpan? GetTimeSpanEltByCssSelector(RemoteWebDriver driver, string cssSelectorCreditDebit)
+        private static TimeSpan? ExtractHeureBadgee(RemoteWebDriver driver)
+        {
+         
+            string cssSelector= "#gv_detailBadgeage tr:last-child td:last-child";
+            try
+            {
+                return GetTimeSpanEltByCssSelector(driver, cssSelector,false);
+            }
+            catch (Exception e)
+            {
+                ExceptionHandlingUtils.LogAndHideException(e, "Erreur lors de la lecture de " + cssSelector + "(Heure badgée) - Méthode 1");
+            }
+
+            cssSelector = "#dejaBadger #lbl_heureBadgee";
+            try
+            {
+                return GetTimeSpanEltByCssSelector(driver, cssSelector, false, true);
+            }
+            catch (Exception e)
+            {
+                ExceptionHandlingUtils.LogAndRethrows(e, "Erreur lors de la lecture de " + cssSelector + "(Heure badgée) - Méthode 2");
+            }
+
+            return null;
+        }
+
+        private static TimeSpan? GetTimeSpanEltByCssSelector(RemoteWebDriver driver, string cssSelectorCreditDebit, bool allowNegative=true, bool extractByRegex = false)
         {
             TimeSpan? tsCd = null;
             string txt = driver.FindElementByCssSelector(cssSelectorCreditDebit).Text;
-            if (!StringUtils.IsNullOrWhiteSpace(txt))
+
+            try
             {
-                _logger.Debug("Raw({0}) : '{1}'", cssSelectorCreditDebit, txt);
-
-                // On extrait l'heure
-                string charPivot = txt.Contains("h") ? "h" : ":";
-
-                String hPartStr = txt.Substring(txt.IndexOf(charPivot) - 2, 2);
-                String mPartStr = txt.Substring(txt.IndexOf(charPivot) + 1, 2);
-
-                short hPart;
-                short mPart;
-                if (Int16.TryParse(hPartStr, out hPart) && Int16.TryParse(mPartStr, out mPart))
+                if (!StringUtils.IsNullOrWhiteSpace(txt))
                 {
-                    tsCd = new TimeSpan(hPart, mPart, 0);
-                    if (txt.Contains("-"))
+                    _logger.Debug("Raw({0}) : '{1}'", cssSelectorCreditDebit, txt);
+
+                    String hPartStr = null;
+                    String mPartStr = null;
+
+                    if (extractByRegex)
                     {
-                        tsCd = tsCd.Value.Negate();
+                        Match match = Cst.ExtractHoursMinRegex.Match(txt);
+                        if (match.Success)
+                        {
+                            hPartStr = match.Groups["h"].Value;
+                            mPartStr = match.Groups["M"].Value;
+                        }
+                    }
+                    else
+                    {
+                        // On extrait l'heure
+                        string charPivot = txt.Contains("h") ? "h" : ":";
+
+                        hPartStr = txt.Substring(txt.IndexOf(charPivot, StringComparison.Ordinal) - 2, 2);
+                        mPartStr = txt.Substring(txt.IndexOf(charPivot, StringComparison.Ordinal) + 1, 2);
+                    }
+
+
+                    if (Int16.TryParse(hPartStr, out var hPart) && Int16.TryParse(mPartStr, out var mPart))
+                    {
+                        tsCd = new TimeSpan(hPart, mPart, 0);
+                        if (allowNegative && txt.Contains("-"))
+                        {
+                            tsCd = tsCd.Value.Negate();
+                        }
                     }
                 }
-
-
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandlingUtils.LogAndRethrows(ex, 
+                    "GetTimeSpanEltByCssSelector(txtRaw("+ cssSelectorCreditDebit + ")=>"+ (txt ?? "VIDE") + ")" );
             }
 
             return tsCd;

@@ -54,6 +54,13 @@ namespace Badger2018.utils
             return (Decimal)reader.GetDecimal(colIndex);
         }
 
+        public static Decimal? GetDecimalNByColName(this SQLiteDataReader reader, String colName)
+        {
+            int colIndex = reader.GetOrdinal(colName);
+
+            return reader.IsDBNull(colIndex) ? (Decimal?)null : (Decimal)reader.GetDecimal(colIndex);
+        }
+
         public static Object GetValueByColName(this SQLiteDataReader reader, String colName)
         {
             int colIndex = reader.GetOrdinal(colName);

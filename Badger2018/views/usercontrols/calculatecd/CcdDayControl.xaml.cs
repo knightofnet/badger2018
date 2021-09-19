@@ -218,16 +218,15 @@ namespace Badger2018.views.usercontrols.calculatecd
 
         }
 
-        public void UpdateTimesTrav(TimeSpan tpsTravMatin, TimeSpan tpsPauseMidi, TimeSpan tpsTravAprem,
+        public void UpdateTimesTrav(TimeSpan tpsTravMatin,  TimeSpan tpsTravAprem,
             TimeSpan tpsPauseHd, TimeSpan tpsNormalJournee,
-            bool prgOptionsIsAdd5MinCpt, double valTt)
+            bool prgOptionsIsAdd5MinCpt, TimeSpan prgOptionsTempsMaxJournee, double valTt)
         {
             StringBuilder strB = new StringBuilder();
             strB.AppendLine(Date.ToShortDateString() + (valTt > 0 ? " (" + valTt + " TT)" : "") + " :");
             strB.AppendLine("------");
 
             strB.AppendLine("Matin : " + tpsTravMatin.ToStrSignedhhmm());
-            strB.AppendLine("Pause du midi suppl. : " + tpsPauseMidi.ToStrSignedhhmm());
             strB.AppendLine("Après-midi : " + tpsTravAprem.ToStrSignedhhmm());
 
             if (tpsPauseHd.CompareTo(TimeSpan.Zero) > 0)
@@ -236,8 +235,14 @@ namespace Badger2018.views.usercontrols.calculatecd
 
             }
 
+            TimeSpan tpsTravDay = tpsTravMatin + tpsTravAprem;
+            if (tpsTravDay.CompareTo(prgOptionsTempsMaxJournee) > 0)
+            {
+                tpsTravDay = prgOptionsTempsMaxJournee;
+                prgOptionsIsAdd5MinCpt = false;
+            }
 
-            TimeSpan total = tpsTravMatin + tpsTravAprem - tpsPauseMidi +
+            TimeSpan total = tpsTravDay +
                              (prgOptionsIsAdd5MinCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) - tpsPauseHd;
             strB.AppendLine();
             strB.AppendLine("Total : " + total.ToStrSignedhhmm() + "/" + tpsNormalJournee.ToStrSignedhhmm());

@@ -12,5 +12,18 @@
             <Label x:Name="lblTpsTravReel" Content="20h00" Height="28" HorizontalContentAlignment="Right" VerticalAlignment="Bottom" FontSize="24" Padding="0" HorizontalAlignment="Right" Width="131" FlowDirection="LeftToRight" Margin="5,0,0,0"/>
 
         </WrapPanel>
+        <Grid x:Name="gridDot" Margin="0,31,-0.4,0.2" HorizontalAlignment="Right" Width="5" >
+
+            <Ellipse x:Name="dotCptTempsTrav"  Fill="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" HorizontalAlignment="Left" Height="5" Margin="0,0,0,15" Stroke="Black" VerticalAlignment="Bottom" Width="5" StrokeThickness="0" Cursor="Hand" ToolTip="Afficher le compteur temps travaillé du jour"/>
+
+            <Ellipse x:Name="dotCptTempsRest" Fill="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" HorizontalAlignment="Left" Height="5" Margin="0,0,0,7" Stroke="Black" VerticalAlignment="Bottom" Width="5" StrokeThickness="0" Cursor="Hand" ToolTip="Afficher le compteur temps restant du jour"/>
+
+            <Ellipse x:Name="dotCptCeD" Fill="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" HorizontalAlignment="Left" Height="5" Stroke="Black" VerticalAlignment="Bottom" Width="5" StrokeThickness="0"  Cursor="Hand"
+                     ToolTip="Afficher le crédit/débit en direct" />
+
+
+        </Grid>
+
+
     </Grid>
 </UserControl>

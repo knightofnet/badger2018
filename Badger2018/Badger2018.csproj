@@ -191,6 +191,9 @@
     <Compile Include="views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="views\AskForTtView.xaml.cs">
+      <DependentUpon>AskForTtView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\BadgeageProgressView.xaml.cs">
       <DependentUpon>BadgeageProgressView.xaml</DependentUpon>
     </Compile>
@@ -199,6 +202,9 @@
     </Compile>
     <Compile Include="views\CalculateCDView.xaml.cs">
       <DependentUpon>CalculateCDView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\CheckCDLastDay.xaml.cs">
+      <DependentUpon>CheckCDLastDay.xaml</DependentUpon>
     </Compile>
     <Compile Include="views\CreateShortcutsView.xaml.cs">
       <DependentUpon>CreateShortcutsView.xaml</DependentUpon>
@@ -329,6 +335,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="views\AskForTtView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="views\BadgeageProgressView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -338,6 +348,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\CalculateCDView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\CheckCDLastDay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -512,6 +526,7 @@
     <Resource Include="Resources\notifOn.png" />
     <Resource Include="Resources\autoBadgeMidiOff.png" />
     <Resource Include="Resources\autoBadgeMidiOn.png" />
+    <Resource Include="Resources\calculator-solid.png" />
     <Content Include="Resources\dbbCreate.sql" />
     <Content Include="Resources\didyouknow.xml">
       <SubType>Designer</SubType>

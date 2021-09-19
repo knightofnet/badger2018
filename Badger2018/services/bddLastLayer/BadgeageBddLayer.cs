@@ -124,7 +124,7 @@ namespace Badger2018.services.bddLastLayer
         }
 
 
-        public static void ChangeBadgeageType(DbbAccessManager dbbManager, DateTime date, int targetTypeBadgeage, int newTypeBadgeage)
+        public static void ChangeLastBadgeageType(DbbAccessManager dbbManager, DateTime date, int targetTypeBadgeage, int newTypeBadgeage)
         {
             SQLiteCommand command = null;
 
@@ -135,7 +135,8 @@ namespace Badger2018.services.bddLastLayer
             }
 
             string sql = String.Format(SqlConstants.UPDATE_WHERE, TableBadgeages, strSetMore,
-                "DATE_BADGE=@DATEBADGE AND TYPE_BADGE=@TYPE_BADGE");
+                "(DATE_BADGE, TIME_BADGE, TYPE_BADGE) IN (select DATE_BADGE, TIME_BADGE, TYPE_BADGE from BADGEAGES WHERE DATE_BADGE=@DATEBADGE AND TYPE_BADGE=@TYPE_BADGE order by TIME_BADGE desc LIMIT 1 )");
+
 
             command = new SQLiteCommand(sql, dbbManager.Connection);
             command.Parameters.Add(new SQLiteParameter("@DATEBADGE", date.ToString("yyyy-MM-dd")));

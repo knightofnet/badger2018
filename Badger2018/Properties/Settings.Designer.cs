@@ -864,5 +864,41 @@ namespace Badger2018.Properties {
                 this["BadgeageNbTentativeVerif"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsCanAskForTT {
+            get {
+                return ((bool)(this["IsCanAskForTT"]));
+            }
+            set {
+                this["IsCanAskForTT"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int LastWeekNbrTtChecked {
+            get {
+                return ((int)(this["LastWeekNbrTtChecked"]));
+            }
+            set {
+                this["LastWeekNbrTtChecked"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsCheckCDLastDay {
+            get {
+                return ((bool)(this["IsCheckCDLastDay"]));
+            }
+            set {
+                this["IsCheckCDLastDay"] = value;
+            }
+        }
     }
 }
