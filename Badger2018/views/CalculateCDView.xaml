@@ -61,6 +61,15 @@
 
                 <Label x:Name="lblTpsPause" Content="Temps pause cumulée :" HorizontalAlignment="Left" Margin="4,99,0,0" VerticalAlignment="Top"/>
                 <TextBox x:Name="tboxTpsPause" HorizontalAlignment="Left" Height="20" Margin="142,103,0,0" TextWrapping="NoWrap" Text="33:00" VerticalAlignment="Top" Width="39"/>
+                <Grid Visibility="Collapsed" x:Name="gridTimes" Height="24" Margin="4,130,0.2,0" VerticalAlignment="Top" Grid.ColumnSpan="2" >
+                    <Rectangle Fill="DodgerBlue" HorizontalAlignment="Left" Width="100" />
+                    <Rectangle Fill="White" Width="50px" Margin="100,0,0,0" HorizontalAlignment="Left"/>
+                    <Rectangle Fill="Goldenrod" Width="150" Margin="150,0,0,0" HorizontalAlignment="Left"/>
+                    <Rectangle Fill="DarkRed" Width="100px" Margin="300,0,0,0" HorizontalAlignment="Left"/>
+
+                </Grid>
+                <Label x:Name="lblBilanDayA" Content="" Margin="10,128,10,0" VerticalAlignment="Top" Grid.ColumnSpan="2" FontSize="8" Padding="0"/>
+                <Label x:Name="lblBilanDayB" Content="" Margin="10,140,10,0" VerticalAlignment="Top" Grid.ColumnSpan="2" FontSize="8" Padding="0"/>
 
 
             </Grid>

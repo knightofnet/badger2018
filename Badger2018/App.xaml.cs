@@ -241,6 +241,9 @@ namespace Badger2018
                 {
                     dbbUpd.BackupDbb();
                     dbbUpd.UpdateDbb();
+
+                    prgOptions.LastSqlUpdateVersion = dbbUpd.LastVersion.ToString();
+                    OptionManager.SaveOptions(prgOptions);
                 }
                 else
                 {

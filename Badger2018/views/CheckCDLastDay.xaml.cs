@@ -21,12 +21,25 @@ namespace Badger2018.views
     /// </summary>
     public partial class CheckCDLastDay : Window
     {
-        private readonly MainWindow.IAppOptionsProvider prgOptRef;
+        private readonly MainWindow.IAppOptionsProvider _prgOptRef;
+
+        public DateTime LastDay { get; set; }
+        public TimeSpan CdVeille { get; set; }
+        public TimeSpan TpsTravLastDay { get; set; }
+        public TimeSpan CdVeilleAfter { get; set; }
+        public DateTime CurrDay { get; set; }
+        public TimeSpan CdToday { get; set; }
+        public TimeSpan TpsTravDiff { get; internal set; }
+        public MessageBoxResult Return { get; private set; }
+
+        public bool HasChanged { get; private set; }
 
         public CheckCDLastDay(MainWindow.IAppOptionsProvider prgOptRef)
         {
             InitializeComponent();
-            this.prgOptRef = prgOptRef;
+            this._prgOptRef = prgOptRef;
+
+            Return = MessageBoxResult.Cancel;
 
             Loaded += OnLoaded;
         }
@@ -45,16 +58,7 @@ namespace Badger2018.views
 
         }
 
-        public DateTime LastDay { get; set; }
-        public TimeSpan CdVeille { get; set; }
-        public TimeSpan TpsTravLastDay { get; set; }
-        public TimeSpan CdVeilleAfter { get; set; }
-        public DateTime CurrDay { get; set; }
-        public TimeSpan CdToday { get; set; }
-        public TimeSpan TpsTravDiff { get; internal set; }
-        public MessageBoxResult Return { get; private set; }
-
-        public bool HasChanged { get; private set; }
+     
 
         private void btnYes_Click(object sender, RoutedEventArgs e)
         {
@@ -76,10 +80,10 @@ namespace Badger2018.views
 
         private void CommonClose()
         {
-            bool isCanAskForTt = !(chkBoxNotAsk.IsChecked ?? false);
-            if (isCanAskForTt != prgOptRef.PrgOptions.IsCanAskForTT)
+            bool isCheckCdLastDay = !(chkBoxNotAsk.IsChecked ?? false);
+            if (isCheckCdLastDay != _prgOptRef.PrgOptions.IsCheckCDLastDay)
             {
-                prgOptRef.PrgOptions.IsCanAskForTT = isCanAskForTt;
+                _prgOptRef.PrgOptions.IsCheckCDLastDay = isCheckCdLastDay;
                 HasChanged = true;
             }
 

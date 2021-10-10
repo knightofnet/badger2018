@@ -23,15 +23,15 @@ namespace Badger2018.views
     /// </summary>
     public partial class NoConnexionBadgingView : Window
     {
-        private MainWindow.IAppOptionsProvider prgOptRef;
+        private MainWindow.IAppOptionsProvider _prgOptRef;
         public MessageBoxResult Result { get; set; }
 
         private string url;
         private readonly DispatcherTimer _timerClose;
-        private BackgroundWorker testConnexionBackgroundWorker;
+        private readonly BackgroundWorker testConnexionBackgroundWorker;
 
-        private readonly int nbSecondeMaxTimeout;
-        private int nbSecondeTimeout;
+        private readonly int _nbSecondeMaxTimeout;
+        private int _nbSecondeTimeout;
 
         public NoConnexionBadgingView(int timeout, string urlToTest)
         {
@@ -42,8 +42,8 @@ namespace Badger2018.views
             lblCptArebour.Content = null;
             url = urlToTest;
 
-            nbSecondeMaxTimeout = timeout;
-            nbSecondeTimeout = timeout;
+            _nbSecondeMaxTimeout = timeout;
+            _nbSecondeTimeout = timeout;
 
             Closing += (sender, args) =>
             {
@@ -63,15 +63,15 @@ namespace Badger2018.views
             _timerClose.Interval = new TimeSpan(0, 0, 1);
             _timerClose.Tick += (sender, args) =>
             {
-                if (nbSecondeTimeout > 0 && testConnexionBackgroundWorker.IsBusy)
+                if (_nbSecondeTimeout > 0 && testConnexionBackgroundWorker.IsBusy)
                 {
-                    if (nbSecondeTimeout < 1000)
+                    if (_nbSecondeTimeout < 1000)
                     {
-                        lblCptArebour.Content = nbSecondeTimeout + "s";
+                        lblCptArebour.Content = _nbSecondeTimeout + "s";
                     }
-                    nbSecondeTimeout--;
+                    _nbSecondeTimeout--;
 
-                    pbarTimeout.Value = (double)nbSecondeTimeout * 100 / nbSecondeMaxTimeout;
+                    pbarTimeout.Value = (double)_nbSecondeTimeout * 100 / _nbSecondeMaxTimeout;
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace Badger2018.views
             {
                 if (!BadgingUtils.IsValidWebResponse(url))
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(2000);
                 }
                 else
                 {

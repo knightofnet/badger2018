@@ -51,6 +51,7 @@ namespace Badger2018.views
             PrgOptions = prgOptions;
 
             gpModDay.IsEnabled = false;
+            gridTimes.Visibility = Visibility.Collapsed; 
 
             InitEvents();
 
@@ -525,6 +526,17 @@ namespace Badger2018.views
             sliderMatin.Value = (int)cElt.EtatMatin;
             sliderAprem.Value = (int)cElt.EtatAprem;
 
+            if (cElt.Elt.PhrasesBilan.Count == 2)
+            {
+                lblBilanDayA.Content = cElt.Elt.PhrasesBilan[0];
+                lblBilanDayB.Content = cElt.Elt.PhrasesBilan[1];
+            }
+            else
+            {
+                lblBilanDayA.Content = String.Empty;
+                lblBilanDayB.Content = String.Empty;
+            }
+
 
             isEventChangeEnabled = true;
         }
@@ -616,17 +628,29 @@ namespace Badger2018.views
 
                 TimeSpan tpsPauseHd = e.TimePause;
 
-                TimeSpan tpsTravDay = tpsTravMatin + tpsTravAprem;
+                TimeSpan tpsTravDay = tpsTravMatin 
+                    + tpsTravAprem 
+                    + (is5minAdded ? new TimeSpan(0, 5, 0) : TimeSpan.Zero)
+                    - tpsPauseHd;
                 if (tpsTravDay.CompareTo(PrgOptions.TempsMaxJournee) > 0)
                 {
                     tpsTravDay = PrgOptions.TempsMaxJournee;
                     is5minAdded = false;
                 }
 
-                TimeSpan cdDay = tpsTravDay + (is5minAdded ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) -
-                                 tpsPauseHd - normalDayTs;
+                TimeSpan cdDay = tpsTravDay  - normalDayTs;
                 cElt.UpdateTimesTrav(tpsTravMatin, tpsTravAprem, tpsPauseHd, normalDayTs,
                     PrgOptions.IsAdd5minCpt, PrgOptions.TempsMaxJournee, e.ValTt);
+
+                cElt.Elt.PhrasesBilan.Clear();
+                cElt.Elt.PhrasesBilan.Add(String.Format(
+                    "Temps travaillé matin : {0}, Temps travaillé après-midi : {1}, Temps pause : {2}",
+                    tpsTravMatin.ToStrSignedhhmm(), tpsTravAprem.ToStrSignedhhmm(), tpsPauseHd.ToStrSignedhhmm()));
+                cElt.Elt.PhrasesBilan.Add(String.Format(
+                    "Total : {0}, Temps théorique du jour : {1}, C/D jour : {2}",
+                    tpsTravDay.ToStrSignedhhmm(), PrgOptions.TempsMaxJournee, cdDay.ToStrSignedhhmm()
+                ));
+
 
                 resCalcObj.CptCdCalc += cdDay;
             }
@@ -682,5 +706,11 @@ namespace Badger2018.views
         public TimeSpan TimePause { get; set; }
         public bool IsDayActive { get; set; }
         public double ValTt { get; set; }
+        public List<String> PhrasesBilan { get; set; }
+
+        public DgElt()
+        {
+            PhrasesBilan = new List<string>(2);
+        }
     }
 }

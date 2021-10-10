@@ -152,7 +152,7 @@ namespace Badger2018
         {
             _logger.Debug("Chargement de l'écran principal");
 #if DEBUG
-            AppDateUtils.ForceDtNow(new DateTime(2021, 09, 19, 7, 30, 40));
+            AppDateUtils.ForceDtNow(new DateTime(2021, 09, 15, 7, 30, 40));
 
             //SetDarkTheme();
 #endif
@@ -1445,7 +1445,7 @@ args.Key == Key.F12 ||
             }
 
             // Invite pour le télétravail
-            if (PrgOptions.IsCanAskForTT && IsLoaded && EtatBadger >= 0 && !PrgSwitch.IsHasAskForTt)
+            if (PrgOptions.IsCanAskForTT && IsLoaded && EtatBadger >= 0 && !PrgSwitch.IsHasAskForTt && WorkAtHomeCpt == 0.0)
             {
                 PrgSwitch.IsHasAskForTt = true;
 
@@ -1460,7 +1460,7 @@ args.Key == Key.F12 ||
                         double newValTt = 0;
                         if (aftv.IsDayTt)
                         {
-                            newValTt = EnumTypesJournees.IsDemiJournee(TypeJournee) ? 0.5 : 1;
+                            newValTt = EnumTypesJournees.IsDemiJournee(TypeJournee) ? 0.5 : 1.0;
                         }
 
                         if (Math.Abs(WorkAtHomeCpt - newValTt) > 0.01)
@@ -3318,6 +3318,17 @@ args.Key == Key.F12 ||
 
                 if (PrgSwitch.ObjCheckCdLastDayView.Return == MessageBoxResult.Cancel)
                 {
+                    PrgSwitch.ObjCheckCdLastDayView = new CheckCDLastDay(this)
+                    {
+                        LastDay = PrgSwitch.ObjCheckCdLastDayView.LastDay,
+                        CdVeille = PrgSwitch.ObjCheckCdLastDayView.CdVeille,
+                        TpsTravLastDay = PrgSwitch.ObjCheckCdLastDayView.TpsTravLastDay,
+                        CdVeilleAfter = PrgSwitch.ObjCheckCdLastDayView.CdVeilleAfter,
+                        CurrDay = PrgSwitch.ObjCheckCdLastDayView.CurrDay,
+                        CdToday = PrgSwitch.ObjCheckCdLastDayView.CdToday,
+                        TpsTravDiff = PrgSwitch.ObjCheckCdLastDayView.TpsTravDiff
+
+                    };
                     return;
                 }
                 else if (PrgSwitch.ObjCheckCdLastDayView.Return == MessageBoxResult.No)

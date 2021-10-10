@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Badger2018.views"
         mc:Ignorable="d"
-        Title="Question" Height="430" Width="433.2" ResizeMode="NoResize">
+        Title="Erreur - crédit-débit incohérent avec les temps de la veille" Height="430" Width="433.2" ResizeMode="NoResize">
     <Grid>
 
         <Button x:Name="btnYes" Content="Garder le C/D" HorizontalAlignment="Right" Margin="0,0,211.2,7.8" VerticalAlignment="Bottom" Width="106" Height="23" Click="btnYes_Click"/>
@@ -37,20 +37,20 @@
                     <Run x:Name="runLastDayB" Text="XXXX XXX"/>
                     <Run Text=":"/>
                     <LineBreak/>
-                    <Run Text="Crédit-débit au début du jour :"/>
+                    <Run Text="- Crédit-débit au début du jour :"/>
                     <Run x:Name="runLastDayCdAtStart" Text="-154h54"/>
                     <LineBreak/>
-                    <Run Text="Temps travaillé :"/>
+                    <Run Text="- Temps travaillé :"/>
                     <Run x:Name="runLastDayTpsTrav" Text="-154h45"/>
                     <LineBreak/>
-                    <Run Text="Crédit-débit calculé en fin de journée :"/>
+                    <Run Text="- Crédit-débit calculé en fin de journée :"/>
                     <Run x:Name="runLastDayCdAtEnd" Text="555h555"/>
                 </Paragraph>
                 <Paragraph Padding="0">
                     <Run x:Name="runCurrDay" Text="YYY YYY YYY"/>
                     <Run Text=":"/>
                     <LineBreak/>
-                    <Run Text="Crédit-débit récupéré au moment du badgeage :"/>
+                    <Run Text="- Crédit-débit récupéré au moment du badgeage :"/>
                     <Run x:Name="runCurrDayCd" Text="-555h78"/>
 
                 </Paragraph>

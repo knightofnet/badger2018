@@ -235,15 +235,14 @@ namespace Badger2018.views.usercontrols.calculatecd
 
             }
 
-            TimeSpan tpsTravDay = tpsTravMatin + tpsTravAprem;
+            TimeSpan tpsTravDay = tpsTravMatin + tpsTravAprem + (prgOptionsIsAdd5MinCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) - tpsPauseHd;
             if (tpsTravDay.CompareTo(prgOptionsTempsMaxJournee) > 0)
             {
                 tpsTravDay = prgOptionsTempsMaxJournee;
                 prgOptionsIsAdd5MinCpt = false;
             }
 
-            TimeSpan total = tpsTravDay +
-                             (prgOptionsIsAdd5MinCpt ? new TimeSpan(0, 5, 0) : TimeSpan.Zero) - tpsPauseHd;
+            TimeSpan total = tpsTravDay;
             strB.AppendLine();
             strB.AppendLine("Total : " + total.ToStrSignedhhmm() + "/" + tpsNormalJournee.ToStrSignedhhmm());
             strB.AppendLine("C/D : " + (total - tpsNormalJournee).ToStrSignedhhmm());
