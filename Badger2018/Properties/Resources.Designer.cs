@@ -425,7 +425,7 @@ namespace Badger2018.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Dianum Dublin.
+        ///   Recherche une chaîne localisée semblable à Einsteinium Erevan.
         /// </summary>
         internal static string versionName {
             get {

@@ -146,6 +146,7 @@ namespace Badger2018.utils
 
             try
             {
+                webRequest.Timeout = 10000;
                 response = (HttpWebResponse)webRequest.GetResponse();
                 // This will have statii from 200 to 30x
                 statusNumber = (int)response.StatusCode;
