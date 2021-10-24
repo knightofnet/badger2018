@@ -45,7 +45,7 @@
       <HintPath>..\packages\AryxDevLibrary.1.0.6.17\lib\net35-client\AryxDevLibrary.dll</HintPath>
     </Reference>
     <Reference Include="AryxDevViewLibrary">
-      <HintPath>..\..\..\AryxDevLibrary\AryxDevViewLibrary\bin\Release\AryxDevViewLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\D\Badger2018\Badger2018\AryxDevViewLibrary.dll</HintPath>
     </Reference>
     <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
       <HintPath>..\packages\AudioSwitcher.AudioApi.3.0.0\lib\net40\AudioSwitcher.AudioApi.dll</HintPath>
