@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -16,10 +17,13 @@ namespace WaveCompagnonPlayer
     class Program
     {
 
-        private static Logger _logger = new Logger(CommonCst.WavePlayerLogFile, CommonCst.ConsoleLogLvl,
-        CommonCst.FileLogLvl, "1 Mo");
+        private static Logger _logger = null;
         static void Main(string[] args)
         {
+            string asDir = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
+
+            _logger = new Logger(Path.Combine(asDir, CommonCst.WavePlayerLogFile), CommonCst.ConsoleLogLvl,
+        CommonCst.FileLogLvl, "1 Mo");
 
 
             AppArgsParser argsParser = null;

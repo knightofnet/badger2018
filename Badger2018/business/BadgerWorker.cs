@@ -59,7 +59,7 @@ namespace Badger2018.business
             };
         }
 
-        public void BadgeFullAction(bool forceWhenMsg = false, bool isOkToShutdownIfOptionEnabled = true)
+        public void BadgeFullAction(bool forceWhenMsg = false, bool isOkToShutdownIfOptionEnabled = true, bool isIgnoreDelay = false)
         {
 
             if (Pwin.PrgSwitch.IsInBadgeWork)
@@ -96,7 +96,7 @@ namespace Badger2018.business
                     BadgeageEtapeP1(forceWhenMsg);
                     break;
                 case 2:
-                    BadgeageEtapeP2(forceWhenMsg, isOkToShutdownIfOptionEnabled);
+                    BadgeageEtapeP2(forceWhenMsg, isOkToShutdownIfOptionEnabled, isIgnoreDelay);
                     break;
             }
         }
@@ -393,7 +393,7 @@ namespace Badger2018.business
             _actionAfterBadgeage(dtSaisieManuelle?.AtSec(Cst.SecondeOffset) ?? dtSaisieManuelle, etatBadger);
         }
 
-        private void BadgeageEtapeP2(bool forceWhenMsg, bool isOkToShutdownIfOptionEnabled)
+        private void BadgeageEtapeP2(bool forceWhenMsg, bool isOkToShutdownIfOptionEnabled, bool isIgnoreDelay)
         {
 
             if (!forceWhenMsg && !ShowMessageAvertissementFinPlageFixe())
@@ -420,7 +420,7 @@ namespace Badger2018.business
                 }
             };
 
-            if (Pwin.PrgOptions.LastBadgeDelay > 0)
+            if (!isIgnoreDelay && Pwin.PrgOptions.LastBadgeDelay > 0)
             {
                 Pwin.PrgSwitch.PbarMainTimerActif = false;
                 LastBadgeTimer.Start();

@@ -97,7 +97,7 @@ namespace BetaUserAddons
 
                 CoreAppBridge.Instance.PlayHook("ExtSetBtnBadger", new object[] { false });
                 //btnBadger.IsEnabled = false;
-                CoreAppBridge.Instance.PlayHook("BadgeFullAction", new object[] { true, true });
+                CoreAppBridge.Instance.PlayHook("BadgeFullAction", new object[] { true, true, false });
 
                 CoreAppBridge.Instance.PlayHook("ExtSetBtnBadger", new object[] { false });
                 //btnBadger.IsEnabled = true;
